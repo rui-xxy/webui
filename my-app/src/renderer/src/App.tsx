@@ -1,7 +1,7 @@
-import ProductionLineChart from './components/ProductionLineChart'
+import DashboardLayout from './components/DashboardLayout'
 
 function App(): React.JSX.Element {
-  return <ProductionLineChart />
+  return <DashboardLayout />
 }
 
 export default App

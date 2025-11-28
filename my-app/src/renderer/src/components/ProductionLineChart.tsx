@@ -72,53 +72,47 @@ function ProductionLineChart(): React.JSX.Element {
   return (
     <div className="sa-dashboard">
       <header className="sa-dashboard-header">
-        <div>
-          <h1 className="sa-dashboard-title">硫酸车间产量趋势</h1>
-          <p className="sa-dashboard-subtitle">
-            按时间段查看硫酸车间总产量趋势，为后续水电气、原辅料消耗和产品结构分析打基础。
-          </p>
-        </div>
+        <section className="sa-dashboard-filters">
+          <div className="sa-field">
+            <label className="sa-label" htmlFor="start-date">
+              开始日期
+            </label>
+            <input
+              id="start-date"
+              className="sa-input"
+              type="date"
+              value={startDate}
+              max={endDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+
+          <div className="sa-field">
+            <label className="sa-label" htmlFor="end-date">
+              结束日期
+            </label>
+            <input
+              id="end-date"
+              className="sa-input"
+              type="date"
+              value={endDate}
+              min={startDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
+
+          <button className="sa-button" type="button" onClick={handleResetRange}>
+            重置为全区间
+          </button>
+        </section>
+
         <div className="sa-dashboard-summary">
-          <span className="sa-dashboard-summary-label">当前区间总产量</span>
           <span className="sa-dashboard-summary-value">
             {totalOutput.toLocaleString('zh-CN')} 吨
           </span>
+          <span className="sa-dashboard-summary-label">当前区间总产量</span>
         </div>
       </header>
-
-      <section className="sa-dashboard-filters">
-        <div className="sa-field">
-          <label className="sa-label" htmlFor="start-date">
-            开始日期
-          </label>
-          <input
-            id="start-date"
-            className="sa-input"
-            type="date"
-            value={startDate}
-            max={endDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </div>
-
-        <div className="sa-field">
-          <label className="sa-label" htmlFor="end-date">
-            结束日期
-          </label>
-          <input
-            id="end-date"
-            className="sa-input"
-            type="date"
-            value={endDate}
-            min={startDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </div>
-
-        <button className="sa-button" type="button" onClick={handleResetRange}>
-          重置为全区间
-        </button>
-      </section>
 
       <section className="sa-chart-card">
         <div className="sa-chart-header">

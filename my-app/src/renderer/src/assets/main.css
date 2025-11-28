@@ -16,6 +16,16 @@ body {
   box-sizing: border-box;
 }
 
+/* 仪表盘网格布局背景，用于拖拽对齐 */
+.layout {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+  /* 12 列，对应 react-grid-layout 的 cols: 12；行高 32px */
+  background-size: calc(100% / 12) 100%, 100% 32px;
+  background-position: 0 0;
+}
+
 .sa-dashboard {
   width: 100%;
   max-width: 1200px;
