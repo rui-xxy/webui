@@ -26,11 +26,11 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
+  gap: 2px;
 }
 
 .sa-dashboard-summary-label {
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0;
   text-transform: none;
   color: var(--ev-c-text-3);
@@ -38,7 +38,7 @@ body {
 }
 
 .sa-dashboard-summary-value {
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--accent-color);
   line-height: 1.2;
@@ -154,47 +154,49 @@ body {
 /* 图表标题区域 */
 .sa-chart-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px 16px;
+  gap: 12px;
+  padding: 12px 16px;
   border-bottom: 1px solid #f3f4f6;
   background: #fafafa;
   flex-shrink: 0;
 }
 
 .sa-chart-title {
-  font-size: 16px;
+  font-size: 14px;
   letter-spacing: 0;
   text-transform: none;
   color: var(--ev-c-text-1);
   font-weight: 600;
+  margin: 0;
 }
 
 .sa-chart-subtitle {
-  margin-top: 6px;
-  font-size: 13px;
+  margin-top: 2px;
+  font-size: 11px;
   color: var(--ev-c-text-3);
   font-weight: 400;
 }
 
 .sa-chart-body {
   flex: 1;
-  padding: 16px 24px 24px;
+  padding: 12px 16px 16px;
   overflow: hidden;
   min-height: 0;
 }
 
-/* 右键菜单遮罩层 */
+/* 右键菜单遮罩层 - 覆盖整个窗口 */
 .context-menu-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background: transparent;
   z-index: 1000;
   cursor: default;
+  pointer-events: all;
 }
 
 /* 右键菜单样式 */
@@ -270,8 +272,225 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+/* 储罐监控样式 */
+.tanks-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 8px 8px !important;
+}
+
+.tank-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tank-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ev-c-text-2);
+  padding-left: 1px;
+  letter-spacing: 0.2px;
+}
+
+.tank-row {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-start;
+}
+
+.tank-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.tank-name {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--ev-c-text-2);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.tank-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 35px;
+}
+
+.tank-top {
+  width: 80%;
+  height: 3px;
+  background: linear-gradient(to bottom, #e5e7eb, #d1d5db);
+  border-radius: 1px 1px 0 0;
+  border-bottom: 1px solid #3b82f6;
+  margin-bottom: -1px;
+}
+
+.tank-body {
+  width: 100%;
+  height: 45px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.tank-liquid {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transition: height 0.6s ease, background-color 0.3s ease;
+  border-radius: 0 0 1px 1px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.tank-wave {
+  position: absolute;
+  top: -2px;
+  left: -10%;
+  right: -10%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  animation: wave 3s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(5%) translateY(-1px);
+  }
+}
+
+.tank-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0px;
+  width: 100%;
+}
+
+.tank-level {
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.tank-volume {
+  font-size: 8px;
+  color: var(--ev-c-text-3);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* 柱状图图例样式 */
+.bar-chart-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.bar-chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bar-chart-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.bar-chart-legend-dot.current-month {
+  background: #3b82f6;
+}
+
+.bar-chart-legend-dot.other-month {
+  background: #60a5fa;
+}
+
+.bar-chart-legend-text {
+  font-size: 11px;
+  color: var(--ev-c-text-2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* 树状图图例样式 */
+.treemap-legend {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.treemap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.treemap-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.treemap-legend-dot.current-month {
+  background: #3b82f6;
+}
+
+.treemap-legend-dot.other-month {
+  background: #60a5fa;
+}
+
+.treemap-legend-text {
+  font-size: 13px;
+  color: var(--ev-c-text-2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 @media (max-width: 720px) {
   #root {
     padding: 16px;
+  }
+  
+  .bar-chart-legend,
+  .treemap-legend {
+    flex-direction: column;
+    gap: 8px;
   }
 }

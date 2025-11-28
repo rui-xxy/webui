@@ -1,6 +1,8 @@
 import type React from 'react'
 import { Responsive, WidthProvider, type Layout } from 'react-grid-layout'
 import ProductionLineChart from './ProductionLineChart'
+import MonthlyTreemap from './MonthlyTreemap'
+import StorageTanks from './StorageTanks'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
@@ -27,8 +29,22 @@ const initialLayout: Layout[] = [
     i: 'production-line-chart',
     x: 0,
     y: 0,
+    w: 6,
+    h: 10
+  },
+  {
+    i: 'monthly-treemap',
+    x: 6,
+    y: 0,
+    w: 6,
+    h: 10
+  },
+  {
+    i: 'storage-tanks',
+    x: 0,
+    y: 10,
     w: 12,
-    h: 16
+    h: 5
   }
 ]
 
@@ -66,6 +82,24 @@ function DashboardLayout(): React.JSX.Element {
           }}
         >
           <ProductionLineChart />
+        </div>
+        <div
+          key="monthly-treemap"
+          style={{
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <MonthlyTreemap />
+        </div>
+        <div
+          key="storage-tanks"
+          style={{
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          <StorageTanks />
         </div>
       </ResponsiveGridLayout>
     </div>
