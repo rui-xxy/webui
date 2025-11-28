@@ -353,7 +353,7 @@ body {
   width: 100vw;
   height: 100vh;
   background: transparent;
-  z-index: 1000;
+  z-index: 9998;
   cursor: default;
   pointer-events: all;
 }
@@ -367,8 +367,10 @@ body {
     0 10px 15px rgba(0, 0, 0, 0.1),
     0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
-  min-width: 280px;
+  min-width: 250px;
+  max-width: 320px;
   animation: contextMenuFadeIn 0.15s ease-out;
+  z-index: 9999;
 }
 
 @keyframes contextMenuFadeIn {

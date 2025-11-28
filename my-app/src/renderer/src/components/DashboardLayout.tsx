@@ -75,9 +75,14 @@ const saveLayoutToStorage = (key: string, layouts: Record<string, Layout[]>): vo
 
 function DailyReportGrid(): React.JSX.Element {
   const [consumptionExpanded, setConsumptionExpanded] = useState(false)
-  const [currentLayouts, setCurrentLayouts] = useState<Record<string, Layout[]>>(() =>
-    loadLayoutFromStorage(STORAGE_KEY_DAILY, defaultDailyLayout)
+  
+  // 使用 useMemo 确保初始化只执行一次，避免重新渲染
+  const initialLayouts = useMemo(
+    () => loadLayoutFromStorage(STORAGE_KEY_DAILY, defaultDailyLayout),
+    []
   )
+  
+  const [currentLayouts, setCurrentLayouts] = useState<Record<string, Layout[]>>(initialLayouts)
 
   // 当展开状态变化时，只调整高度，保留用户的位置和宽度设置
   const handleExpandChange = (expanded: boolean): void => {
@@ -120,6 +125,11 @@ function DailyReportGrid(): React.JSX.Element {
       margin={[16, 16]}
       draggableHandle=".sa-chart-header"
       onLayoutChange={handleLayoutChange}
+      isDraggable={true}
+      isResizable={true}
+      useCSSTransforms={true}
+      compactType={null}
+      preventCollision={false}
     >
       <div key="production-line-chart" style={{ display: 'flex', flexDirection: 'column' }}>
         <ProductionLineChart />
@@ -135,9 +145,13 @@ function DailyReportGrid(): React.JSX.Element {
 }
 
 function YearlyReportGrid(): React.JSX.Element {
-  const [currentLayouts, setCurrentLayouts] = useState<Record<string, Layout[]>>(() =>
-    loadLayoutFromStorage(STORAGE_KEY_YEARLY, defaultYearlyLayout)
+  // 使用 useMemo 确保初始化只执行一次
+  const initialLayouts = useMemo(
+    () => loadLayoutFromStorage(STORAGE_KEY_YEARLY, defaultYearlyLayout),
+    []
   )
+  
+  const [currentLayouts, setCurrentLayouts] = useState<Record<string, Layout[]>>(initialLayouts)
 
   // 当用户手动调整布局时，保存新的布局
   const handleLayoutChange = (layout: Layout[], allLayouts: Record<string, Layout[]>): void => {
@@ -156,6 +170,11 @@ function YearlyReportGrid(): React.JSX.Element {
       margin={[16, 16]}
       draggableHandle=".sa-chart-header"
       onLayoutChange={handleLayoutChange}
+      isDraggable={true}
+      isResizable={true}
+      useCSSTransforms={true}
+      compactType={null}
+      preventCollision={false}
     >
       <div key="monthly-treemap" style={{ display: 'flex', flexDirection: 'column' }}>
         <MonthlyTreemap />
