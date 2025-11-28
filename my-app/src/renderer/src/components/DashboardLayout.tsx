@@ -43,9 +43,9 @@ function DashboardLayout(): React.JSX.Element {
       style={{
         width: '100%',
         height: '100vh',
-        padding: 16,
+        padding: 0,
         boxSizing: 'border-box',
-        backgroundColor: '#020617'
+        backgroundColor: 'transparent'
       }}
     >
       <ResponsiveGridLayout
@@ -61,9 +61,9 @@ function DashboardLayout(): React.JSX.Element {
         <div
           key="production-line-chart"
           style={{
-            backgroundColor: '#020617',
-            borderRadius: 12,
-            border: '1px solid #1f2937',
+            backgroundColor: 'transparent',
+            borderRadius: 0,
+            border: 'none',
             overflow: 'hidden'
           }}
         >
