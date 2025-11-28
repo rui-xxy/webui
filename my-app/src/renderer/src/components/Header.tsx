@@ -9,27 +9,28 @@ interface HeaderProps {
 
 function Header({ currentReport, onReportChange }: HeaderProps): React.JSX.Element {
   return (
-    <div className="brutalist-header">
-      <div className="brutalist-header-content">
-        {/* 标题 */}
-        <div className="brutalist-title-section">
-          <h1 className="brutalist-title">硫酸车间报表</h1>
-          <div className="brutalist-subtitle">SULFURIC ACID WORKSHOP</div>
+    <div className="clay-header">
+      <div className="clay-grain-texture"></div>
+      <div className="clay-header-content">
+        {/* 雕刻标题 */}
+        <div className="clay-title-section">
+          <h1 className="clay-title">硫酸车间报表</h1>
         </div>
 
-        {/* 新野兽派按钮组 */}
-        <div className="brutalist-tabs">
+        {/* 物理形态按键 */}
+        <div className="clay-controls">
           <button
-            className={`brutalist-tab brutalist-tab-daily ${currentReport === 'daily' ? 'active' : ''}`}
+            className={`clay-button clay-button-daily ${currentReport === 'daily' ? 'active' : ''}`}
             onClick={() => onReportChange('daily')}
           >
-            <span className="brutalist-tab-text">日报</span>
+            <span className="clay-button-text">日报</span>
           </button>
+          
           <button
-            className={`brutalist-tab brutalist-tab-yearly ${currentReport === 'yearly' ? 'active' : ''}`}
+            className={`clay-button clay-button-yearly ${currentReport === 'yearly' ? 'active' : ''}`}
             onClick={() => onReportChange('yearly')}
           >
-            <span className="brutalist-tab-text">年报</span>
+            <span className="clay-button-text">年报</span>
           </button>
         </div>
       </div>
