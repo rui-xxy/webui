@@ -82,135 +82,138 @@ function ProductionLineChart(): React.JSX.Element {
     setShowContextMenu(false)
   }
 
-  // 点击其他地方关闭菜单
-  const handleClickOutside = (): void => {
-    if (showContextMenu) {
-      setShowContextMenu(false)
-    }
-  }
-
   return (
-    <div className="sa-dashboard" onClick={handleClickOutside}>
-      <section className="sa-chart-card" onContextMenu={handleContextMenu}>
-        <div className="sa-chart-header">
-          <div>
-            <h2 className="sa-chart-title">产量趋势</h2>
-            <p className="sa-chart-subtitle">
-              {startDate} ~ {endDate}
-            </p>
+    <>
+      <div className="chart-container">
+        <div className="sa-chart-card" onContextMenu={handleContextMenu}>
+          {/* 标题区域 */}
+          <div className="sa-chart-header">
+            <div>
+              <h2 className="sa-chart-title">产量趋势</h2>
+              <p className="sa-chart-subtitle">
+                {startDate} ~ {endDate}
+              </p>
+            </div>
+            <div className="sa-dashboard-summary">
+              <span className="sa-dashboard-summary-value">
+                {totalOutput.toLocaleString('zh-CN')} 吨
+              </span>
+              <span className="sa-dashboard-summary-label">当前区间总产量</span>
+            </div>
           </div>
-          <div className="sa-dashboard-summary">
-            <span className="sa-dashboard-summary-value">
-              {totalOutput.toLocaleString('zh-CN')} 吨
-            </span>
-            <span className="sa-dashboard-summary-label">当前区间总产量</span>
-          </div>
-        </div>
 
-        <div className="sa-chart-body">
-          <ResponsiveContainer width="100%" height={360}>
-            <LineChart
-              data={filteredData}
-              margin={{
-                top: 16,
-                right: 24,
-                bottom: 24,
-                left: 0
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis
-                dataKey="date"
-                stroke="#9ca3af"
-                tick={{ fill: '#6b7280', fontSize: 12 }}
-                tickMargin={12}
-                axisLine={{ stroke: '#d1d5db' }}
-              />
-              <YAxis
-                stroke="#9ca3af"
-                tick={{ fill: '#6b7280', fontSize: 12 }}
-                tickMargin={12}
-                axisLine={{ stroke: '#d1d5db' }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 8,
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          <div className="sa-chart-body">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={filteredData}
+                margin={{
+                  top: 16,
+                  right: 24,
+                  bottom: 24,
+                  left: 0
                 }}
-                labelStyle={{ color: '#374151', fontWeight: 500, marginBottom: 4 }}
-                itemStyle={{ color: '#3b82f6', fontWeight: 500 }}
-                formatter={(value: number) => [`${value} 吨`, '产量']}
-              />
-              <Line
-                type="monotone"
-                dataKey="output"
-                stroke="#3b82f6"
-                strokeWidth={3}
-                dot={{ r: 4, strokeWidth: 2, stroke: '#3b82f6', fill: '#ffffff' }}
-                activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#3b82f6' }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
-      {/* 右键菜单 */}
-      {showContextMenu && (
-        <div
-          className="context-menu"
-          style={{
-            position: 'fixed',
-            top: contextMenuPosition.y,
-            left: contextMenuPosition.x,
-            zIndex: 1000
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="context-menu-content">
-            <div className="context-menu-header">时间范围设置</div>
-            
-            <div className="sa-field">
-              <label className="sa-label" htmlFor="start-date">
-                开始日期
-              </label>
-              <input
-                id="start-date"
-                className="sa-input"
-                type="date"
-                value={startDate}
-                max={endDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-
-            <div className="sa-field">
-              <label className="sa-label" htmlFor="end-date">
-                结束日期
-              </label>
-              <input
-                id="end-date"
-                className="sa-input"
-                type="date"
-                value={endDate}
-                min={startDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </div>
-
-            <div className="context-menu-actions">
-              <button className="sa-button" type="button" onClick={handleResetRange}>
-                重置区间
-              </button>
-              <button className="sa-button-secondary" type="button" onClick={handleCloseMenu}>
-                关闭
-              </button>
-            </div>
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis
+                  dataKey="date"
+                  stroke="#9ca3af"
+                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  tickMargin={12}
+                  axisLine={{ stroke: '#d1d5db' }}
+                />
+                <YAxis
+                  stroke="#9ca3af"
+                  tick={{ fill: '#6b7280', fontSize: 12 }}
+                  tickMargin={12}
+                  axisLine={{ stroke: '#d1d5db' }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#ffffff',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: 8,
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                  }}
+                  labelStyle={{ color: '#374151', fontWeight: 500, marginBottom: 4 }}
+                  itemStyle={{ color: '#3b82f6', fontWeight: 500 }}
+                  formatter={(value: number) => [`${value} 吨`, '产量']}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="output"
+                  stroke="#3b82f6"
+                  strokeWidth={3}
+                  dot={{ r: 4, strokeWidth: 2, stroke: '#3b82f6', fill: '#ffffff' }}
+                  activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#3b82f6' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
+      </div>
+
+      {/* 右键菜单 - 使用遮罩层 */}
+      {showContextMenu && (
+        <>
+          {/* 遮罩层 - 点击关闭菜单 */}
+          <div 
+            className="context-menu-overlay"
+            onClick={handleCloseMenu}
+          />
+          <div
+            className="context-menu"
+            style={{
+              position: 'fixed',
+              top: contextMenuPosition.y,
+              left: contextMenuPosition.x,
+              zIndex: 1001
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="context-menu-content">
+              <div className="context-menu-header">时间范围设置</div>
+              
+              <div className="sa-field">
+                <label className="sa-label" htmlFor="start-date">
+                  开始日期
+                </label>
+                <input
+                  id="start-date"
+                  className="sa-input"
+                  type="date"
+                  value={startDate}
+                  max={endDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+              </div>
+
+              <div className="sa-field">
+                <label className="sa-label" htmlFor="end-date">
+                  结束日期
+                </label>
+                <input
+                  id="end-date"
+                  className="sa-input"
+                  type="date"
+                  value={endDate}
+                  min={startDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                />
+              </div>
+
+              <div className="context-menu-actions">
+                <button className="sa-button" type="button" onClick={handleResetRange}>
+                  重置区间
+                </button>
+                <button className="sa-button-secondary" type="button" onClick={handleCloseMenu}>
+                  关闭
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
-    </div>
+    </>
   )
 }
 

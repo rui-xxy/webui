@@ -27,8 +27,8 @@ const initialLayout: Layout[] = [
     i: 'production-line-chart',
     x: 0,
     y: 0,
-    w: 6,
-    h: 10
+    w: 12,
+    h: 16
   }
 ]
 
@@ -53,18 +53,16 @@ function DashboardLayout(): React.JSX.Element {
         breakpoints={breakpoints}
         cols={cols}
         layouts={{ lg: initialLayout }}
-        rowHeight={32}
-        margin={[0, 0]}
+        rowHeight={40}
+        margin={[16, 16]}
         onLayoutChange={handleLayoutChange}
-        draggableHandle=".sa-dashboard-header"
+        draggableHandle=".sa-chart-card"
       >
         <div
           key="production-line-chart"
           style={{
-            backgroundColor: 'transparent',
-            borderRadius: 0,
-            border: 'none',
-            overflow: 'hidden'
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           <ProductionLineChart />
