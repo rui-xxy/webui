@@ -1,5 +1,7 @@
 import type React from 'react'
+import { useMemo, useState } from 'react'
 import { Responsive, WidthProvider, type Layout } from 'react-grid-layout'
+import Header from './Header'
 import ProductionLineChart from './ProductionLineChart'
 import MonthlyTreemap from './MonthlyTreemap'
 import StorageTanks from './StorageTanks'
@@ -24,85 +26,94 @@ const cols = {
   xxs: 4
 }
 
-const initialLayout: Layout[] = [
-  {
-    i: 'production-line-chart',
-    x: 0,
-    y: 0,
-    w: 6,
-    h: 10
-  },
-  {
-    i: 'monthly-treemap',
-    x: 6,
-    y: 0,
-    w: 6,
-    h: 10
-  },
-  {
-    i: 'storage-tanks',
-    x: 0,
-    y: 10,
-    w: 12,
-    h: 5
-  }
+const dailyLayout: Layout[] = [
+  { i: 'production-line-chart', x: 0, y: 0, w: 6, h: 10 },
+  { i: 'storage-tanks', x: 6, y: 0, w: 6, h: 10 }
 ]
 
+const yearlyLayout: Layout[] = [
+  { i: 'monthly-treemap', x: 0, y: 0, w: 12, h: 10 }
+]
+
+type ReportType = 'daily' | 'yearly'
+
+const cloneLayout = (layout: Layout[]): Layout[] => layout.map((item) => ({ ...item }))
+
+const buildLayouts = (layout: Layout[]): Record<string, Layout[]> => ({
+  lg: cloneLayout(layout),
+  md: cloneLayout(layout),
+  sm: cloneLayout(layout),
+  xs: cloneLayout(layout),
+  xxs: cloneLayout(layout)
+})
+
+function DailyReportGrid(): React.JSX.Element {
+  const layouts = useMemo(() => buildLayouts(dailyLayout), [])
+
+  return (
+    <ResponsiveGridLayout
+      className="layout"
+      breakpoints={breakpoints}
+      cols={cols}
+      layouts={layouts}
+      rowHeight={40}
+      margin={[16, 16]}
+      draggableHandle=".sa-chart-card"
+    >
+      <div
+        key="production-line-chart"
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
+        <ProductionLineChart />
+      </div>
+      <div
+        key="storage-tanks"
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
+        <StorageTanks />
+      </div>
+    </ResponsiveGridLayout>
+  )
+}
+
+function YearlyReportGrid(): React.JSX.Element {
+  const layouts = useMemo(() => buildLayouts(yearlyLayout), [])
+
+  return (
+    <ResponsiveGridLayout
+      className="layout"
+      breakpoints={breakpoints}
+      cols={cols}
+      layouts={layouts}
+      rowHeight={40}
+      margin={[16, 16]}
+      draggableHandle=".sa-chart-card"
+    >
+      <div
+        key="monthly-treemap"
+        style={{ display: 'flex', flexDirection: 'column' }}
+      >
+        <MonthlyTreemap />
+      </div>
+    </ResponsiveGridLayout>
+  )
+}
+
 function DashboardLayout(): React.JSX.Element {
-  const handleLayoutChange = (currentLayout: Layout[]): void => {
-    // 将来可以把布局存到 localStorage 或接口
-    // console.log('layout changed', currentLayout)
+  const [currentReport, setCurrentReport] = useState<ReportType>('daily')
+
+  const handleReportChange = (type: ReportType): void => {
+    setCurrentReport(type)
   }
 
   return (
-    <div
-      style={{
-        width: '100%',
-        height: '100vh',
-        padding: 0,
-        boxSizing: 'border-box',
-        backgroundColor: 'transparent'
-      }}
-    >
-      <ResponsiveGridLayout
-        className="layout"
-        breakpoints={breakpoints}
-        cols={cols}
-        layouts={{ lg: initialLayout }}
-        rowHeight={40}
-        margin={[16, 16]}
-        onLayoutChange={handleLayoutChange}
-        draggableHandle=".sa-chart-card"
-      >
-        <div
-          key="production-line-chart"
-          style={{
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <ProductionLineChart />
-        </div>
-        <div
-          key="monthly-treemap"
-          style={{
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <MonthlyTreemap />
-        </div>
-        <div
-          key="storage-tanks"
-          style={{
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          <StorageTanks />
-        </div>
-      </ResponsiveGridLayout>
-    </div>
+    <>
+      <Header currentReport={currentReport} onReportChange={handleReportChange} />
+      
+      <div className="dashboard-content">
+        {currentReport === 'daily' ? <DailyReportGrid /> : <YearlyReportGrid />}
+      </div>
+    </>
   )
 }
 

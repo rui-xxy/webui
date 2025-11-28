@@ -10,10 +10,142 @@ body {
   height: 100vh;
   width: 100vw;
   display: flex;
+  flex-direction: column;
   align-items: stretch;
-  justify-content: center;
-  padding: 24px;
+  justify-content: flex-start;
+  padding: 0;
   box-sizing: border-box;
+}
+
+/* 新野兽派风格头部栏 */
+.brutalist-header {
+  background: #FAFAF8;
+  border-bottom: 5px solid #000000;
+  box-shadow: 0 5px 0 0 #000000;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.brutalist-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: #000000;
+}
+
+.brutalist-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 32px;
+  max-width: 100%;
+}
+
+.brutalist-title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brutalist-title {
+  font-size: 48px;
+  font-weight: 900;
+  color: #000000;
+  margin: 0;
+  letter-spacing: -1px;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  line-height: 1;
+}
+
+.brutalist-subtitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.brutalist-tabs {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.brutalist-tab {
+  position: relative;
+  padding: 16px 32px;
+  border: 4px solid #000000;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 120px;
+  box-shadow: 6px 6px 0 0 #000000;
+}
+
+.brutalist-tab:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 4px 4px 0 0 #000000;
+}
+
+.brutalist-tab:active {
+  transform: translate(6px, 6px);
+  box-shadow: 0 0 0 0 #000000;
+}
+
+.brutalist-tab-daily {
+  background: #0066FF;
+  color: #FFFFFF;
+}
+
+.brutalist-tab-daily.active {
+  background: #0052CC;
+}
+
+.brutalist-tab-yearly {
+  background: #FFE600;
+  color: #000000;
+}
+
+.brutalist-tab-yearly.active {
+  background: #FFCC00;
+}
+
+.brutalist-tab-text {
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+/* 旧样式移除 */
+.dashboard-header,
+.dashboard-header-content,
+.dashboard-title-section,
+.dashboard-title,
+.dashboard-subtitle,
+.report-tabs,
+.report-tab {
+  display: none;
+}
+
+/* 仪表盘内容区 */
+.dashboard-content {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  padding: 16px 24px 32px;
+  background: #f0f2f5;
+}
+
+.dashboard-content > .layout {
+  min-height: calc(100vh - 160px);
 }
 
 /* 仪表盘网格布局背景 */
