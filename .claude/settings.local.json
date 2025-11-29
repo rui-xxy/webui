@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__web-reader__webReader",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
