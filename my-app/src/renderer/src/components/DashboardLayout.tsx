@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { Responsive, WidthProvider, type Layout } from 'react-grid-layout'
 import Header from './Header'
 import ProductionLineChart from './ProductionLineChart'
@@ -85,7 +85,8 @@ function DailyReportGrid(): React.JSX.Element {
   const [currentLayouts, setCurrentLayouts] = useState<Record<string, Layout[]>>(initialLayouts)
 
   // 当展开状态变化时，只调整高度，保留用户的位置和宽度设置
-  const handleExpandChange = (expanded: boolean): void => {
+  // 使用 useCallback 稳定函数引用,避免触发 ConsumptionMonitor 的 useEffect 无限循环
+  const handleExpandChange = useCallback((expanded: boolean): void => {
     setConsumptionExpanded(expanded)
 
     setCurrentLayouts((prevLayouts) => {
@@ -95,18 +96,17 @@ function DailyReportGrid(): React.JSX.Element {
           if (item.i === 'consumption-monitor') {
             return {
               ...item,
-              h: expanded ? Math.max(item.h, 15) : Math.min(item.h, 6), // 展开时至少15行，收起时最多6行
+              h: expanded ? Math.max(item.h, 15) : Math.min(item.h, 6), // 展开时至少15行,收起时最多6行
               minH: 5
             }
           }
           return item
         })
       })
-      // 保存到 localStorage
-      saveLayoutToStorage(STORAGE_KEY_DAILY, newLayouts)
+      // 不在这里保存,让 handleLayoutChange 统一处理,避免触发无限循环
       return newLayouts
     })
-  }
+  }, []) // 空依赖数组,函数引用永远不变
 
   // 当用户手动调整布局时，保存新的布局
   const handleLayoutChange = (layout: Layout[], allLayouts: Record<string, Layout[]>): void => {
