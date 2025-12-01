@@ -1,0 +1,577 @@
+/* ============================================
+   时间轴样式（月度和年度）
+   ============================================ */
+
+/* ============================================
+   停机时间轴样式
+   ============================================ */
+.timeline-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* 头部摘要 */
+.timeline-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  padding: 12px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.timeline-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timeline-summary-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.timeline-summary-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.timeline-summary-value.danger {
+  color: #ef4444;
+}
+
+.timeline-summary-divider {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    #e2e8f0 20%,
+    #e2e8f0 80%,
+    transparent
+  );
+}
+
+/* 图例 */
+.timeline-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 16px;
+  background: #fafbfc;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.timeline-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.timeline-legend-icon {
+  font-size: 14px;
+}
+
+.timeline-legend-label {
+  font-weight: 500;
+}
+
+.timeline-legend-count {
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+/* 时间轴容器 */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 时间刻度 */
+.timeline-marks {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px;
+  position: relative;
+}
+
+.timeline-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.timeline-mark-line {
+  width: 2px;
+  height: 8px;
+  background: #cbd5e1;
+  border-radius: 1px;
+}
+
+.timeline-mark-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+/* 时间轴主体 */
+.timeline-track {
+  position: relative;
+  height: 40px;
+  overflow: visible;
+}
+
+/* 主轴细线 */
+.timeline-main-axis {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  right: 8px;
+  height: 3px;
+  background: #e5e7eb;
+  border-radius: 9999px;
+}
+
+/* 事件块容器 */
+.timeline-events {
+  position: absolute;
+  inset: 0;
+  padding: 0 8px;
+}
+
+/* 红色停车区段 */
+.timeline-event {
+  position: absolute;
+  top: 50%;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 9999px;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transform-origin: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.15);
+  overflow: visible;
+}
+
+.timeline-event.hovered {
+  transform: translateY(-50%) scaleX(0.15);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15);
+  z-index: 2;
+}
+
+.timeline-event.selected {
+  box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.25);
+  z-index: 3;
+}
+
+/* 事件提示框 */
+.timeline-event-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 200px;
+  max-width: 280px;
+  pointer-events: none;
+}
+
+.timeline-event:hover .timeline-event-tooltip {
+  display: block;
+}
+
+.timeline-event-tooltip::before {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #ffffff;
+}
+
+.timeline-event-tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.timeline-event-tooltip-icon {
+  font-size: 16px;
+}
+
+.timeline-event-tooltip-type {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.timeline-event-tooltip-time {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.timeline-event-tooltip-reason {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.timeline-event-tooltip-desc {
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* 详细信息卡片 */
+.timeline-detail-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.timeline-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.timeline-detail-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.timeline-detail-icon {
+  font-size: 18px;
+}
+
+.timeline-detail-close {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #64748b;
+  transition: all 0.2s;
+}
+
+.timeline-detail-close:hover {
+  background: #ffffff;
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+.timeline-detail-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeline-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.timeline-detail-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+.timeline-detail-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  text-align: right;
+}
+
+.timeline-detail-value.danger {
+  color: #ef4444;
+}
+
+/* ============================================
+   年度停车时间轴样式
+   ============================================ */
+.yearly-timeline-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+}
+
+/* 头部统计 */
+.yearly-timeline-summary {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
+}
+
+.yearly-timeline-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 86px;
+}
+
+.yearly-timeline-stat-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.yearly-timeline-stat-value.danger {
+  color: #dc2626;
+}
+
+.yearly-timeline-stat-value.planned {
+  color: #f43f5e;
+}
+
+.yearly-timeline-stat-value.unplanned {
+  color: #dc2626;
+}
+
+.yearly-timeline-stat-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: #64748b;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+/* 时间轴主体 */
+.yearly-timeline-main {
+  position: relative;
+  padding-top: 4px;
+}
+
+.yearly-timeline-track {
+  position: relative;
+  padding: 24px 0 54px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.08), rgba(148, 163, 184, 0));
+}
+
+.yearly-timeline-axis-line {
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: #d4dae5;
+  border-radius: 999px;
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.7);
+  z-index: 1;
+}
+
+.yearly-timeline-month-marker {
+  position: absolute;
+  top: 42px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.yearly-timeline-month-marker:first-child {
+  transform: translateX(0);
+  align-items: flex-start;
+}
+
+.yearly-timeline-month-marker:last-child {
+  transform: translateX(-100%);
+  align-items: flex-end;
+}
+
+.yearly-timeline-month-tick {
+  width: 1px;
+  height: 10px;
+  background: #cbd5f5;
+}
+
+.yearly-timeline-month-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.yearly-timeline-events {
+  position: absolute;
+  top: 42px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  z-index: 2;
+}
+
+.yearly-timeline-event {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.18);
+  transition: box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.yearly-timeline-event.planned {
+  background: linear-gradient(90deg, #fb7185, #f43f5e);
+}
+
+.yearly-timeline-event.unplanned {
+  background: linear-gradient(90deg, #dc2626, #ef4444);
+}
+
+.yearly-timeline-event.hovered {
+  box-shadow: 0 6px 16px rgba(244, 63, 94, 0.35);
+  filter: brightness(1.05);
+}
+
+/* 当前日期指示器 */
+/* 悬浮提示框 */
+.yearly-timeline-tooltip {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.18);
+  z-index: 1000;
+  min-width: 240px;
+  max-width: 300px;
+  pointer-events: none;
+  animation: tooltipFadeIn 0.18s ease-out;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-100% - 12px));
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+  }
+}
+
+.yearly-timeline-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-top-color: #ffffff;
+}
+
+.yearly-timeline-tooltip-header {
+  margin-bottom: 10px;
+}
+
+.yearly-timeline-tooltip-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: #ffffff;
+}
+
+.yearly-timeline-tooltip-badge.planned {
+  background: linear-gradient(135deg, #fb7185, #f43f5e);
+}
+
+.yearly-timeline-tooltip-badge.unplanned {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.yearly-timeline-tooltip-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.yearly-timeline-tooltip-date {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 6px;
+}
+
+.yearly-timeline-tooltip-duration {
+  font-size: 12px;
+  font-weight: 600;
+  color: #dc2626;
+  margin-bottom: 8px;
+}
+
+.yearly-timeline-tooltip-desc {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.5;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}

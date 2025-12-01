@@ -1,0 +1,44 @@
+/* ============================================
+   基础样式和CSS变量
+   ============================================ */
+
+/* 导入原有的base.css */
+@import '../base.css';
+
+/* 基础样式 */
+body {
+  background-color: #f0f2f5;
+  background-image: none;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* 未来科技感NERV指挥中心风格CSS变量 */
+:root {
+  --futuristic-bg: #1a1a2e;
+  --futuristic-text-emerald: #00ff88;
+  --futuristic-glow-emerald: rgba(0, 255, 136, 0.8);
+  --futuristic-daily-color: #ff6b35;
+  --futuristic-yearly-color: #1a1a2e;
+  --futuristic-glass-dark: rgba(30, 30, 40, 0.8);
+  --futuristic-metal: #8b8b9c;
+  --futuristic-grid-color: rgba(0, 255, 136, 0.1);
+  --futuristic-emergency-orange: #ff6b35;
+  --futuristic-dark-indigo: #1a1a2e;
+  --futuristic-holographic-blue: rgba(96, 165, 250, 0.6);
+  --futuristic-header-height: 180px;
+}

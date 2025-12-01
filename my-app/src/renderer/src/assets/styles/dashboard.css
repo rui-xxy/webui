@@ -1,0 +1,149 @@
+/* ============================================
+   仪表盘布局和表单控件样式
+   ============================================ */
+
+/* 仪表盘内容区 */
+.dashboard-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  min-height: 0;
+  background: #f0f2f5;
+  padding: 0 24px 32px;
+}
+
+.dashboard-main {
+  flex: 1;
+  width: 100%;
+}
+
+.dashboard-main > .layout {
+  min-height: calc(100vh - 280px);
+}
+
+/* 仪表盘网格布局背景 */
+.layout {
+  background: transparent;
+  height: 100%;
+}
+
+.sa-dashboard-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.sa-dashboard-summary-label {
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ev-c-text-3);
+  font-weight: 400;
+}
+
+.sa-dashboard-summary-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent-color);
+  line-height: 1.2;
+}
+
+.sa-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+}
+
+.sa-label {
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ev-c-text-2);
+  font-weight: 500;
+}
+
+.sa-input {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: var(--ev-c-text-1);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.sa-input:hover {
+  border-color: #9ca3af;
+}
+
+.sa-input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px var(--accent-color-soft);
+}
+
+.sa-input::-webkit-calendar-picker-indicator {
+  filter: none;
+  cursor: pointer;
+}
+
+.sa-button {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 1px solid var(--accent-color);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
+  cursor: pointer;
+  color: #ffffff;
+  background: var(--accent-color);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.sa-button:hover {
+  background: #2563eb;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.sa-button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.sa-button-secondary {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ev-c-text-2);
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.sa-button-secondary:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.sa-button-secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}

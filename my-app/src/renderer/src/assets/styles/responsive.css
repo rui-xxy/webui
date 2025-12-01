@@ -1,0 +1,212 @@
+/* ============================================
+   响应式设计和增强效果
+   ============================================ */
+
+/* 响应式设计 */
+@media (max-width: 720px) {
+  #root {
+    padding: 16px;
+  }
+  
+  .bar-chart-legend,
+  .treemap-legend {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ring-details {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ring-detail-divider {
+    width: 60%;
+    height: 1px;
+  }
+
+  .ring-percentage {
+    font-size: 36px;
+  }
+
+  .ring-detail-value {
+    font-size: 20px;
+  }
+}
+
+/* 额外的未来科技感增强效果 */
+.futuristic-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 107, 53, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 简化的标题区域效果 */
+.futuristic-title-section {
+  position: relative;
+  padding: 20px 30px;
+}
+
+/* 增强的按钮玻璃效果 */
+.futuristic-controls {
+  position: relative;
+  background: rgba(26, 26, 46, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(139, 139, 156, 0.2);
+  border-radius: 12px;
+  padding: 15px 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* 添加数据读取动画效果 */
+@keyframes dataRead {
+  0% {
+    opacity: 0.3;
+    transform: translateY(5px);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0.3;
+    transform: translateY(5px);
+  }
+}
+
+.futuristic-hex-code {
+  animation: hexCodeFloat 15s linear infinite, dataRead 3s ease-in-out infinite;
+}
+
+/* 增强的扫描线效果 */
+.futuristic-scan-lines::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 136, 0.8),
+    transparent
+  );
+  animation: scanLineMove 4s linear infinite;
+}
+
+@keyframes scanLineMove {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(1000%);
+  }
+}
+
+/* 添加边框发光效果 */
+.futuristic-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(0, 255, 136, 0.3),
+    transparent,
+    rgba(255, 107, 53, 0.3),
+    transparent
+  );
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: borderGlow 5s linear infinite;
+}
+
+@keyframes borderGlow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* 增强的标题文字效果 */
+.futuristic-title-text {
+  position: relative;
+  z-index: 3;
+  background: linear-gradient(
+    45deg,
+    #00ff88 0%,
+    #4dffb8 25%,
+    #00cc66 50%,
+    #00ff88 75%,
+    #4dffb8 100%
+  );
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleFlicker 2s ease-in-out infinite, gradientShift 4s ease-in-out infinite;
+  text-shadow:
+    0 0 20px rgba(0, 255, 136, 0.8),
+    0 0 40px rgba(0, 255, 136, 0.6);
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 添加粒子效果 */
+.futuristic-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(0, 255, 136, 0.8), transparent),
+    radial-gradient(2px 2px at 60% 70%, rgba(255, 107, 53, 0.8), transparent),
+    radial-gradient(1px 1px at 50% 50%, rgba(139, 139, 156, 0.6), transparent),
+    radial-gradient(1px 1px at 80% 20%, rgba(0, 255, 136, 0.6), transparent);
+  background-size: 200px 200px;
+  animation: particleFloat 20s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes particleFloat {
+  0% {
+    transform: translate(0, 0);
+  }
+  33% {
+    transform: translate(30px, -30px);
+  }
+  66% {
+    transform: translate(-20px, 20px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}

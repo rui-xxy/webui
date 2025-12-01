@@ -1,0 +1,550 @@
+/* ============================================
+   未来科技感NERV指挥中心风格头部样式
+   ============================================ */
+
+/* 未来科技感头部容器 */
+.futuristic-header {
+  position: relative;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  padding: 26px 36px;
+  flex-shrink: 0;
+  overflow: hidden;
+  min-height: var(--futuristic-header-height);
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35);
+  width: 100%;
+  margin: 0 0 24px;
+  border-radius: 24px;
+}
+
+/* 背景网格覆盖 */
+.futuristic-grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    linear-gradient(rgba(0, 255, 136, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+  opacity: 0.4;
+  animation: gridScan 15s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gridScan {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 20px 20px;
+  }
+}
+
+/* 扫描线效果 */
+.futuristic-scan-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 1px,
+    rgba(0, 0, 0, 0.2) 1px,
+    rgba(0, 0, 0, 0.2) 2px
+  );
+  pointer-events: none;
+  opacity: 0.4;
+  animation: scanMove 2s linear infinite;
+}
+
+@keyframes scanMove {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* 色差效果 */
+.futuristic-chromatic-aberration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 0, 0, 0.02) 50%,
+      transparent 100%),
+    linear-gradient(0deg,
+      transparent 0%,
+      rgba(0, 0, 255, 0.02) 50%,
+      transparent 100%);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.3;
+}
+
+/* 数字噪音效果 */
+.futuristic-digital-noise {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 80%, rgba(139, 139, 156, 0.03) 0%, transparent 50%);
+  animation: noiseFlicker 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes noiseFlicker {
+  0%, 100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* 数据流背景效果 */
+.futuristic-data-stream {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.15;
+  overflow: hidden;
+}
+
+.futuristic-data-stream::before,
+.futuristic-data-stream::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--futuristic-text-emerald) 20%,
+    transparent 40%,
+    var(--futuristic-text-emerald) 60%,
+    transparent 80%,
+    var(--futuristic-text-emerald) 100%
+  );
+  animation: dataStreamFlow 8s linear infinite;
+}
+
+.futuristic-data-stream::before {
+  left: 15%;
+  animation-delay: 0s;
+}
+
+.futuristic-data-stream::after {
+  right: 25%;
+  animation-delay: 3s;
+}
+
+@keyframes dataStreamFlow {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* 十六进制代码背景 */
+.futuristic-data-stream::before {
+  box-shadow:
+    0 0 10px var(--futuristic-text-emerald),
+    0 0 20px var(--futuristic-text-emerald);
+}
+
+/* 十六进制代码字符串 */
+.futuristic-hex-code {
+  position: absolute;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: rgba(0, 255, 136, 0.3);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: hexCodeFloat 15s linear infinite;
+}
+
+.futuristic-hex-code:nth-child(1) {
+  top: 10%;
+  left: 5%;
+  animation-delay: 0s;
+}
+
+.futuristic-hex-code:nth-child(2) {
+  top: 20%;
+  right: 10%;
+  animation-delay: 3s;
+}
+
+.futuristic-hex-code:nth-child(3) {
+  top: 60%;
+  left: 8%;
+  animation-delay: 6s;
+}
+
+.futuristic-hex-code:nth-child(4) {
+  top: 70%;
+  right: 15%;
+  animation-delay: 9s;
+}
+
+.futuristic-hex-code:nth-child(5) {
+  top: 40%;
+  left: 50%;
+  animation-delay: 12s;
+}
+
+@keyframes hexCodeFloat {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100px) rotate(5deg);
+    opacity: 0;
+  }
+}
+
+.futuristic-header-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.futuristic-title-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+/* 未来科技感标题 */
+.futuristic-title {
+  position: relative;
+  font-family: 'Orbitron', 'Rajdhani', 'Arial Black', sans-serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--futuristic-text-emerald);
+  margin: 0;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.futuristic-title-text {
+  position: relative;
+  z-index: 3;
+  background: linear-gradient(
+    90deg,
+    #00ff88 0%,
+    #00ffcc 25%,
+    #00ff88 50%,
+    #00ffcc 75%,
+    #00ff88 100%
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleGlow 3s ease-in-out infinite, titleShift 4s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.8));
+}
+
+/* 新的标题动画效果 */
+@keyframes titleGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.8)) brightness(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(0, 255, 136, 1)) brightness(1.2);
+  }
+}
+
+@keyframes titleShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+/* 简化的发光效果 */
+.futuristic-title-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 255, 136, 0.3) 0%,
+    rgba(0, 255, 136, 0.1) 40%,
+    transparent 70%
+  );
+  filter: blur(20px);
+  z-index: 1;
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* 移除不需要的效果 */
+.futuristic-title-motion-blur,
+.futuristic-title-pixelation {
+  display: none;
+}
+
+/* 控制区域 */
+.futuristic-controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.futuristic-button-container {
+  position: relative;
+}
+
+.futuristic-button {
+  position: relative;
+  border: none;
+  background: var(--futuristic-glass-dark);
+  cursor: pointer;
+  padding: 16px 32px;
+  border: 2px solid rgba(139, 139, 156, 0.5);
+  border-radius: 8px;
+  min-width: 100px;
+  height: 70px;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  overflow: hidden;
+  backdrop-filter: blur(15px);
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.futuristic-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 30%,
+    rgba(255, 255, 255, 0.05) 70%,
+    transparent 100%
+  );
+}
+
+.futuristic-button-text {
+  position: relative;
+  z-index: 2;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+/* 按钮发光效果 */
+.futuristic-button-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+/* 状态指示器 */
+.futuristic-button-status {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(139, 139, 156, 0.6);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* 日报按钮激活状态 - 紧急橙色 */
+.futuristic-button-container.active .futuristic-button-daily {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.95), rgba(255, 140, 90, 0.9));
+  border-color: rgba(255, 140, 90, 0.9);
+  box-shadow:
+    0 0 30px rgba(255, 107, 53, 0.8),
+    0 0 60px rgba(255, 107, 53, 0.4),
+    inset 0 0 30px rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.futuristic-button-container.active .futuristic-button-daily .futuristic-button-text {
+  color: #ffffff;
+  text-shadow:
+    0 0 20px rgba(255, 255, 255, 1),
+    0 0 30px rgba(255, 255, 255, 0.8);
+  font-weight: 800;
+}
+
+.futuristic-button-container.active .futuristic-button-daily .futuristic-button-status {
+  background: var(--futuristic-emergency-orange);
+  box-shadow:
+    0 0 15px var(--futuristic-emergency-orange),
+    0 0 25px var(--futuristic-emergency-orange);
+  animation: statusPulse 1s ease-in-out infinite;
+}
+
+.futuristic-button-container.active .futuristic-button-daily .futuristic-button-glow {
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 107, 53, 0.6) 0%,
+    rgba(255, 107, 53, 0.4) 40%,
+    transparent 70%
+  );
+  opacity: 1;
+  filter: blur(2px);
+}
+
+/* 年报按钮激活状态 - 深靛蓝色 */
+.futuristic-button-container.active .futuristic-button-yearly {
+  background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(30, 30, 60, 0.9));
+  border-color: var(--futuristic-holographic-blue);
+  box-shadow:
+    0 0 25px rgba(59, 130, 246, 0.5),
+    0 0 50px rgba(59, 130, 246, 0.3),
+    inset 0 0 25px rgba(255, 255, 255, 0.1);
+  position: relative;
+}
+
+.futuristic-button-container.active .futuristic-button-yearly .futuristic-button-text {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+.futuristic-button-container.active .futuristic-button-yearly .futuristic-button-status {
+  background: #60a5fa;
+  box-shadow: 0 0 10px #60a5fa;
+  animation: statusPulse 1.5s ease-in-out infinite;
+}
+
+.futuristic-button-container.active .futuristic-button-yearly .futuristic-button-glow {
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(
+    circle,
+    rgba(59, 130, 246, 0.4) 0%,
+    rgba(59, 130, 246, 0.2) 40%,
+    transparent 70%
+  );
+  opacity: 1;
+}
+
+/* 年报按钮右上角状态指示灯 */
+.yearly-status-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(139, 139, 156, 0.6);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.futuristic-button-container.active .yearly-status-indicator {
+  background: var(--futuristic-holographic-blue);
+  box-shadow:
+    0 0 10px var(--futuristic-holographic-blue),
+    0 0 20px var(--futuristic-holographic-blue);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+/* 悬停效果 */
+.futuristic-button-container:not(.active):hover .futuristic-button {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  border-color: rgba(139, 139, 156, 0.8);
+}
+
+.futuristic-button-container:not(.active):hover .futuristic-button-text {
+  color: rgba(255, 255, 255, 1);
+}
+
+.futuristic-button-container:not(.active):hover .futuristic-button-status {
+  background: rgba(139, 139, 156, 0.9);
+}
+
+.futuristic-button-container:not(.active):hover .futuristic-button-glow {
+  width: 90%;
+  height: 90%;
+  opacity: 0.3;
+}
+
+/* 移除旧样式 */
+.clay-header { display: none; }
+.ethereal-header { display: none; }
+.nerv-header { display: none; }
