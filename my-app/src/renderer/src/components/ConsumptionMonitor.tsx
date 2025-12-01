@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   BarChart,
   Bar,
@@ -8,8 +8,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
-  Legend
+  ResponsiveContainer
 } from 'recharts'
 
 type ConsumptionType = 'water' | 'electricity' | 'hydrogen-peroxide' | 'pyrite'
@@ -124,6 +123,13 @@ const consumptionData: ConsumptionItem[] = [
     ]
   }
 ]
+
+const ENERGY_CONSUMPTION_TYPES: ConsumptionType[] = ['water', 'electricity']
+const RAW_MATERIAL_CONSUMPTION_TYPES: ConsumptionType[] = ['hydrogen-peroxide', 'pyrite']
+const energyConsumptionItems = consumptionData.filter((item) => ENERGY_CONSUMPTION_TYPES.includes(item.id))
+const rawMaterialConsumptionItems = consumptionData.filter((item) =>
+  RAW_MATERIAL_CONSUMPTION_TYPES.includes(item.id)
+)
 
 // 获取状态颜色
 const getStatusColor = (current: number, standard: number): string => {
@@ -298,16 +304,17 @@ function ConsumptionCard({
   )
 }
 
-function ConsumptionMonitor({ onExpandChange }: ConsumptionMonitorProps): React.JSX.Element {
+const useConsumptionExpansion = (
+  onExpandChange?: (expanded: boolean) => void
+): ((id: ConsumptionType, expanded: boolean) => void) => {
   const [expandedCards, setExpandedCards] = useState<Set<ConsumptionType>>(new Set())
 
-  // 监听展开状态变化，通知父组件
   useEffect(() => {
     const hasExpanded = expandedCards.size > 0
     onExpandChange?.(hasExpanded)
   }, [expandedCards, onExpandChange])
 
-  const handleCardExpandChange = (id: ConsumptionType, expanded: boolean): void => {
+  return useCallback((id: ConsumptionType, expanded: boolean) => {
     setExpandedCards((prev) => {
       const newSet = new Set(prev)
       if (expanded) {
@@ -317,32 +324,79 @@ function ConsumptionMonitor({ onExpandChange }: ConsumptionMonitorProps): React.
       }
       return newSet
     })
-  }
+  }, [])
+}
 
+interface ConsumptionSectionProps {
+  title: string
+  items: ConsumptionItem[]
+  onCardExpandChange: (id: ConsumptionType, expanded: boolean) => void
+}
+
+function ConsumptionSection({
+  title,
+  items,
+  onCardExpandChange
+}: ConsumptionSectionProps): React.JSX.Element {
   return (
-    <div className="chart-container">
-      <div className="sa-chart-card">
-        {/* 标题区域 */}
-        <div className="sa-chart-header">
-          <div>
-            <h2 className="sa-chart-title">能耗与原辅料消耗</h2>
-          </div>
+    <div className="sa-chart-card">
+      <div className="sa-chart-header">
+        <div>
+          <h2 className="sa-chart-title">{title}</h2>
         </div>
+      </div>
 
-        <div className="sa-chart-body consumption-body">
-          <div className="consumption-grid">
-            {consumptionData.map((item) => (
-              <ConsumptionCard
-                key={item.id}
-                item={item}
-                onExpandChange={(expanded) => handleCardExpandChange(item.id, expanded)}
-              />
-            ))}
-          </div>
+      <div className="sa-chart-body consumption-body">
+        <div className="consumption-grid">
+          {items.map((item) => (
+            <ConsumptionCard
+              key={item.id}
+              item={item}
+              onExpandChange={(expanded) => onCardExpandChange(item.id, expanded)}
+            />
+          ))}
         </div>
       </div>
     </div>
   )
 }
 
-export default ConsumptionMonitor
+function BaseConsumptionMonitor({
+  title,
+  items,
+  onExpandChange
+}: {
+  title: string
+  items: ConsumptionItem[]
+  onExpandChange?: (expanded: boolean) => void
+}): React.JSX.Element {
+  const handleCardExpandChange = useConsumptionExpansion(onExpandChange)
+
+  return (
+    <div className="chart-container">
+      <ConsumptionSection title={title} items={items} onCardExpandChange={handleCardExpandChange} />
+    </div>
+  )
+}
+
+export function EnergyConsumptionMonitor({ onExpandChange }: ConsumptionMonitorProps): React.JSX.Element {
+  return (
+    <BaseConsumptionMonitor
+      title="能耗"
+      items={energyConsumptionItems}
+      onExpandChange={onExpandChange}
+    />
+  )
+}
+
+export function RawMaterialConsumptionMonitor({
+  onExpandChange
+}: ConsumptionMonitorProps): React.JSX.Element {
+  return (
+    <BaseConsumptionMonitor
+      title="原辅料消耗"
+      items={rawMaterialConsumptionItems}
+      onExpandChange={onExpandChange}
+    />
+  )
+}
