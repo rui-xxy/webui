@@ -7,7 +7,7 @@
   #root {
     padding: 16px;
   }
-  
+
   .bar-chart-legend,
   .treemap-legend {
     flex-direction: column;
@@ -84,7 +84,9 @@
 }
 
 .futuristic-hex-code {
-  animation: hexCodeFloat 15s linear infinite, dataRead 3s ease-in-out infinite;
+  animation:
+    hexCodeFloat 15s linear infinite,
+    dataRead 3s ease-in-out infinite;
 }
 
 /* 增强的扫描线效果 */
@@ -95,12 +97,7 @@
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 255, 136, 0.8),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.8), transparent);
   animation: scanLineMove 4s linear infinite;
 }
 
@@ -131,14 +128,17 @@
     rgba(255, 107, 53, 0.3),
     transparent
   );
-  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
   mask-composite: exclude;
   pointer-events: none;
   animation: borderGlow 5s linear infinite;
 }
 
 @keyframes borderGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
   }
   50% {
@@ -162,14 +162,17 @@
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: titleFlicker 2s ease-in-out infinite, gradientShift 4s ease-in-out infinite;
+  animation:
+    titleFlicker 2s ease-in-out infinite,
+    gradientShift 4s ease-in-out infinite;
   text-shadow:
     0 0 20px rgba(0, 255, 136, 0.8),
     0 0 40px rgba(0, 255, 136, 0.6);
 }
 
 @keyframes gradientShift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {

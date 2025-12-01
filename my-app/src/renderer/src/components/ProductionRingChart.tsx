@@ -117,13 +117,15 @@ function ProductionRingChart({
                 <span className="ring-detail-icon" style={{ backgroundColor: '#cbd5e1' }}></span>
                 差距
               </div>
-              <div className="ring-detail-value" style={{ 
-                color: currentProduction >= targetProduction ? '#10b981' : '#6b7280' 
-              }}>
-                {currentProduction >= targetProduction 
+              <div
+                className="ring-detail-value"
+                style={{
+                  color: currentProduction >= targetProduction ? '#10b981' : '#6b7280'
+                }}
+              >
+                {currentProduction >= targetProduction
                   ? `+${(currentProduction - targetProduction).toLocaleString('zh-CN')}`
-                  : (currentProduction - targetProduction).toLocaleString('zh-CN')
-                }
+                  : (currentProduction - targetProduction).toLocaleString('zh-CN')}
                 <span className="ring-detail-unit">吨</span>
               </div>
             </div>
@@ -136,11 +138,11 @@ function ProductionRingChart({
               <span className="ring-progress-percentage">{percentage}%</span>
             </div>
             <div className="ring-progress-bar">
-              <div 
-                className="ring-progress-fill" 
-                style={{ 
+              <div
+                className="ring-progress-fill"
+                style={{
                   width: `${achievementRate}%`,
-                  backgroundColor: mainColor 
+                  backgroundColor: mainColor
                 }}
               >
                 <div className="ring-progress-glow"></div>

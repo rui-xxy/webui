@@ -95,9 +95,9 @@ const timeToMinutes = (time: string): number => {
   return hours * 60 + minutes
 }
 
-function DowntimeTimeline({ 
+function DowntimeTimeline({
   date = new Date().toLocaleDateString('zh-CN'),
-  events = mockEvents 
+  events = mockEvents
 }: DowntimeTimelineProps): React.JSX.Element {
   const [selectedEvent, setSelectedEvent] = useState<DowntimeEvent | null>(null)
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null)
@@ -121,10 +121,10 @@ function DowntimeTimeline({
   const getEventPosition = (event: DowntimeEvent) => {
     const startMinutes = timeToMinutes(event.startTime)
     const endMinutes = timeToMinutes(event.endTime)
-    
+
     const left = ((startMinutes - workStartMinutes) / workDurationMinutes) * 100
     const width = ((endMinutes - startMinutes) / workDurationMinutes) * 100
-    
+
     return { left: `${left}%`, width: `${width}%` }
   }
 
@@ -160,17 +160,19 @@ function DowntimeTimeline({
         <div className="sa-chart-body timeline-body">
           {/* 图例 */}
           <div className="timeline-legend">
-            {(['maintenance', 'malfunction', 'material', 'other'] as DowntimeEventType[]).map((type) => {
-              const config = getEventTypeConfig(type)
-              const count = events.filter(e => e.type === type).length
-              return (
-                <div key={type} className="timeline-legend-item">
-                  <span className="timeline-legend-icon">{config.icon}</span>
-                  <span className="timeline-legend-label">{config.label}</span>
-                  <span className="timeline-legend-count">({count})</span>
-                </div>
-              )
-            })}
+            {(['maintenance', 'malfunction', 'material', 'other'] as DowntimeEventType[]).map(
+              (type) => {
+                const config = getEventTypeConfig(type)
+                const count = events.filter((e) => e.type === type).length
+                return (
+                  <div key={type} className="timeline-legend-item">
+                    <span className="timeline-legend-icon">{config.icon}</span>
+                    <span className="timeline-legend-label">{config.label}</span>
+                    <span className="timeline-legend-count">({count})</span>
+                  </div>
+                )
+              }
+            )}
           </div>
 
           {/* 时间轴容器 */}
@@ -208,13 +210,18 @@ function DowntimeTimeline({
                       }}
                       onClick={() => setSelectedEvent(isSelected ? null : event)}
                       onMouseEnter={() => setHoveredEventId(event.id)}
-                      onMouseLeave={() => setHoveredEventId((prev) => (prev === event.id ? null : prev))}
+                      onMouseLeave={() =>
+                        setHoveredEventId((prev) => (prev === event.id ? null : prev))
+                      }
                     >
                       {/* 悬浮提示 */}
                       <div className="timeline-event-tooltip">
                         <div className="timeline-event-tooltip-header">
                           <span className="timeline-event-tooltip-icon">{config.icon}</span>
-                          <span className="timeline-event-tooltip-type" style={{ color: config.color }}>
+                          <span
+                            className="timeline-event-tooltip-type"
+                            style={{ color: config.color }}
+                          >
                             {config.label}
                           </span>
                         </div>
@@ -243,17 +250,14 @@ function DowntimeTimeline({
                   </span>
                   <span>{selectedEvent.reason}</span>
                 </div>
-                <button
-                  className="timeline-detail-close"
-                  onClick={() => setSelectedEvent(null)}
-                >
+                <button className="timeline-detail-close" onClick={() => setSelectedEvent(null)}>
                   ✕
                 </button>
               </div>
               <div className="timeline-detail-body">
                 <div className="timeline-detail-row">
                   <span className="timeline-detail-label">类型</span>
-                  <span 
+                  <span
                     className="timeline-detail-value"
                     style={{ color: getEventTypeConfig(selectedEvent.type).color }}
                   >
@@ -275,9 +279,7 @@ function DowntimeTimeline({
                 {selectedEvent.description && (
                   <div className="timeline-detail-row">
                     <span className="timeline-detail-label">详细描述</span>
-                    <span className="timeline-detail-value">
-                      {selectedEvent.description}
-                    </span>
+                    <span className="timeline-detail-value">{selectedEvent.description}</span>
                   </div>
                 )}
               </div>

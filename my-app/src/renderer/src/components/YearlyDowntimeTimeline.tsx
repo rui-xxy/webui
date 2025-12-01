@@ -87,13 +87,13 @@ const getDaysBetween = (start: string, end: string): number => {
 const formatDateRange = (start: string, end: string): string => {
   const startDate = new Date(start)
   const endDate = new Date(end)
-  
+
   const formatDate = (date: Date) => {
     const month = date.getMonth() + 1
     const day = date.getDate()
     return `${month}月${day}日`
   }
-  
+
   return `${formatDate(startDate)} - ${formatDate(endDate)}`
 }
 
@@ -112,28 +112,41 @@ function YearlyDowntimeTimeline({
   }, 0)
 
   // 分类统计
-  const plannedCount = events.filter(e => e.type === 'planned').length
-  const unplannedCount = events.filter(e => e.type === 'unplanned').length
+  const plannedCount = events.filter((e) => e.type === 'planned').length
+  const unplannedCount = events.filter((e) => e.type === 'unplanned').length
 
   // 月份标签
-  const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+  const months = [
+    '1月',
+    '2月',
+    '3月',
+    '4月',
+    '5月',
+    '6月',
+    '7月',
+    '8月',
+    '9月',
+    '10月',
+    '11月',
+    '12月'
+  ]
 
   // 计算事件在时间轴上的位置
   const getEventPosition = (event: DowntimeEvent) => {
     const startDay = getDayOfYear(event.startDate)
     const days = getDaysBetween(event.startDate, event.endDate)
-    
+
     // 一年按365天计算
     const left = (startDay / 365) * 100
     const width = (days / 365) * 100
-    
+
     return { left: `${left}%`, width: `${width}%` }
   }
 
   // 处理鼠标悬停
   const handleMouseEnter = (event: DowntimeEvent, e: React.MouseEvent) => {
     setHoveredEvent(event)
-    
+
     // 获取鼠标位置
     const rect = e.currentTarget.getBoundingClientRect()
     setTooltipPosition({
@@ -181,14 +194,14 @@ function YearlyDowntimeTimeline({
                 const monthPosition = (index / (months.length - 1)) * 100
 
                 return (
-                <div
-                  key={month}
-                  className="yearly-timeline-month-marker"
-                  style={{ left: `${monthPosition}%` }}
-                >
-                  <span className="yearly-timeline-month-tick"></span>
-                  <span className="yearly-timeline-month-label">{month}</span>
-                </div>
+                  <div
+                    key={month}
+                    className="yearly-timeline-month-marker"
+                    style={{ left: `${monthPosition}%` }}
+                  >
+                    <span className="yearly-timeline-month-tick"></span>
+                    <span className="yearly-timeline-month-label">{month}</span>
+                  </div>
                 )
               })}
 
@@ -213,7 +226,6 @@ function YearlyDowntimeTimeline({
                   )
                 })}
               </div>
-
             </div>
           </div>
         </div>

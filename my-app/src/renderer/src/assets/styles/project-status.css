@@ -1,0 +1,215 @@
+/* ============================================
+   项目状态组件样式 (优化版 - 带Modal)
+   ============================================ */
+
+/* 容器微调 */
+.project-status-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-status-body {
+  flex: 1;
+  padding: 16px;
+  background: #fff;
+}
+
+/* 概览网格 - 使用3列布局 */
+.status-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  height: 100%;
+  align-items: stretch;
+}
+
+/* 新版状态卡片样式 */
+.status-item-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.status-item-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* 状态特定背景色 (非常淡) */
+.status-item-card.status-progress { background: linear-gradient(145deg, #ffffff 0%, #eff6ff 100%); border-color: #dbeafe; }
+.status-item-card.status-completed { background: linear-gradient(145deg, #ffffff 0%, #ecfdf5 100%); border-color: #d1fae5; }
+.status-item-card.status-delayed { background: linear-gradient(145deg, #ffffff 0%, #fef2f2 100%); border-color: #fee2e2; }
+
+/* 卡片头部 */
+.status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.status-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ev-c-text-2);
+}
+
+.status-icon-mini {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+}
+
+/* 数值展示 */
+.status-value-group {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.status-count {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.status-unit {
+  font-size: 12px;
+  color: var(--ev-c-text-3);
+}
+
+/* 底部微型进度条装饰 */
+.status-bar-bg {
+  width: 100%;
+  height: 4px;
+  background: rgba(0,0,0,0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.status-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* ============================================
+   Modal 弹窗样式
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeInOverlay 0.2s ease-out;
+}
+
+.modal-content {
+  background: #fff;
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: scaleInModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #fff;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-title-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background: #fff;
+}
+
+/* 弹窗内的表格样式微调 */
+.modal-body .custom-table-container {
+  padding: 0;
+}
+
+.modal-body .custom-table th {
+  background: #f9fafb;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #4b5563;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-body .custom-table td {
+  padding: 12px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 13px;
+}
+
+.modal-body .custom-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* 动画定义 */
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleInModal {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}

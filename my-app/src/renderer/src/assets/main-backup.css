@@ -114,14 +114,8 @@ body {
   width: 100%;
   height: 100%;
   background:
-    linear-gradient(90deg,
-      transparent 0%,
-      rgba(255, 0, 0, 0.02) 50%,
-      transparent 100%),
-    linear-gradient(0deg,
-      transparent 0%,
-      rgba(0, 0, 255, 0.02) 50%,
-      transparent 100%);
+    linear-gradient(90deg, transparent 0%, rgba(255, 0, 0, 0.02) 50%, transparent 100%),
+    linear-gradient(0deg, transparent 0%, rgba(0, 0, 255, 0.02) 50%, transparent 100%);
   pointer-events: none;
   mix-blend-mode: overlay;
   opacity: 0.3;
@@ -143,7 +137,8 @@ body {
 }
 
 @keyframes noiseFlicker {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.2;
   }
   50% {
@@ -282,7 +277,6 @@ body {
   flex: 1;
 }
 
-
 /* 未来科技感标题 */
 .futuristic-title {
   position: relative;
@@ -311,13 +305,16 @@ body {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: titleGlow 3s ease-in-out infinite, titleShift 4s linear infinite;
+  animation:
+    titleGlow 3s ease-in-out infinite,
+    titleShift 4s linear infinite;
   filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.8));
 }
 
 /* 新的标题动画效果 */
 @keyframes titleGlow {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.8)) brightness(1);
   }
   50% {
@@ -353,7 +350,8 @@ body {
 }
 
 @keyframes glowPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
     transform: scale(1);
   }
@@ -548,7 +546,8 @@ body {
 }
 
 @keyframes statusPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -580,9 +579,15 @@ body {
 }
 
 /* 移除旧样式 */
-.clay-header { display: none; }
-.ethereal-header { display: none; }
-.nerv-header { display: none; }
+.clay-header {
+  display: none;
+}
+.ethereal-header {
+  display: none;
+}
+.nerv-header {
+  display: none;
+}
 
 /* 仪表盘内容区 */
 .dashboard-content {
@@ -722,7 +727,7 @@ body {
   background: #ffffff;
   overflow: hidden;
   transition: all 0.3s ease;
-  box-shadow: 
+  box-shadow:
     0 1px 3px rgba(0, 0, 0, 0.08),
     0 1px 2px rgba(0, 0, 0, 0.06);
   cursor: default;
@@ -730,7 +735,7 @@ body {
 }
 
 .sa-chart-card:hover {
-  box-shadow: 
+  box-shadow:
     0 4px 6px rgba(0, 0, 0, 0.08),
     0 2px 4px rgba(0, 0, 0, 0.06);
 }
@@ -794,7 +799,7 @@ body {
   position: fixed;
   background: #ffffff;
   border-radius: 8px;
-  box-shadow: 
+  box-shadow:
     0 10px 15px rgba(0, 0, 0, 0.1),
     0 4px 6px rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
@@ -945,7 +950,9 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  transition: height 0.6s ease, background-color 0.3s ease;
+  transition:
+    height 0.6s ease,
+    background-color 0.3s ease;
   border-radius: 0 0 1px 1px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
 }
@@ -962,7 +969,8 @@ body {
 }
 
 @keyframes wave {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0) translateY(0);
   }
   50% {
@@ -1328,13 +1336,7 @@ body {
 .timeline-summary-divider {
   width: 1px;
   height: 32px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    #e2e8f0 20%,
-    #e2e8f0 80%,
-    transparent
-  );
+  background: linear-gradient(to bottom, transparent, #e2e8f0 20%, #e2e8f0 80%, transparent);
 }
 
 /* 图例 */
@@ -1439,7 +1441,9 @@ body {
   cursor: pointer;
   transform: translateY(-50%);
   transform-origin: center;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
   box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.15);
   overflow: visible;
 }
@@ -1714,13 +1718,7 @@ body {
 .ring-detail-divider {
   width: 1px;
   height: 32px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    #e2e8f0 20%,
-    #e2e8f0 80%,
-    transparent
-  );
+  background: linear-gradient(to bottom, transparent, #e2e8f0 20%, #e2e8f0 80%, transparent);
 }
 
 /* 进度条 */
@@ -1773,12 +1771,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.4) 50%,
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4) 50%, transparent);
   animation: progress-shimmer 2s infinite;
 }
 
@@ -1921,7 +1914,9 @@ body {
   border-radius: 999px;
   cursor: pointer;
   box-shadow: 0 3px 8px rgba(15, 23, 42, 0.18);
-  transition: box-shadow 0.2s ease, filter 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
 }
 
 .yearly-timeline-event.planned {
@@ -2029,7 +2024,7 @@ body {
   #root {
     padding: 16px;
   }
-  
+
   .bar-chart-legend,
   .treemap-legend {
     flex-direction: column;
@@ -2106,7 +2101,9 @@ body {
 }
 
 .futuristic-hex-code {
-  animation: hexCodeFloat 15s linear infinite, dataRead 3s ease-in-out infinite;
+  animation:
+    hexCodeFloat 15s linear infinite,
+    dataRead 3s ease-in-out infinite;
 }
 
 /* 增强的扫描线效果 */
@@ -2117,12 +2114,7 @@ body {
   left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 255, 136, 0.8),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.8), transparent);
   animation: scanLineMove 4s linear infinite;
 }
 
@@ -2153,14 +2145,17 @@ body {
     rgba(255, 107, 53, 0.3),
     transparent
   );
-  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) padding-box,
+    linear-gradient(#fff 0 0);
   mask-composite: exclude;
   pointer-events: none;
   animation: borderGlow 5s linear infinite;
 }
 
 @keyframes borderGlow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
   }
   50% {
@@ -2184,14 +2179,17 @@ body {
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: titleFlicker 2s ease-in-out infinite, gradientShift 4s ease-in-out infinite;
+  animation:
+    titleFlicker 2s ease-in-out infinite,
+    gradientShift 4s ease-in-out infinite;
   text-shadow:
     0 0 20px rgba(0, 255, 136, 0.8),
     0 0 40px rgba(0, 255, 136, 0.6);
 }
 
 @keyframes gradientShift {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {

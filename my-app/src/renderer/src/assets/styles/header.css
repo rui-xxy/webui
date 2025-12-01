@@ -6,10 +6,10 @@
   --prism-bg: #ffffff;
   --prism-glass: rgba(255, 255, 255, 0.75);
   --prism-glass-border: rgba(255, 255, 255, 0.9);
-  --prism-color-1: #FF00CC; /* 热力粉 */
-  --prism-color-2: #3333FF; /* 电光蓝 */
-  --prism-color-3: #00FFCC; /* 荧光青 */
-  --prism-color-4: #FFCC00; /* 赛博黄 */
+  --prism-color-1: #ff00cc; /* 热力粉 */
+  --prism-color-2: #3333ff; /* 电光蓝 */
+  --prism-color-3: #00ffcc; /* 荧光青 */
+  --prism-color-4: #ffcc00; /* 赛博黄 */
   --prism-shadow: rgba(0, 0, 0, 0.08);
 }
 
@@ -24,7 +24,7 @@
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 
+  box-shadow:
     0 20px 60px -10px rgba(51, 51, 255, 0.15),
     0 10px 20px -5px rgba(255, 0, 204, 0.1);
   display: flex;
@@ -86,10 +86,18 @@
 }
 
 @keyframes blobFloat {
-  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
-  33% { transform: translate(30px, -50px) rotate(120deg) scale(1.1); }
-  66% { transform: translate(-20px, 20px) rotate(240deg) scale(0.9); }
-  100% { transform: translate(0, 0) rotate(360deg) scale(1); }
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) rotate(120deg) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(240deg) scale(0.9);
+  }
+  100% {
+    transform: translate(0, 0) rotate(360deg) scale(1);
+  }
 }
 
 /* 3. 边框动画：旋转光谱 (Animation 2: Spinning Rainbow Border) */
@@ -100,15 +108,15 @@
   border-radius: 30px;
   padding: 2px; /* 边框宽度 */
   background: linear-gradient(
-    90deg, 
-    var(--prism-color-1), 
-    var(--prism-color-4), 
-    var(--prism-color-3), 
-    var(--prism-color-2), 
+    90deg,
+    var(--prism-color-1),
+    var(--prism-color-4),
+    var(--prism-color-3),
+    var(--prism-color-2),
     var(--prism-color-1)
   );
-  -webkit-mask: 
-    linear-gradient(#fff 0 0) content-box, 
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
@@ -118,8 +126,12 @@
 }
 
 @keyframes borderRotate {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
 }
 
 /* 内容布局 */
@@ -177,12 +189,23 @@
 }
 
 @keyframes textShine {
-  to { background-position: 200% center; }
+  to {
+    background-position: 200% center;
+  }
 }
 
 @keyframes pulseDot {
-  0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(255, 0, 204, 0.7); }
-  50% { transform: scale(1.5); opacity: 0.5; box-shadow: 0 0 0 10px rgba(255, 0, 204, 0); }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(255, 0, 204, 0.7);
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+    box-shadow: 0 0 0 10px rgba(255, 0, 204, 0);
+  }
 }
 
 /* 5. 装饰元素：悬浮几何体 (Animation 4: Floating 3D Objects) */
@@ -216,8 +239,13 @@
 }
 
 @keyframes floatGeo {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-30px) rotate(10deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(10deg);
+  }
 }
 
 /* 6. 控制区：弹性卡片按钮 (Animation 5: Elastic Hover & Pop) */
@@ -237,7 +265,7 @@
   cursor: pointer;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 弹性贝塞尔曲线 */
-  box-shadow: 
+  box-shadow:
     0 5px 15px rgba(0, 0, 0, 0.05),
     inset 0 0 0 1px rgba(255, 255, 255, 0.8);
   display: flex;
@@ -271,7 +299,7 @@
 /* 按钮悬停效果 - 极其夸张 */
 .prism-btn:hover {
   transform: translateY(-8px) scale(1.05);
-  box-shadow: 
+  box-shadow:
     0 20px 40px -10px rgba(51, 51, 255, 0.4),
     0 0 20px rgba(0, 255, 204, 0.6); /* 发光 */
   border-radius: 24px; /* 形状变化 */
@@ -312,7 +340,7 @@
 
 /* 日报特定样式 */
 .prism-btn-daily::before {
-  background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 99%, #FECFEF 100%);
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
 }
 .prism-btn-daily:hover {
   box-shadow: 0 20px 40px -10px rgba(255, 154, 158, 0.5);
@@ -334,12 +362,7 @@
   left: -100%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.8),
-    transparent
-  );
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8), transparent);
   transform: skewX(-25deg);
   animation: glareSweep 6s infinite;
   pointer-events: none;
@@ -347,6 +370,11 @@
 }
 
 @keyframes glareSweep {
-  0%, 80% { left: -100%; }
-  100% { left: 200%; }
+  0%,
+  80% {
+    left: -100%;
+  }
+  100% {
+    left: 200%;
+  }
 }

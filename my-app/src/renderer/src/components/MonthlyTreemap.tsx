@@ -1,5 +1,14 @@
 import { useMemo } from 'react'
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell } from 'recharts'
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Cell
+} from 'recharts'
 
 type MonthData = {
   month: string
@@ -90,16 +99,9 @@ function MonthlyTreemap(): React.JSX.Element {
                 itemStyle={{ fontSize: 11 }}
                 formatter={(value: number) => [`${value} 吨`, '产量']}
               />
-              <Bar 
-                dataKey="value" 
-                radius={[0, 4, 4, 0]}
-                maxBarSize={16}
-              >
+              <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={16}>
                 {monthlyData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={entry.isCurrentMonth ? '#3b82f6' : '#60a5fa'} 
-                  />
+                  <Cell key={`cell-${index}`} fill={entry.isCurrentMonth ? '#3b82f6' : '#60a5fa'} />
                 ))}
               </Bar>
             </BarChart>

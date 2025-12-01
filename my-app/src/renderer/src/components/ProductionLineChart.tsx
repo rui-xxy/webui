@@ -57,8 +57,7 @@ function ProductionLineChart(): React.JSX.Element {
   const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 })
 
   const filteredData = useMemo(
-    () =>
-      productionData.filter((point) => point.date >= startDate && point.date <= endDate),
+    () => productionData.filter((point) => point.date >= startDate && point.date <= endDate),
     [startDate, endDate]
   )
 
@@ -76,37 +75,37 @@ function ProductionLineChart(): React.JSX.Element {
   const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>): void => {
     e.preventDefault()
     e.stopPropagation()
-    
+
     // 获取点击位置（相对于视口）
     const clickX = e.clientX
     const clickY = e.clientY
-    
+
     // 获取视口尺寸
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-    
+
     // 右键菜单的实际尺寸
     const menuWidth = 250
     const menuHeight = 280
-    
+
     // 计算菜单位置，优先显示在鼠标右下方
     let x = clickX + 10 // 右侧偏移10px，避免直接在鼠标下
     let y = clickY + 10 // 下方偏移10px
-    
+
     // 如果右侧空间不足，显示在鼠标左侧
     if (x + menuWidth > viewportWidth - 20) {
       x = clickX - menuWidth - 10
     }
-    
+
     // 如果底部空间不足，显示在鼠标上方
     if (y + menuHeight > viewportHeight - 20) {
       y = clickY - menuHeight - 10
     }
-    
+
     // 确保不超出左侧和顶部边界
     x = Math.max(10, x)
     y = Math.max(10, y)
-    
+
     setContextMenuPosition({ x, y })
     setShowContextMenu(true)
   }

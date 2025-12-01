@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, useRef } from 'react'
 import {
   BarChart,
   Bar,
@@ -126,7 +126,9 @@ const consumptionData: ConsumptionItem[] = [
 
 const ENERGY_CONSUMPTION_TYPES: ConsumptionType[] = ['water', 'electricity']
 const RAW_MATERIAL_CONSUMPTION_TYPES: ConsumptionType[] = ['hydrogen-peroxide', 'pyrite']
-const energyConsumptionItems = consumptionData.filter((item) => ENERGY_CONSUMPTION_TYPES.includes(item.id))
+const energyConsumptionItems = consumptionData.filter((item) =>
+  ENERGY_CONSUMPTION_TYPES.includes(item.id)
+)
 const rawMaterialConsumptionItems = consumptionData.filter((item) =>
   RAW_MATERIAL_CONSUMPTION_TYPES.includes(item.id)
 )
@@ -190,14 +192,10 @@ function ConsumptionCard({
             <span className="consumption-status" style={{ color: statusColor }}>
               {statusText}
             </span>
-            <span className="consumption-percentage">
-              {percentage}% 标准值
-            </span>
+            <span className="consumption-percentage">{percentage}% 标准值</span>
           </div>
         </div>
-        <div className={`consumption-expand-icon ${expanded ? 'rotated' : ''}`}>
-          ▼
-        </div>
+        <div className={`consumption-expand-icon ${expanded ? 'rotated' : ''}`}>▼</div>
       </div>
 
       {/* 展开区域 */}
@@ -225,15 +223,8 @@ function ConsumptionCard({
               {viewMode === 'week' ? (
                 <LineChart data={item.weekData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fill: '#6b7280', fontSize: 11 }}
-                    stroke="#d1d5db"
-                  />
-                  <YAxis
-                    tick={{ fill: '#6b7280', fontSize: 11 }}
-                    stroke="#d1d5db"
-                  />
+                  <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
+                  <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#ffffff',
@@ -254,15 +245,8 @@ function ConsumptionCard({
               ) : (
                 <BarChart data={item.monthData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis
-                    dataKey="date"
-                    tick={{ fill: '#6b7280', fontSize: 11 }}
-                    stroke="#d1d5db"
-                  />
-                  <YAxis
-                    tick={{ fill: '#6b7280', fontSize: 11 }}
-                    stroke="#d1d5db"
-                  />
+                  <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
+                  <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#ffffff',
@@ -308,8 +292,13 @@ const useConsumptionExpansion = (
   onExpandChange?: (expanded: boolean) => void
 ): ((id: ConsumptionType, expanded: boolean) => void) => {
   const [expandedCards, setExpandedCards] = useState<Set<ConsumptionType>>(new Set())
+  const initialRenderRef = useRef(true)
 
   useEffect(() => {
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false
+      return
+    }
     const hasExpanded = expandedCards.size > 0
     onExpandChange?.(hasExpanded)
   }, [expandedCards, onExpandChange])
@@ -379,7 +368,9 @@ function BaseConsumptionMonitor({
   )
 }
 
-export function EnergyConsumptionMonitor({ onExpandChange }: ConsumptionMonitorProps): React.JSX.Element {
+export function EnergyConsumptionMonitor({
+  onExpandChange
+}: ConsumptionMonitorProps): React.JSX.Element {
   return (
     <BaseConsumptionMonitor
       title="能耗"
