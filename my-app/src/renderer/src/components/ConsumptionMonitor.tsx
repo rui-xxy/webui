@@ -292,14 +292,14 @@ const useConsumptionExpansion = (
   onExpandChange?: (expanded: boolean) => void
 ): ((id: ConsumptionType, expanded: boolean) => void) => {
   const [expandedCards, setExpandedCards] = useState<Set<ConsumptionType>>(new Set())
-  const initialRenderRef = useRef(true)
+  const prevHasExpandedRef = useRef(expandedCards.size > 0)
 
   useEffect(() => {
-    if (initialRenderRef.current) {
-      initialRenderRef.current = false
+    const hasExpanded = expandedCards.size > 0
+    if (prevHasExpandedRef.current === hasExpanded) {
       return
     }
-    const hasExpanded = expandedCards.size > 0
+    prevHasExpandedRef.current = hasExpanded
     onExpandChange?.(hasExpanded)
   }, [expandedCards, onExpandChange])
 
