@@ -182,64 +182,63 @@ function ProductionLineChart(): React.JSX.Element {
       </div>
 
       {/* 右键菜单 - 使用遮罩层 */}
-      {showContextMenu && (
-        <>
-          {/* 遮罩层 - 点击关闭菜单 */}
-          <div 
-            className="context-menu-overlay"
-            onClick={handleCloseMenu}
-          />
-          <div
-            className="context-menu"
-            style={{
-              top: contextMenuPosition.y,
-              left: contextMenuPosition.x
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="context-menu-content">
-              <div className="context-menu-header">时间范围设置</div>
-              
-              <div className="sa-field">
-                <label className="sa-label" htmlFor="start-date">
-                  开始日期
-                </label>
-                <input
-                  id="start-date"
-                  className="sa-input"
-                  type="date"
-                  value={startDate}
-                  max={endDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                />
-              </div>
+      {showContextMenu &&
+        createPortal(
+          <>
+            {/* 遮罩层 - 点击关闭菜单 */}
+            <div className="context-menu-overlay" onClick={handleCloseMenu} />
+            <div
+              className="context-menu"
+              style={{
+                top: contextMenuPosition.y,
+                left: contextMenuPosition.x
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="context-menu-content">
+                <div className="context-menu-header">时间范围设置</div>
 
-              <div className="sa-field">
-                <label className="sa-label" htmlFor="end-date">
-                  结束日期
-                </label>
-                <input
-                  id="end-date"
-                  className="sa-input"
-                  type="date"
-                  value={endDate}
-                  min={startDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-              </div>
+                <div className="sa-field">
+                  <label className="sa-label" htmlFor="start-date">
+                    开始日期
+                  </label>
+                  <input
+                    id="start-date"
+                    className="sa-input"
+                    type="date"
+                    value={startDate}
+                    max={endDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
 
-              <div className="context-menu-actions">
-                <button className="sa-button" type="button" onClick={handleResetRange}>
-                  重置区间
-                </button>
-                <button className="sa-button-secondary" type="button" onClick={handleCloseMenu}>
-                  关闭
-                </button>
+                <div className="sa-field">
+                  <label className="sa-label" htmlFor="end-date">
+                    结束日期
+                  </label>
+                  <input
+                    id="end-date"
+                    className="sa-input"
+                    type="date"
+                    value={endDate}
+                    min={startDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+
+                <div className="context-menu-actions">
+                  <button className="sa-button" type="button" onClick={handleResetRange}>
+                    重置区间
+                  </button>
+                  <button className="sa-button-secondary" type="button" onClick={handleCloseMenu}>
+                    关闭
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>,
+          document.body
+        )}
     </>
   )
 }
