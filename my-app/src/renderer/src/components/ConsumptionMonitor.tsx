@@ -326,7 +326,6 @@ function ConsumptionMonitor({ onExpandChange }: ConsumptionMonitorProps): React.
         <div className="sa-chart-header">
           <div>
             <h2 className="sa-chart-title">能耗与原辅料消耗</h2>
-            <p className="sa-chart-subtitle">今日实时监控 · 点击展开趋势</p>
           </div>
         </div>
 

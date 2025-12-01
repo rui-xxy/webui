@@ -47,9 +47,6 @@ function ProductionRingChart({
         <div className="sa-chart-header">
           <div>
             <h2 className="sa-chart-title">本月产量达成率</h2>
-            <p className="sa-chart-subtitle">
-              {new Date().getMonth() + 1}月目标追踪
-            </p>
           </div>
         </div>
 

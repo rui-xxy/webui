@@ -145,16 +145,13 @@ function DowntimeTimeline({
         <div className="sa-chart-header">
           <div>
             <h2 className="sa-chart-title">停机时间轴</h2>
-            <p className="sa-chart-subtitle">{date} · 工作时段 08:00 - 18:00</p>
           </div>
           <div className="timeline-summary">
             <div className="timeline-summary-item">
-              <span className="timeline-summary-label">停机次数</span>
               <span className="timeline-summary-value">{events.length}次</span>
             </div>
             <div className="timeline-summary-divider"></div>
             <div className="timeline-summary-item">
-              <span className="timeline-summary-label">总停机时长</span>
               <span className="timeline-summary-value danger">{totalDowntimeHours}小时</span>
             </div>
           </div>

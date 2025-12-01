@@ -89,32 +89,23 @@ function ProductionLineChart(): React.JSX.Element {
     const menuWidth = 250
     const menuHeight = 280
     
-    // 计算菜单位置，确保不超出视口
-    let x = clickX + 5 // 稍微偏移一点，不要直接在鼠标位置
-    let y = clickY + 5
+    // 计算菜单位置，优先显示在鼠标右下方
+    let x = clickX + 10 // 右侧偏移10px，避免直接在鼠标下
+    let y = clickY + 10 // 下方偏移10px
     
-    // 如果右侧空间不足，向左显示
-    if (x + menuWidth > viewportWidth - 10) {
-      x = clickX - menuWidth - 5
+    // 如果右侧空间不足，显示在鼠标左侧
+    if (x + menuWidth > viewportWidth - 20) {
+      x = clickX - menuWidth - 10
     }
     
-    // 如果底部空间不足，向上显示
-    if (y + menuHeight > viewportHeight - 10) {
-      y = clickY - menuHeight - 5
+    // 如果底部空间不足，显示在鼠标上方
+    if (y + menuHeight > viewportHeight - 20) {
+      y = clickY - menuHeight - 10
     }
     
-    // 确保不超出左侧和顶部
+    // 确保不超出左侧和顶部边界
     x = Math.max(10, x)
     y = Math.max(10, y)
-    
-    console.log('Context menu debug:', {
-      clickX,
-      clickY,
-      finalX: x,
-      finalY: y,
-      viewportWidth,
-      viewportHeight
-    })
     
     setContextMenuPosition({ x, y })
     setShowContextMenu(true)
@@ -132,15 +123,11 @@ function ProductionLineChart(): React.JSX.Element {
           <div className="sa-chart-header">
             <div>
               <h2 className="sa-chart-title">产量趋势</h2>
-              <p className="sa-chart-subtitle">
-                {startDate} ~ {endDate}
-              </p>
             </div>
             <div className="sa-dashboard-summary">
               <span className="sa-dashboard-summary-value">
                 {totalOutput.toLocaleString('zh-CN')} 吨
               </span>
-              <span className="sa-dashboard-summary-label">当前区间总产量</span>
             </div>
           </div>
 

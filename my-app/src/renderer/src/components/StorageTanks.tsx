@@ -98,11 +98,9 @@ function StorageTanks(): React.JSX.Element {
         <div className="sa-chart-header">
           <div>
             <h2 className="sa-chart-title">储罐监控</h2>
-            <p className="sa-chart-subtitle">实时液位 · 储存量</p>
           </div>
           <div className="sa-dashboard-summary">
             <span className="sa-dashboard-summary-value">12</span>
-            <span className="sa-dashboard-summary-label">储罐总数</span>
           </div>
         </div>
 

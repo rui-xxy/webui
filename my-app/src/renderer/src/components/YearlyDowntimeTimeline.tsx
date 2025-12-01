@@ -153,24 +153,19 @@ function YearlyDowntimeTimeline({
         <div className="sa-chart-header">
           <div>
             <h2 className="sa-chart-title">{year}年停车记录</h2>
-            <p className="sa-chart-subtitle">全年设备运行状态 · 悬停查看详情</p>
           </div>
           <div className="yearly-timeline-summary">
             <div className="yearly-timeline-stat">
               <span className="yearly-timeline-stat-value">{events.length}</span>
-              <span className="yearly-timeline-stat-label">停车次数</span>
             </div>
             <div className="yearly-timeline-stat">
               <span className="yearly-timeline-stat-value danger">{totalDowntimeDays}</span>
-              <span className="yearly-timeline-stat-label">总停车天数</span>
             </div>
             <div className="yearly-timeline-stat">
               <span className="yearly-timeline-stat-value planned">{plannedCount}</span>
-              <span className="yearly-timeline-stat-label">计划停车</span>
             </div>
             <div className="yearly-timeline-stat">
               <span className="yearly-timeline-stat-value unplanned">{unplannedCount}</span>
-              <span className="yearly-timeline-stat-label">非计划停车</span>
             </div>
           </div>
         </div>

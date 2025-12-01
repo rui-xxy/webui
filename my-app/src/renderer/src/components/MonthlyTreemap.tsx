@@ -41,13 +41,11 @@ function MonthlyTreemap(): React.JSX.Element {
         <div className="sa-chart-header">
           <div>
             <h2 className="sa-chart-title">月度产量分布</h2>
-            <p className="sa-chart-subtitle">2025年 1-12月</p>
           </div>
           <div className="sa-dashboard-summary">
             <span className="sa-dashboard-summary-value">
               {totalYearOutput.toLocaleString('zh-CN')} 吨
             </span>
-            <span className="sa-dashboard-summary-label">年度总产量</span>
           </div>
         </div>
 
