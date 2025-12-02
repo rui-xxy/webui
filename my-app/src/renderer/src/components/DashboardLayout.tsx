@@ -31,17 +31,18 @@ const cols = {
 
 const CONSUMPTION_WIDGET_IDS = ['energy-consumption', 'raw-material-consumption'] as const
 type ConsumptionWidgetId = (typeof CONSUMPTION_WIDGET_IDS)[number]
+const MIN_WIDGET_HEIGHT = 2
 const EXPANDED_CONSUMPTION_HEIGHT = 15
-const MIN_CONSUMPTION_HEIGHT = 2
+const MIN_CONSUMPTION_HEIGHT = MIN_WIDGET_HEIGHT
 
 const defaultDailyLayout: Layout[] = [
   { i: 'production-line-chart', x: 0, y: 0, w: 6, h: 10 },
   { i: 'storage-tanks', x: 6, y: 0, w: 6, h: 10 },
   { i: 'energy-consumption', x: 0, y: 10, w: 6, h: 3, minH: MIN_CONSUMPTION_HEIGHT },
   { i: 'raw-material-consumption', x: 6, y: 10, w: 6, h: 3, minH: MIN_CONSUMPTION_HEIGHT },
-  { i: 'production-ring-chart', x: 0, y: 16, w: 6, h: 10, minH: 8 },
-  { i: 'project-status', x: 6, y: 16, w: 6, h: 10, minH: 8 },
-  { i: 'yearly-downtime-timeline', x: 0, y: 26, w: 12, h: 7, minH: 6 }
+  { i: 'production-ring-chart', x: 0, y: 16, w: 6, h: 10, minH: MIN_WIDGET_HEIGHT },
+  { i: 'project-status', x: 6, y: 16, w: 6, h: 10, minH: MIN_WIDGET_HEIGHT },
+  { i: 'yearly-downtime-timeline', x: 0, y: 26, w: 12, h: 7, minH: MIN_WIDGET_HEIGHT }
 ]
 
 const defaultYearlyLayout: Layout[] = [{ i: 'monthly-treemap', x: 0, y: 0, w: 12, h: 10 }]
@@ -51,14 +52,31 @@ type ReportType = 'daily' | 'yearly'
 const STORAGE_KEY_DAILY = 'dashboard-layout-daily'
 const STORAGE_KEY_YEARLY = 'dashboard-layout-yearly'
 
-const cloneLayout = (layout: Layout[]): Layout[] => layout.map((item) => ({ ...item }))
+type WidgetConstraints = Partial<Pick<Layout, 'minH' | 'minW' | 'maxH' | 'maxW'>>
+
+const WIDGET_CONSTRAINTS: Record<string, WidgetConstraints> = {
+  'energy-consumption': { minH: MIN_CONSUMPTION_HEIGHT },
+  'raw-material-consumption': { minH: MIN_CONSUMPTION_HEIGHT },
+  'production-ring-chart': { minH: MIN_WIDGET_HEIGHT },
+  'project-status': { minH: MIN_WIDGET_HEIGHT },
+  'yearly-downtime-timeline': { minH: MIN_WIDGET_HEIGHT }
+}
+
+const applyWidgetConstraints = (layout: Layout[]): Layout[] =>
+  layout.map((item) => {
+    const constraints = WIDGET_CONSTRAINTS[item.i]
+    if (!constraints) {
+      return { ...item }
+    }
+    return { ...item, ...constraints }
+  })
 
 const buildLayouts = (layout: Layout[]): Record<string, Layout[]> => ({
-  lg: cloneLayout(layout),
-  md: cloneLayout(layout),
-  sm: cloneLayout(layout),
-  xs: cloneLayout(layout),
-  xxs: cloneLayout(layout)
+  lg: applyWidgetConstraints(layout),
+  md: applyWidgetConstraints(layout),
+  sm: applyWidgetConstraints(layout),
+  xs: applyWidgetConstraints(layout),
+  xxs: applyWidgetConstraints(layout)
 })
 
 const mergeLayoutWithDefaults = (layout: Layout[], defaultLayout: Layout[]): Layout[] => {
@@ -83,7 +101,9 @@ const normalizeLayouts = (
 
   Object.keys(normalized).forEach((breakpoint) => {
     if (layouts[breakpoint]) {
-      normalized[breakpoint] = mergeLayoutWithDefaults(layouts[breakpoint], defaultLayout)
+      normalized[breakpoint] = applyWidgetConstraints(
+        mergeLayoutWithDefaults(layouts[breakpoint], defaultLayout)
+      )
     }
   })
 

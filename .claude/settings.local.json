@@ -3,7 +3,21 @@
     "allow": [
       "mcp__web-reader__webReader",
       "Bash(git remote add:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(where:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(\"E:\\sql\\bin\\pg_ctl.exe\" status -D \"E:\\sql\\data\")",
+      "Bash(\"E:\\sql\\bin\\psql.exe\" --version)",
+      "Bash(sc query:*)",
+      "Bash(setx:*)",
+      "Bash(psql:*)",
+      "Bash(set PATH=%PATH%)",
+      "Bash(E:sqlbin:*)",
+      "Bash(E:\\sql\\bin\\psql.exe:*)",
+      "Bash(powershell -Command:*)",
+      "Bash($env:PATH -split ';')",
+      "Bash(Where-Object { $_ -match 'E:\\\\sql\\\\bin' })"
     ],
     "deny": [],
     "ask": []
