@@ -10,14 +10,14 @@ interface HeaderProps {
 
 function Header({ currentReport, onReportChange }: HeaderProps): React.JSX.Element {
   return (
-    <Card className="w-full bg-background/60 dark:bg-default-100/50 backdrop-blur-lg border-none shadow-sm mb-4 rounded-none sm:rounded-2xl">
-      <CardBody className="flex flex-row items-center justify-between p-4 overflow-hidden">
+    <Card className="w-full bg-white/70 backdrop-blur-2xl border-none shadow-sm mb-6 rounded-[24px]">
+      <CardBody className="flex flex-row items-center justify-between px-8 py-6 overflow-hidden">
         {/* Left: Title */}
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-tight">
+          <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-tight">
             硫酸车间报表
           </h1>
-          <div className="text-[10px] text-default-500 tracking-[0.2em] uppercase font-medium">
+          <div className="text-[11px] text-default-400 tracking-[0.3em] uppercase font-bold">
             Sulfuric Acid Workshop Dashboard
           </div>
         </div>

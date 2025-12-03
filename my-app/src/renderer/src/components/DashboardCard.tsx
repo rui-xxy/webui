@@ -28,19 +28,19 @@ export function DashboardCard({
       className="w-full h-full"
     >
       <Card
-        className={`w-full h-full flex flex-col bg-background/60 backdrop-blur-lg border border-default-200/50 shadow-sm ${className || ""}`}
+        className={`w-full h-full flex flex-col bg-white/70 backdrop-blur-2xl border-none shadow-sm hover:shadow-md transition-all duration-300 rounded-[24px] ${className || ""}`}
         {...props}
       >
         {(title || subtitle || headerContent) && (
-          <CardHeader className="flex justify-between items-center px-4 py-3 sa-chart-header cursor-move select-none shrink-0 border-b border-default-200/50">
-            <div className="flex flex-col gap-1">
-              {title && <h3 className="text-lg font-bold text-foreground tracking-tight">{title}</h3>}
-              {subtitle && <p className="text-tiny text-default-500 uppercase tracking-wider font-medium">{subtitle}</p>}
+          <CardHeader className="flex justify-between items-center px-6 py-5 sa-chart-header cursor-move select-none shrink-0">
+            <div className="flex flex-col gap-0.5">
+              {title && <h3 className="text-lg font-bold text-foreground/90 tracking-tight">{title}</h3>}
+              {subtitle && <p className="text-tiny text-default-400 uppercase tracking-wider font-medium">{subtitle}</p>}
             </div>
             {headerContent && <div className="flex items-center gap-2">{headerContent}</div>}
           </CardHeader>
         )}
-        <CardBody className={`flex-1 h-full overflow-hidden relative ${noPadding ? 'p-0' : 'p-4'}`}>
+        <CardBody className={`flex-1 h-full overflow-hidden relative ${noPadding ? 'p-0' : 'px-6 pb-6 pt-0'}`}>
           {children}
         </CardBody>
       </Card>

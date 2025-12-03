@@ -64,7 +64,7 @@ const Tank: React.FC<{ data: TankData }> = ({ data }) => {
             <span className="text-tiny font-medium text-default-500">{data.name}</span>
             
             {/* Tank Visual */}
-            <div className="relative w-14 h-20 border border-default-300 rounded-lg overflow-hidden bg-default-100 shadow-inner group-hover:border-default-400 transition-colors">
+            <div className="relative w-14 h-20 border border-default-300 rounded-xl overflow-hidden bg-default-50 shadow-inner group-hover:border-default-400 transition-colors">
                 {/* Liquid */}
                 <div 
                     className={`absolute bottom-0 left-0 w-full transition-all duration-700 ease-in-out ${config.bgClass}`}

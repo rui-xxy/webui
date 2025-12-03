@@ -155,8 +155,8 @@ function DailyReportGrid(): React.JSX.Element {
       breakpoints={breakpoints}
       cols={cols}
       layouts={currentLayouts}
-      rowHeight={40}
-      margin={[16, 16]}
+      rowHeight={44}
+      margin={[24, 24]}
       draggableHandle=".sa-chart-header"
       onLayoutChange={handleLayoutChange}
       isDraggable={true}
