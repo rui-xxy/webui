@@ -10,17 +10,9 @@ import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer
 } from 'recharts'
-import { 
-  Tabs, 
-  Tab, 
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  Button,
-  useDisclosure
-} from "@heroui/react";
+import { Tabs, Tab, Button } from '@heroui/react';
 import { DashboardCard } from './DashboardCard';
+import { GlassModal } from './GlassModal';
 
 type ConsumptionType = 'water' | 'electricity' | 'hydrogen-peroxide' | 'pyrite'
 
@@ -212,7 +204,7 @@ function ConsumptionCard({
       </div>
       
       {/* Progress Bar */}
-      <div className="absolute bottom-0 left-0 w-full h-1 bg-default-100">
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-default-200">
           <div 
               className={`h-full ${statusConfig.bg.replace('/10', '')} transition-all duration-500`} 
               style={{ width: `${Math.min(Number(percentage), 100)}%`, backgroundColor: statusConfig.color }}
@@ -229,18 +221,17 @@ function BaseConsumptionMonitor({
   title: string
   items: ConsumptionItem[]
 }): React.JSX.Element {
-  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
   const [selectedItem, setSelectedItem] = useState<ConsumptionItem | null>(null);
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
 
   const handleCardClick = (item: ConsumptionItem) => {
     setSelectedItem(item);
-    onOpen();
+    setViewMode('week');
   };
 
   const handleClose = () => {
     setSelectedItem(null);
-    onClose();
+    setViewMode('week');
   };
 
   const selectedStatusConfig = selectedItem ? getStatusConfig(selectedItem.today, selectedItem.standard) : null;
@@ -259,171 +250,106 @@ function BaseConsumptionMonitor({
             </div>
         </DashboardCard>
 
-        <Modal 
-            isOpen={isOpen} 
-            onOpenChange={onOpenChange}
-            size="2xl"
-            placement="center"
-            hideCloseButton
-            backdrop="blur"
-            classNames={{
-                base: "bg-background/95 backdrop-blur-2xl border border-default-100/60 shadow-2xl",
-                header: "border-b border-default-100/60",
-                body: "py-6",
-            }}
-            motionProps={{
-              variants: {
-                enter: { opacity: 1, y: 0, scale: 1 },
-                exit: { opacity: 0, y: 30, scale: 0.96 }
-              },
-              transition: { duration: 0.25, ease: 'easeOut' }
-            }}
-            onClose={handleClose}
-        >
-            <ModalContent>
-                {(close) => (
-                    <>
-                        <ModalHeader className="flex gap-3 items-center w-full">
-                            {selectedItem && (
-                                <>
-                                    <div className={`p-2 rounded-lg ${selectedStatusConfig?.bg} ${selectedStatusConfig?.textClass}`}>
-                                        {Icons[selectedItem.id]}
-                                    </div>
-                                    <div className="flex flex-col gap-0.5">
-                                        <span className="text-lg font-bold">{selectedItem.name}消耗详情</span>
-                                        <span className="text-tiny text-default-500">
-                                            当前: {selectedItem.today} {selectedItem.unit} / 标准: {selectedItem.standard} {selectedItem.unit}
-                                        </span>
-                                    </div>
-                                </>
-                            )}
-                        </ModalHeader>
-                        <ModalBody>
-                            {selectedItem && selectedStatusConfig && (
-                                <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto">
-                                    <div className="flex flex-col gap-4">
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div className="flex flex-col p-3 rounded-xl bg-content1/40 border border-default-100/60">
-                                                <span className="text-tiny text-default-500">今日消耗</span>
-                                                <div className="flex items-baseline gap-1">
-                                                    <span className={`text-xl font-bold ${selectedStatusConfig.textClass}`}>
-                                                        {selectedItem.today}
-                                                    </span>
-                                                    <span className="text-tiny text-default-400">{selectedItem.unit}</span>
-                                                </div>
-                                            </div>
-                                            <div className="flex flex-col p-3 rounded-xl bg-content1/40 border border-default-100/60">
-                                                <span className="text-tiny text-default-500">标准限额</span>
-                                                <div className="flex items-baseline gap-1">
-                                                    <span className="text-xl font-bold text-default-700">
-                                                        {selectedItem.standard}
-                                                    </span>
-                                                    <span className="text-tiny text-default-400">{selectedItem.unit}</span>
-                                                </div>
-                                            </div>
-                                        </div>
+        <GlassModal isOpen={!!selectedItem} onClose={handleClose} className="w-[min(900px,92vw)] max-h-[78vh]">
+          {selectedItem && selectedStatusConfig && (
+            <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto px-2 sm:px-6 py-6">
+              <div className="flex items-center gap-3 border-b border-default-200/60 pb-4">
+                <div className={`p-2 rounded-lg ${selectedStatusConfig?.bg} ${selectedStatusConfig?.textClass}`}>
+                  {Icons[selectedItem.id]}
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-lg font-bold">{selectedItem.name}消耗详情</span>
+                  <span className="text-tiny text-default-500">
+                    当前: {selectedItem.today} {selectedItem.unit} / 标准: {selectedItem.standard} {selectedItem.unit}
+                  </span>
+                </div>
+                <Button color="danger" variant="light" className="ml-auto" onPress={handleClose}>
+                  关闭
+                </Button>
+              </div>
 
-                                        <div className="flex justify-end">
-                                            <Tabs 
-                                                size="sm" 
-                                                aria-label="View Mode" 
-                                                selectedKey={viewMode} 
-                                                onSelectionChange={(k) => setViewMode(k as any)}
-                                                color={selectedStatusConfig.semantic}
-                                                variant="bordered"
-                                            >
-                                                <Tab key="week" title="本周趋势" />
-                                                <Tab key="month" title="本月对比" />
-                                            </Tabs>
-                                        </div>
-                                    </div>
+              <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col p-3 rounded-xl bg-content1/40 border border-default-200/50">
+                    <span className="text-tiny text-default-500">今日消耗</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className={`text-xl font-bold ${selectedStatusConfig.textClass}`}>{selectedItem.today}</span>
+                      <span className="text-tiny text-default-400">{selectedItem.unit}</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col p-3 rounded-xl bg-content1/40 border border-default-200/50">
+                    <span className="text-tiny text-default-500">标准限额</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl font-bold text-default-700">{selectedItem.standard}</span>
+                      <span className="text-tiny text-default-400">{selectedItem.unit}</span>
+                    </div>
+                  </div>
+                </div>
 
-                                    <div className="h-[260px] w-full bg-content1/40 rounded-2xl p-4 border border-default-100/60">
-                                        <ResponsiveContainer width="100%" height="100%">
-                                            {viewMode === 'week' ? (
-                                                <LineChart data={selectedItem.weekData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} vertical={false} />
-                                                    <XAxis 
-                                                        dataKey="date" 
-                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
-                                                        tickLine={false} 
-                                                        axisLine={false} 
-                                                        dy={10}
-                                                    />
-                                                    <YAxis 
-                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
-                                                        tickLine={false} 
-                                                        axisLine={false} 
-                                                        dx={-10}
-                                                    />
-                                                    <RechartsTooltip
-                                                        contentStyle={{
-                                                            backgroundColor: 'hsl(var(--heroui-background))',
-                                                            border: '1px solid hsl(var(--heroui-default-200))',
-                                                            borderRadius: 12,
-                                                            fontSize: 12,
-                                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                                                        }}
-                                                        cursor={{ stroke: selectedStatusConfig.color, strokeWidth: 1, strokeDasharray: '5 5' }}
-                                                    />
-                                                    <Line
-                                                        type="monotone"
-                                                        dataKey="value"
-                                                        stroke={selectedStatusConfig.color}
-                                                        strokeWidth={3}
-                                                        dot={{ fill: 'hsl(var(--heroui-background))', stroke: selectedStatusConfig.color, strokeWidth: 2, r: 4 }}
-                                                        activeDot={{ r: 6, fill: selectedStatusConfig.color }}
-                                                    />
-                                                </LineChart>
-                                            ) : (
-                                                <BarChart data={selectedItem.monthData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} vertical={false} />
-                                                    <XAxis 
-                                                        dataKey="date" 
-                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
-                                                        tickLine={false} 
-                                                        axisLine={false}
-                                                        dy={10}
-                                                    />
-                                                    <YAxis 
-                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
-                                                        tickLine={false} 
-                                                        axisLine={false}
-                                                        dx={-10}
-                                                    />
-                                                    <RechartsTooltip
-                                                        cursor={{ fill: 'hsl(var(--heroui-default-100))', opacity: 0.5 }}
-                                                        contentStyle={{
-                                                            backgroundColor: 'hsl(var(--heroui-background))',
-                                                            border: '1px solid hsl(var(--heroui-default-200))',
-                                                            borderRadius: 12,
-                                                            fontSize: 12,
-                                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                                                        }}
-                                                    />
-                                                    <Bar 
-                                                        dataKey="value" 
-                                                        fill={selectedStatusConfig.color} 
-                                                        radius={[6, 6, 0, 0]} 
-                                                        barSize={40}
-                                                    />
-                                                </BarChart>
-                                            )}
-                                        </ResponsiveContainer>
-                                    </div>
+                <div className="flex justify-end">
+                  <Tabs
+                    size="sm"
+                    aria-label="View Mode"
+                    selectedKey={viewMode}
+                    onSelectionChange={(key) => setViewMode(key as 'week' | 'month')}
+                    color={selectedStatusConfig.semantic}
+                    variant="bordered"
+                  >
+                    <Tab key="week" title="本周趋势" />
+                    <Tab key="month" title="本月对比" />
+                  </Tabs>
+                </div>
+              </div>
 
-                                    <div className="flex justify-end">
-                                        <Button color="danger" variant="light" onPress={close}>
-                                            关闭
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                        </ModalBody>
-                    </>
-                )}
-            </ModalContent>
-        </Modal>
+              <div className="h-[260px] w-full bg-content1/40 rounded-2xl p-4 border border-default-200/50">
+                <ResponsiveContainer width="100%" height="100%">
+                  {viewMode === 'week' ? (
+                    <LineChart data={selectedItem.weekData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} tickLine={false} axisLine={false} dy={10} />
+                      <YAxis tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} tickLine={false} axisLine={false} dx={-10} />
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--heroui-background))',
+                          border: '1px solid hsl(var(--heroui-default-200))',
+                          borderRadius: 12,
+                          fontSize: 12,
+                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                        }}
+                        cursor={{ stroke: selectedStatusConfig.color, strokeWidth: 1, strokeDasharray: '5 5' }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke={selectedStatusConfig.color}
+                        strokeWidth={3}
+                        dot={{ fill: 'hsl(var(--heroui-background))', stroke: selectedStatusConfig.color, strokeWidth: 2, r: 4 }}
+                        activeDot={{ r: 6, fill: selectedStatusConfig.color }}
+                      />
+                    </LineChart>
+                  ) : (
+                    <BarChart data={selectedItem.monthData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} tickLine={false} axisLine={false} dy={10} />
+                      <YAxis tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} tickLine={false} axisLine={false} dx={-10} />
+                      <RechartsTooltip
+                        cursor={{ fill: 'hsl(var(--heroui-default-100))', opacity: 0.5 }}
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--heroui-background))',
+                          border: '1px solid hsl(var(--heroui-default-200))',
+                          borderRadius: 12,
+                          fontSize: 12,
+                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                        }}
+                      />
+                      <Bar dataKey="value" fill={selectedStatusConfig.color} radius={[6, 6, 0, 0]} barSize={40} />
+                    </BarChart>
+                  )}
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
+        </GlassModal>
     </>
   )
 }

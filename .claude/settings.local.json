@@ -24,7 +24,10 @@
       "Bash(/e/sql/bin/psql.exe:*)",
       "Bash(/e/sql/bin/pg_isready.exe:*)",
       "Bash(PGPASSWORD=123456 /e/sql/bin/psql.exe:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(cmd:*)",
+      "Bash(cat:*)",
+      "Bash(/E/sql/bin/psql.exe:*)"
     ],
     "deny": [],
     "ask": []

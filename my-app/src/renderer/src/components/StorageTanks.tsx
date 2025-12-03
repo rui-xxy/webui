@@ -52,12 +52,13 @@ const Tank: React.FC<{ data: TankData }> = ({ data }) => {
   return (
     <Tooltip 
         content={
-            <div className="px-1 py-2">
-                <div className="font-bold mb-1">{data.type} - {data.name}</div>
-                <div className="text-tiny">液位: {data.level}%</div>
-                <div className="text-tiny">储量: {data.volume} / {data.capacity} 吨</div>
+            <div className="px-2 py-2">
+                <div className="font-bold mb-1 text-foreground">{data.type} - {data.name}</div>
+                <div className="text-tiny text-default-600">液位: {data.level}%</div>
+                <div className="text-tiny text-default-600">储量: {data.volume} / {data.capacity} 吨</div>
             </div>
         }
+        className="bg-background/80 backdrop-blur-md border border-default-200 shadow-lg"
     >
         <div className="flex flex-col items-center gap-2 group cursor-pointer">
             <span className="text-tiny font-medium text-default-500">{data.name}</span>

@@ -9,11 +9,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "nerv-bg": "#1a1a2e",
-        "nerv-emerald": "#00ff88",
-        "nerv-orange": "#ff6b35",
-        "nerv-metal": "#8b8b9c",
-        "nerv-glass": "rgba(30, 30, 40, 0.8)",
+        "nerv-bg": "#f0f4f8",
+        "nerv-emerald": "#059669",
+        "nerv-orange": "#ea580c",
+        "nerv-metal": "#64748b",
+        "nerv-glass": "rgba(255, 255, 255, 0.8)",
       }
     },
   },
@@ -21,37 +21,37 @@ module.exports = {
   plugins: [heroui({
     themes: {
       "nerv": {
-        extend: "dark", // inherits from dark theme
+        extend: "light", // inherits from light theme
         colors: {
-          background: "#1a1a2e",
-          foreground: "#ffffff",
+          background: "#f0f4f8",
+          foreground: "#1e293b",
           primary: {
-            50: "#e6fffa",
-            100: "#b2f5ea",
-            200: "#81e6d9",
-            300: "#4fd1c5",
-            400: "#38b2ac",
-            500: "#00ff88", // futuristic-text-emerald
-            600: "#00cc6a",
-            700: "#00994f",
-            800: "#006635",
-            900: "#00331b",
-            DEFAULT: "#00ff88",
-            foreground: "#1a1a2e",
+            50: "#f0fdf4",
+            100: "#dcfce7",
+            200: "#bbf7d0",
+            300: "#86efac",
+            400: "#4ade80",
+            500: "#22c55e", 
+            600: "#16a34a",
+            700: "#15803d",
+            800: "#166534",
+            900: "#14532d",
+            DEFAULT: "#10b981", // emerald-500
+            foreground: "#ffffff",
           },
           secondary: {
-            DEFAULT: "#ff6b35", // futuristic-daily-color
+            DEFAULT: "#f97316", // orange-500
             foreground: "#ffffff",
           },
           success: {
-            DEFAULT: "#00ff88",
-            foreground: "#1a1a2e",
-          },
-          warning: {
-            DEFAULT: "#ff6b35",
+            DEFAULT: "#10b981",
             foreground: "#ffffff",
           },
-          focus: "#00ff88",
+          warning: {
+            DEFAULT: "#f59e0b",
+            foreground: "#ffffff",
+          },
+          focus: "#10b981",
         },
         layout: {
           radius: {

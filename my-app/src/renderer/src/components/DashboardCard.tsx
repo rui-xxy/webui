@@ -28,11 +28,11 @@ export function DashboardCard({
       className="w-full h-full"
     >
       <Card
-        className={`w-full h-full flex flex-col bg-background/60 dark:bg-default-100/50 backdrop-blur-lg border border-white/10 shadow-sm ${className || ""}`}
+        className={`w-full h-full flex flex-col bg-background/60 backdrop-blur-lg border border-default-200/50 shadow-sm ${className || ""}`}
         {...props}
       >
         {(title || subtitle || headerContent) && (
-          <CardHeader className="flex justify-between items-center px-4 py-3 sa-chart-header cursor-move select-none shrink-0 border-b border-white/5">
+          <CardHeader className="flex justify-between items-center px-4 py-3 sa-chart-header cursor-move select-none shrink-0 border-b border-default-200/50">
             <div className="flex flex-col gap-1">
               {title && <h3 className="text-lg font-bold text-foreground tracking-tight">{title}</h3>}
               {subtitle && <p className="text-tiny text-default-500 uppercase tracking-wider font-medium">{subtitle}</p>}

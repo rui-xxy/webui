@@ -39,7 +39,7 @@ function ProductionRingChart({
                 classNames={{
                     svg: "w-40 h-40 drop-shadow-md",
                     indicator: "stroke-current",
-                    track: "stroke-default-100/50",
+                    track: "stroke-default-200/50",
                 }}
                 value={achievementRate}
                 color={color}
@@ -93,7 +93,7 @@ function ProductionRingChart({
                 color={color}
                 aria-label="Progress Bar"
                 classNames={{
-                    track: "bg-default-100/50",
+                    track: "bg-default-200/50",
                     indicator: "bg-gradient-to-r from-primary to-secondary",
                 }}
             />
