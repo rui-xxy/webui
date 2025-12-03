@@ -1,4 +1,6 @@
 import React from 'react'
+import { Tooltip, Divider, Chip } from "@heroui/react";
+import { DashboardCard } from './DashboardCard';
 
 type TankType = '98酸' | '发烟硫酸' | '精品酸'
 
@@ -32,56 +34,57 @@ const tanksData: TankData[] = [
   { id: 'jp-4', name: '4#', type: '精品酸', level: 88, volume: 52.8, capacity: 60.0 }
 ]
 
-// 根据液位高度获取颜色
-const getLevelColor = (level: number): string => {
+// 根据液位高度获取颜色配置
+const getLevelConfig = (level: number) => {
   if (level >= 70) {
-    return '#10b981' // 绿色 - 高液位
+    return { color: 'success', hex: '#10b981', bgClass: 'bg-success', textClass: 'text-success' }
   } else if (level >= 40) {
-    return '#3b82f6' // 蓝色 - 中液位
+    return { color: 'primary', hex: '#3b82f6', bgClass: 'bg-primary', textClass: 'text-primary' }
   } else {
-    return '#f59e0b' // 橙色 - 低液位（警告）
+    return { color: 'warning', hex: '#f59e0b', bgClass: 'bg-warning', textClass: 'text-warning' }
   }
 }
 
 // 单个储罐组件
 const Tank: React.FC<{ data: TankData }> = ({ data }) => {
-  const color = getLevelColor(data.level)
-  const levelHeight = data.level
+  const config = getLevelConfig(data.level)
 
   return (
-    <div className="tank-item">
-      {/* 罐子名称 */}
-      <div className="tank-name">{data.name}</div>
+    <Tooltip 
+        content={
+            <div className="px-1 py-2">
+                <div className="font-bold mb-1">{data.type} - {data.name}</div>
+                <div className="text-tiny">液位: {data.level}%</div>
+                <div className="text-tiny">储量: {data.volume} / {data.capacity} 吨</div>
+            </div>
+        }
+    >
+        <div className="flex flex-col items-center gap-2 group cursor-pointer">
+            <span className="text-tiny font-medium text-default-500">{data.name}</span>
+            
+            {/* Tank Visual */}
+            <div className="relative w-14 h-20 border border-default-300 rounded-lg overflow-hidden bg-default-100 shadow-inner group-hover:border-default-400 transition-colors">
+                {/* Liquid */}
+                <div 
+                    className={`absolute bottom-0 left-0 w-full transition-all duration-700 ease-in-out ${config.bgClass}`}
+                    style={{ height: `${data.level}%` }}
+                >
+                    {/* Simple CSS Wave effect overlay */}
+                    <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNDQwIDMyMCI+PHBhdGggZmlsbD0iI2ZmZmZmZiIgZmlsbC1vcGFjaXR5PSIwLjIiIGQ9Ik0wLDk2TzQ4LDExMi45Qzk2LDEyOCwxOTIsMTYwLDI4OCwxNjBDMzg0LDE2MCw0ODAsMTI4LDU3NiwxMTJDNjcyLDk2LDc2OCw5Niw4NjQsMTEyQzk2MCwxMjgsMTA1NiwxNjAsMTE1MiwxNjBDMTI0OCwxNjAsMTM0NCwxMjgsMTM5MiwxMTJMMTQ0MCw5NkwxNDQwLDMyMEwxMzkyLDMyMEMxMzQ0LDMyMCwxMjQ4LDMyMCwxMTUyLDMyMEMxMDU2LDMyMCw5NjAsMzIwLDg2NCwzMjBDNzY4LDMyMCw2NzIsMzIwLDU3NiwzMjBDNDgwLDMyMCwzODQsMzIwLDI4OCwzMjBDMTkyLDMyMCw5NiwzMjAsNDgsMzIwTDAsMzIwWiI+PC9wYXRoPjwvc3ZnPg==')] bg-cover bg-bottom animate-pulse"></div>
+                </div>
+                
+                {/* Measurement Lines */}
+                <div className="absolute top-1/4 w-full h-[1px] bg-default-400/30"></div>
+                <div className="absolute top-2/4 w-full h-[1px] bg-default-400/30"></div>
+                <div className="absolute top-3/4 w-full h-[1px] bg-default-400/30"></div>
+            </div>
 
-      {/* 罐子容器 */}
-      <div className="tank-container">
-        {/* 液位显示 */}
-        <div className="tank-body">
-          <div
-            className="tank-liquid"
-            style={{
-              height: `${levelHeight}%`,
-              backgroundColor: color
-            }}
-          >
-            <div className="tank-wave"></div>
-          </div>
+            <div className="flex flex-col items-center gap-0">
+                <span className={`text-small font-bold ${config.textClass}`}>{data.level}%</span>
+                <span className="text-[10px] text-default-400">{data.volume.toFixed(1)}t</span>
+            </div>
         </div>
-
-        {/* 罐顶 */}
-        <div className="tank-top" style={{ borderBottomColor: color }}></div>
-      </div>
-
-      {/* 数据显示 */}
-      <div className="tank-data">
-        <div className="tank-level" style={{ color: color }}>
-          {data.level}%
-        </div>
-        <div className="tank-volume">
-          {data.volume.toFixed(1)} / {data.capacity.toFixed(0)} 吨
-        </div>
-      </div>
-    </div>
+    </Tooltip>
   )
 }
 
@@ -92,51 +95,50 @@ function StorageTanks(): React.JSX.Element {
   const tankJP = tanksData.filter((t) => t.type === '精品酸')
 
   return (
-    <div className="chart-container">
-      <div className="sa-chart-card">
-        {/* 标题区域 */}
-        <div className="sa-chart-header">
-          <div>
-            <h2 className="sa-chart-title">储罐监控</h2>
-          </div>
-          <div className="sa-dashboard-summary">
-            <span className="sa-dashboard-summary-value">12</span>
-          </div>
+    <DashboardCard
+      title="储罐监控"
+      headerContent={
+        <Chip size="sm" variant="flat" color="secondary">Total: 12</Chip>
+      }
+    >
+      <div className="flex flex-col gap-4 h-full overflow-y-auto p-2 scrollbar-hide">
+        {/* 98酸 */}
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <div className="h-3 w-1 bg-primary rounded-full"></div>
+                <span className="text-small font-bold text-default-600">98酸</span>
+                <Divider className="flex-1" />
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+                {tank98.map(tank => <Tank key={tank.id} data={tank} />)}
+            </div>
         </div>
 
-        <div className="sa-chart-body tanks-body">
-          {/* 98酸 - 第一排 */}
-          <div className="tank-section">
-            <div className="tank-section-title">98酸</div>
-            <div className="tank-row">
-              {tank98.map((tank) => (
-                <Tank key={tank.id} data={tank} />
-              ))}
+        {/* 发烟硫酸 */}
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <div className="h-3 w-1 bg-warning rounded-full"></div>
+                <span className="text-small font-bold text-default-600">发烟硫酸</span>
+                <Divider className="flex-1" />
             </div>
-          </div>
+            <div className="grid grid-cols-4 gap-2">
+                {tankFY.map(tank => <Tank key={tank.id} data={tank} />)}
+            </div>
+        </div>
 
-          {/* 发烟硫酸 - 第二排 */}
-          <div className="tank-section">
-            <div className="tank-section-title">发烟硫酸</div>
-            <div className="tank-row">
-              {tankFY.map((tank) => (
-                <Tank key={tank.id} data={tank} />
-              ))}
+        {/* 精品酸 */}
+        <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <div className="h-3 w-1 bg-success rounded-full"></div>
+                <span className="text-small font-bold text-default-600">精品酸</span>
+                <Divider className="flex-1" />
             </div>
-          </div>
-
-          {/* 精品酸 - 第三排 */}
-          <div className="tank-section">
-            <div className="tank-section-title">精品酸</div>
-            <div className="tank-row">
-              {tankJP.map((tank) => (
-                <Tank key={tank.id} data={tank} />
-              ))}
+            <div className="grid grid-cols-4 gap-2">
+                {tankJP.map(tank => <Tank key={tank.id} data={tank} />)}
             </div>
-          </div>
         </div>
       </div>
-    </div>
+    </DashboardCard>
   )
 }
 

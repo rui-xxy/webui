@@ -10,6 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer
 } from 'recharts'
+import { Card, CardBody, Tabs, Tab, Chip, Divider } from "@heroui/react";
+import { DashboardCard } from './DashboardCard';
 
 type ConsumptionType = 'water' | 'electricity' | 'hydrogen-peroxide' | 'pyrite'
 
@@ -133,21 +135,13 @@ const rawMaterialConsumptionItems = consumptionData.filter((item) =>
   RAW_MATERIAL_CONSUMPTION_TYPES.includes(item.id)
 )
 
-// 获取状态颜色
-const getStatusColor = (current: number, standard: number): string => {
+// 获取状态配置
+const getStatusConfig = (current: number, standard: number) => {
   const ratio = current / standard
-  if (ratio <= 0.8) return '#10b981' // 优秀 - 绿色
-  if (ratio <= 1.0) return '#3b82f6' // 正常 - 蓝色
-  if (ratio <= 1.1) return '#f59e0b' // 预警 - 橙色
-  return '#ef4444' // 超标 - 红色
-}
-
-const getStatusText = (current: number, standard: number): string => {
-  const ratio = current / standard
-  if (ratio <= 0.8) return '优秀'
-  if (ratio <= 1.0) return '正常'
-  if (ratio <= 1.1) return '预警'
-  return '超标'
+  if (ratio <= 0.8) return { color: '#10b981', semantic: 'success' as const, text: '优秀' }
+  if (ratio <= 1.0) return { color: '#3b82f6', semantic: 'primary' as const, text: '正常' }
+  if (ratio <= 1.1) return { color: '#f59e0b', semantic: 'warning' as const, text: '预警' }
+  return { color: '#ef4444', semantic: 'danger' as const, text: '超标' }
 }
 
 // 单个消耗卡片
@@ -161,130 +155,127 @@ function ConsumptionCard({
   const [expanded, setExpanded] = useState(false)
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week')
 
-  const statusColor = getStatusColor(item.today, item.standard)
-  const statusText = getStatusText(item.today, item.standard)
+  const statusConfig = getStatusConfig(item.today, item.standard)
   const percentage = ((item.today / item.standard) * 100).toFixed(1)
 
-  const handleCardClick = (e: React.MouseEvent): void => {
-    e.stopPropagation()
+  const handleCardClick = (): void => {
     const newExpanded = !expanded
     setExpanded(newExpanded)
     onExpandChange?.(newExpanded)
   }
 
-  const handleToggleClick = (e: React.MouseEvent, mode: 'week' | 'month'): void => {
-    e.stopPropagation()
-    setViewMode(mode)
-  }
-
   return (
-    <div className={`consumption-card ${expanded ? 'expanded' : ''}`}>
-      {/* 主卡片 */}
-      <div className="consumption-card-main" onClick={handleCardClick}>
-        <div className="consumption-icon">{item.icon}</div>
-        <div className="consumption-info">
-          <div className="consumption-name">{item.name}</div>
-          <div className="consumption-value" style={{ color: statusColor }}>
-            {item.today.toLocaleString('zh-CN')}
-            <span className="consumption-unit">{item.unit}</span>
-          </div>
-          <div className="consumption-meta">
-            <span className="consumption-status" style={{ color: statusColor }}>
-              {statusText}
-            </span>
-            <span className="consumption-percentage">{percentage}% 标准值</span>
-          </div>
-        </div>
-        <div className={`consumption-expand-icon ${expanded ? 'rotated' : ''}`}>▼</div>
-      </div>
-
-      {/* 展开区域 */}
-      {expanded && (
-        <div className="consumption-detail">
-          {/* 切换按钮 */}
-          <div className="consumption-toggle">
-            <button
-              className={`toggle-btn ${viewMode === 'week' ? 'active' : ''}`}
-              onClick={(e) => handleToggleClick(e, 'week')}
-            >
-              本周趋势
-            </button>
-            <button
-              className={`toggle-btn ${viewMode === 'month' ? 'active' : ''}`}
-              onClick={(e) => handleToggleClick(e, 'month')}
-            >
-              本月对比
-            </button>
-          </div>
-
-          {/* 图表区域 */}
-          <div className="consumption-chart">
-            <ResponsiveContainer width="100%" height={200}>
-              {viewMode === 'week' ? (
-                <LineChart data={item.weekData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
-                  <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: 8,
-                      fontSize: 12
-                    }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke={statusColor}
-                    strokeWidth={2}
-                    dot={{ fill: statusColor, r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              ) : (
-                <BarChart data={item.monthData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="date" tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
-                  <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} stroke="#d1d5db" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#ffffff',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: 8,
-                      fontSize: 12
-                    }}
-                  />
-                  <Bar dataKey="value" fill={statusColor} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              )}
-            </ResponsiveContainer>
-          </div>
-
-          {/* 统计信息 */}
-          <div className="consumption-stats">
-            <div className="stat-item">
-              <span className="stat-label">平均值</span>
-              <span className="stat-value">
-                {(
-                  (viewMode === 'week' ? item.weekData : item.monthData).reduce(
-                    (sum, d) => sum + d.value,
-                    0
-                  ) / (viewMode === 'week' ? 7 : 4)
-                ).toFixed(1)}{' '}
-                {item.unit}
-              </span>
+    <Card 
+        isPressable 
+        onPress={handleCardClick}
+        className={`w-full transition-all duration-300 border-none bg-content2/50 hover:bg-content2/80`}
+        shadow="none"
+    >
+      <CardBody className="p-3 overflow-hidden">
+        {/* Main Info Row */}
+        <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+                <div className="text-2xl">{item.icon}</div>
+                <div>
+                    <p className="text-small font-medium text-default-500">{item.name}</p>
+                    <div className="flex items-baseline gap-1">
+                        <span className={`text-lg font-bold text-${statusConfig.semantic}`}>{item.today.toLocaleString('zh-CN')}</span>
+                        <span className="text-tiny text-default-400">{item.unit}</span>
+                    </div>
+                </div>
             </div>
-            <div className="stat-item">
-              <span className="stat-label">标准值</span>
-              <span className="stat-value">
-                {item.standard} {item.unit}
-              </span>
+            <div className="flex flex-col items-end gap-1">
+                <Chip size="sm" color={statusConfig.semantic} variant="flat">{statusConfig.text}</Chip>
+                <span className="text-tiny text-default-400">{percentage}% 标准</span>
             </div>
-          </div>
         </div>
-      )}
-    </div>
+
+        {/* Expanded Content */}
+        {expanded && (
+            <div className="mt-4 w-full animate-appearance-in cursor-default" onClick={(e) => e.stopPropagation()}>
+                <Divider className="my-2" />
+                <div className="flex justify-between items-center mb-2">
+                    <Tabs 
+                        size="sm" 
+                        variant="light" 
+                        aria-label="View Mode" 
+                        selectedKey={viewMode} 
+                        onSelectionChange={(k) => setViewMode(k as any)}
+                        color="primary"
+                    >
+                        <Tab key="week" title="本周趋势" />
+                        <Tab key="month" title="本月对比" />
+                    </Tabs>
+                </div>
+                
+                <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                    {viewMode === 'week' ? (
+                    <LineChart data={item.weekData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} />
+                        <XAxis dataKey="date" tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
+                        <YAxis tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: 'hsl(var(--heroui-background))',
+                                border: '1px solid hsl(var(--heroui-default-200))',
+                                borderRadius: 8,
+                                fontSize: 12
+                            }}
+                        />
+                        <Line
+                        type="monotone"
+                        dataKey="value"
+                        stroke={statusConfig.color}
+                        strokeWidth={2}
+                        dot={{ fill: statusConfig.color, r: 4 }}
+                        activeDot={{ r: 6 }}
+                        />
+                    </LineChart>
+                    ) : (
+                    <BarChart data={item.monthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} />
+                        <XAxis dataKey="date" tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
+                        <YAxis tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
+                        <Tooltip
+                            contentStyle={{
+                                backgroundColor: 'hsl(var(--heroui-background))',
+                                border: '1px solid hsl(var(--heroui-default-200))',
+                                borderRadius: 8,
+                                fontSize: 12
+                            }}
+                        />
+                        <Bar dataKey="value" fill={statusConfig.color} radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                    )}
+                </ResponsiveContainer>
+                </div>
+
+                {/* Stats */}
+                <div className="flex justify-between mt-2 bg-default-50 p-2 rounded-lg">
+                    <div className="flex flex-col">
+                        <span className="text-tiny text-default-500">平均值</span>
+                        <span className="text-small font-medium">
+                            {(
+                                (viewMode === 'week' ? item.weekData : item.monthData).reduce(
+                                (sum, d) => sum + d.value,
+                                0
+                                ) / (viewMode === 'week' ? 7 : 4)
+                            ).toFixed(1)}{' '}
+                            {item.unit}
+                        </span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                        <span className="text-tiny text-default-500">标准值</span>
+                        <span className="text-small font-medium">
+                            {item.standard} {item.unit}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        )}
+      </CardBody>
+    </Card>
   )
 }
 
@@ -316,40 +307,6 @@ const useConsumptionExpansion = (
   }, [])
 }
 
-interface ConsumptionSectionProps {
-  title: string
-  items: ConsumptionItem[]
-  onCardExpandChange: (id: ConsumptionType, expanded: boolean) => void
-}
-
-function ConsumptionSection({
-  title,
-  items,
-  onCardExpandChange
-}: ConsumptionSectionProps): React.JSX.Element {
-  return (
-    <div className="sa-chart-card">
-      <div className="sa-chart-header">
-        <div>
-          <h2 className="sa-chart-title">{title}</h2>
-        </div>
-      </div>
-
-      <div className="sa-chart-body consumption-body">
-        <div className="consumption-grid">
-          {items.map((item) => (
-            <ConsumptionCard
-              key={item.id}
-              item={item}
-              onExpandChange={(expanded) => onCardExpandChange(item.id, expanded)}
-            />
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 function BaseConsumptionMonitor({
   title,
   items,
@@ -362,9 +319,17 @@ function BaseConsumptionMonitor({
   const handleCardExpandChange = useConsumptionExpansion(onExpandChange)
 
   return (
-    <div className="chart-container">
-      <ConsumptionSection title={title} items={items} onCardExpandChange={handleCardExpandChange} />
-    </div>
+    <DashboardCard title={title}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full content-start">
+          {items.map((item) => (
+            <ConsumptionCard
+              key={item.id}
+              item={item}
+              onExpandChange={(expanded) => handleCardExpandChange(item.id, expanded)}
+            />
+          ))}
+        </div>
+    </DashboardCard>
   )
 }
 

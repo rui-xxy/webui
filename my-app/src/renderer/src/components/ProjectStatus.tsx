@@ -1,6 +1,22 @@
-import React, { useState } from 'react';
-import { createPortal } from 'react-dom';
-import '../assets/styles/project-status.css';
+import { useMemo, useState } from 'react';
+import {
+  Button,
+  Progress,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  Table,
+  TableHeader,
+  TableColumn,
+  TableBody,
+  TableRow,
+  TableCell,
+  Chip
+} from '@heroui/react';
+import { DashboardCard } from './DashboardCard';
+import { motion } from 'framer-motion';
 
 // Define types
 type StatusType = 'progress' | 'completed' | 'delayed';
@@ -46,179 +62,185 @@ const Icons = {
       <line x1="12" y1="8" x2="12" y2="12" />
       <line x1="12" y1="16" x2="12.01" y2="16" />
     </svg>
-  ),
-  close: (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
   )
 };
 
 const statusConfig = {
-  progress: { 
-    label: '进行中', 
-    color: '#3b82f6', 
-    bgColor: '#eff6ff',
-    borderColor: '#bfdbfe',
-    icon: Icons.progress 
-  },
-  completed: { 
-    label: '已完成', 
-    color: '#10b981', 
-    bgColor: '#ecfdf5',
-    borderColor: '#a7f3d0',
-    icon: Icons.completed 
-  },
-  delayed: { 
-    label: '已延期', 
-    color: '#ef4444', 
-    bgColor: '#fef2f2',
-    borderColor: '#fecaca',
-    icon: Icons.delayed 
-  },
-};
+  progress: { label: '进行中', color: 'primary', icon: Icons.progress },
+  completed: { label: '已完成', color: 'success', icon: Icons.completed },
+  delayed: { label: '已延期', color: 'danger', icon: Icons.delayed },
+} as const;
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  icon: React.ReactNode;
-  color: string;
-  children: React.ReactNode;
-}
-
-const Modal = ({ isOpen, onClose, title, icon, color, children }: ModalProps) => {
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <div className="modal-header" style={{ borderLeft: `4px solid ${color}` }}>
-          <div className="modal-title" style={{ color }}>
-            <span className="modal-title-icon">{icon}</span>
-            {title}
-          </div>
-          <button className="modal-close-btn" onClick={onClose}>
-            {Icons.close}
-          </button>
-        </div>
-        <div className="modal-body">
-          {children}
-        </div>
-      </div>
-    </div>,
-    document.body
-  );
-};
-
-export const ProjectStatus = () => {
+export default function ProjectStatus() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedStatus, setSelectedStatus] = useState<StatusType | null>(null);
 
-  const filteredData = selectedStatus 
-    ? mockData.filter(item => item.status === selectedStatus)
-    : [];
+  const handleStatusClick = (status: StatusType) => {
+    setSelectedStatus(status);
+    onOpen();
+  };
+
+  const filteredData = useMemo(
+    () => (selectedStatus ? mockData.filter((item) => item.status === selectedStatus) : []),
+    [selectedStatus]
+  );
+
+  const handleModalChange = (open: boolean): void => {
+    if (!open) {
+      setSelectedStatus(null);
+      onClose();
+    }
+  };
 
   return (
-    <>
-      <div className="sa-chart-card project-status-container">
-        <div className="sa-chart-header">
-          <div className="sa-chart-title-group">
-            <h3 className="sa-chart-title">项目状态监控</h3>
-            <p className="sa-chart-subtitle">PROJECT STATUS MONITOR</p>
-          </div>
-        </div>
-        
-        <div className="project-status-body">
-          <div className="status-overview-grid">
+    <DashboardCard title="项目状态监控" className="relative overflow-hidden">
+        <div className="flex flex-row items-center h-full w-full divide-x divide-default-200/50">
             {(Object.keys(statusConfig) as StatusType[]).map((status) => {
-              const config = statusConfig[status];
-              const count = mockData.filter(item => item.status === status).length;
-              
-              return (
-                <div 
-                  key={status}
-                  className={`status-item-card status-${status}`}
-                  onClick={() => setSelectedStatus(status)}
-                >
-                  <div className="status-header">
-                    <span className="status-label">{config.label}</span>
-                    <div className="status-icon-mini" style={{ color: config.color }}>
-                      {config.icon}
-                    </div>
-                  </div>
-                  <div className="status-value-group">
-                    <span className="status-count" style={{ color: config.color }}>{count}</span>
-                    <span className="status-unit">项</span>
-                  </div>
-                  <div className="status-bar-bg">
-                    <div 
-                      className="status-bar-fill" 
-                      style={{ backgroundColor: config.color, width: '60%' }} // 模拟总体进度
-                    ></div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      <Modal
-        isOpen={!!selectedStatus}
-        onClose={() => setSelectedStatus(null)}
-        title={selectedStatus ? `${statusConfig[selectedStatus].label}项目列表` : ''}
-        icon={selectedStatus ? statusConfig[selectedStatus].icon : null}
-        color={selectedStatus ? statusConfig[selectedStatus].color : '#000'}
-      >
-        <div className="custom-table-container">
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th style={{ width: '30%' }}>项目名称</th>
-                <th style={{ width: '15%' }}>负责人</th>
-                <th style={{ width: '20%' }}>截止日期</th>
-                <th style={{ width: '15%' }}>预算</th>
-                <th style={{ width: '20%' }}>进度</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredData.length > 0 ? (
-                filteredData.map((item) => (
-                  <tr key={item.id}>
-                    <td style={{ fontWeight: 600, color: '#1f2937' }}>{item.name}</td>
-                    <td>{item.manager}</td>
-                    <td style={{ fontFamily: 'monospace', color: '#6b7280' }}>{item.deadline}</td>
-                    <td>{item.budget}</td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div className="progress-bar-bg">
-                          <div 
-                            className="progress-bar-fill"
-                            style={{ 
-                              width: `${item.progress}%`,
-                              backgroundColor: statusConfig[item.status].color
-                            }}
-                          ></div>
+                const config = statusConfig[status];
+                const count = mockData.filter(item => item.status === status).length;
+                return (
+                    <div
+                        key={status}
+                        className="flex-1 h-full flex flex-col items-center justify-center cursor-pointer hover:bg-default-100/50 transition-colors group relative overflow-hidden"
+                        onClick={() => handleStatusClick(status)}
+                    >
+                        {/* Hover Glow Effect */}
+                        <div className={`absolute inset-0 bg-${config.color}/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300`} />
+                        
+                        <div className="flex flex-col items-center gap-1 z-10">
+                            <div className="flex items-center gap-1.5">
+                                <div className={`text-${config.color} transition-transform duration-300 group-hover:scale-110`}>
+                                    {config.icon}
+                                </div>
+                                <span className="text-small font-medium text-default-600">{config.label}</span>
+                            </div>
+                            <div className="flex items-baseline gap-1">
+                                <motion.span 
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className={`text-3xl font-bold text-${config.color} font-mono`}
+                                >
+                                    {count}
+                                </motion.span>
+                                <span className="text-tiny text-default-400">项</span>
+                            </div>
                         </div>
-                        <span style={{ fontSize: '11px', width: '28px', textAlign: 'right' }}>{item.progress}%</span>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '32px', color: '#9ca3af' }}>
-                    暂无相关项目数据
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                    </div>
+                )
+            })}
         </div>
-      </Modal>
-    </>
+
+        <Modal
+          isOpen={isOpen && !!selectedStatus}
+          onOpenChange={handleModalChange}
+          size="4xl"
+          placement="center"
+          backdrop="blur"
+          scrollBehavior="inside"
+          hideCloseButton
+          classNames={{
+            base: 'bg-background/95 backdrop-blur-2xl border border-default-100/40 shadow-2xl',
+            header: 'border-b border-default-100/60'
+          }}
+          motionProps={{
+            variants: {
+              enter: { opacity: 1, y: 0, scale: 1 },
+              exit: { opacity: 0, y: 40, scale: 0.98 }
+            },
+            transition: { duration: 0.25, ease: 'easeOut' }
+          }}
+        >
+          <ModalContent>
+            {(close) =>
+              selectedStatus && (
+                <>
+                  <ModalHeader className="flex items-center gap-3">
+                    <div
+                      className={`p-2 rounded-lg bg-${statusConfig[selectedStatus].color}/15 text-${statusConfig[selectedStatus].color}`}
+                    >
+                      {statusConfig[selectedStatus].icon}
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-base font-semibold text-foreground">
+                        {statusConfig[selectedStatus].label}项目清单
+                      </span>
+                      <span className="text-tiny text-default-500">
+                        共 {filteredData.length} 项 · 点击表格行可在后续集成跳转
+                      </span>
+                    </div>
+                    <Button size="sm" variant="light" className="ml-auto" onPress={close}>
+                      关闭
+                    </Button>
+                  </ModalHeader>
+                  <ModalBody className="py-4">
+                    <Table
+                      aria-label="项目状态明细"
+                      removeWrapper
+                      className="w-full max-w-4xl mx-auto border border-default-100/50 rounded-2xl bg-content1/40 shadow-lg shadow-black/5"
+                      classNames={{
+                        base: 'max-h-[480px]',
+                        wrapper: 'rounded-2xl overflow-hidden',
+                        table: 'min-w-[720px]',
+                        thead: 'bg-default-50/20 backdrop-blur',
+                        th: 'px-4 py-3 text-left text-tiny tracking-wide text-default-500 font-semibold',
+                        tr: 'hover:bg-default-50/30 transition-colors',
+                        td: 'px-4 py-3 text-small text-default-600 align-middle'
+                      }}
+                    >
+                      <TableHeader>
+                        <TableColumn key="project">项目</TableColumn>
+                        <TableColumn key="owner">负责人</TableColumn>
+                        <TableColumn key="progress">进度</TableColumn>
+                        <TableColumn key="deadline">截止日期</TableColumn>
+                        <TableColumn key="budget">预算</TableColumn>
+                      </TableHeader>
+                      <TableBody emptyContent="暂无数据" items={filteredData}>
+                        {(item) => (
+                          <TableRow key={item.id}>
+                            <TableCell>
+                              <div className="space-y-1">
+                                <p className="text-small font-semibold text-default-900">{item.name}</p>
+                                <p className="text-tiny text-default-500">编号: {item.id}</p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Chip
+                                  size="sm"
+                                  variant="flat"
+                                  color={statusConfig[item.status].color as any}
+                                  className="font-medium"
+                                >
+                                  {item.manager}
+                                </Chip>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-3 w-48">
+                                <Progress
+                                  aria-label={`${item.name} progress`}
+                                  size="sm"
+                                  value={item.progress}
+                                  color={statusConfig[item.status].color as any}
+                                  className="flex-1"
+                                />
+                                <span className="font-mono text-tiny text-default-500 w-10 text-right">
+                                  {item.progress}%
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="font-mono text-tiny text-default-600">{item.deadline}</TableCell>
+                            <TableCell className="font-mono text-small text-default-900">{item.budget}</TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </ModalBody>
+                </>
+              )
+            }
+          </ModalContent>
+        </Modal>
+    </DashboardCard>
   );
 };
-
-export default ProjectStatus;

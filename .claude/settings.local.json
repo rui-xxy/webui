@@ -23,7 +23,8 @@
       "Bash(createdb:*)",
       "Bash(/e/sql/bin/psql.exe:*)",
       "Bash(/e/sql/bin/pg_isready.exe:*)",
-      "Bash(PGPASSWORD=123456 /e/sql/bin/psql.exe:*)"
+      "Bash(PGPASSWORD=123456 /e/sql/bin/psql.exe:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []

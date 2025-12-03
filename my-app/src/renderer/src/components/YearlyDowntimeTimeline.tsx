@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { DashboardCard } from './DashboardCard'
+import { Tooltip, Chip } from "@heroui/react";
 
 // 停车事件
 interface DowntimeEvent {
@@ -101,11 +102,6 @@ function YearlyDowntimeTimeline({
   year = 2025,
   events = mockEvents
 }: YearlyDowntimeTimelineProps): React.JSX.Element {
-  const [hoveredEvent, setHoveredEvent] = useState<DowntimeEvent | null>(null)
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
-  const todayDayOfYear = getDayOfYear(new Date().toISOString().split('T')[0])
-  const todayPosition = (todayDayOfYear / 365) * 100
-
   // 计算总停车天数
   const totalDowntimeDays = events.reduce((sum, event) => {
     return sum + getDaysBetween(event.startDate, event.endDate)
@@ -117,18 +113,8 @@ function YearlyDowntimeTimeline({
 
   // 月份标签
   const months = [
-    '1月',
-    '2月',
-    '3月',
-    '4月',
-    '5月',
-    '6月',
-    '7月',
-    '8月',
-    '9月',
-    '10月',
-    '11月',
-    '12月'
+    '1月', '2月', '3月', '4月', '5月', '6月',
+    '7月', '8月', '9月', '10月', '11月', '12月'
   ]
 
   // 计算事件在时间轴上的位置
@@ -143,121 +129,73 @@ function YearlyDowntimeTimeline({
     return { left: `${left}%`, width: `${width}%` }
   }
 
-  // 处理鼠标悬停
-  const handleMouseEnter = (event: DowntimeEvent, e: React.MouseEvent) => {
-    setHoveredEvent(event)
-
-    // 获取鼠标位置
-    const rect = e.currentTarget.getBoundingClientRect()
-    setTooltipPosition({
-      x: rect.left + rect.width / 2,
-      y: rect.top
-    })
-  }
-
-  const handleMouseLeave = () => {
-    setHoveredEvent(null)
-  }
-
   return (
-    <div className="chart-container">
-      <div className="sa-chart-card">
-        {/* 标题区域 */}
-        <div className="sa-chart-header">
-          <div>
-            <h2 className="sa-chart-title">{year}年停车记录</h2>
+    <DashboardCard
+      title={`${year}年停车记录`}
+      headerContent={
+          <div className="flex flex-wrap gap-2 justify-end">
+             <Chip size="sm" variant="flat" color="default">总数: {events.length}</Chip>
+             <Chip size="sm" variant="flat" color="danger">停机: {totalDowntimeDays}天</Chip>
+             <Chip size="sm" variant="dot" color="primary">计划: {plannedCount}</Chip>
+             <Chip size="sm" variant="dot" color="warning">非计划: {unplannedCount}</Chip>
           </div>
-          <div className="yearly-timeline-summary">
-            <div className="yearly-timeline-stat">
-              <span className="yearly-timeline-stat-value">{events.length}</span>
-            </div>
-            <div className="yearly-timeline-stat">
-              <span className="yearly-timeline-stat-value danger">{totalDowntimeDays}</span>
-            </div>
-            <div className="yearly-timeline-stat">
-              <span className="yearly-timeline-stat-value planned">{plannedCount}</span>
-            </div>
-            <div className="yearly-timeline-stat">
-              <span className="yearly-timeline-stat-value unplanned">{unplannedCount}</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="sa-chart-body yearly-timeline-body">
-          {/* 时间轴主体 */}
-          <div className="yearly-timeline-main">
-            <div className="yearly-timeline-track">
-              <div className="yearly-timeline-axis-line"></div>
-
-              {/* 月份刻度 */}
+      }
+    >
+       <div className="flex items-center h-full w-full px-4 py-8 relative select-none">
+          {/* Track */}
+          <div className="w-full h-1.5 bg-default-100 rounded-full relative">
+              {/* Month Markers */}
               {months.map((month, index) => {
                 const monthPosition = (index / (months.length - 1)) * 100
-
                 return (
                   <div
                     key={month}
-                    className="yearly-timeline-month-marker"
+                    className="absolute top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none"
                     style={{ left: `${monthPosition}%` }}
                   >
-                    <span className="yearly-timeline-month-tick"></span>
-                    <span className="yearly-timeline-month-label">{month}</span>
+                    <div className="w-0.5 h-3 bg-default-300 mb-6"></div>
+                    <span className="text-[10px] text-default-500 absolute top-4 whitespace-nowrap">{month}</span>
                   </div>
                 )
               })}
 
-              {/* 停车事件段 */}
-              <div className="yearly-timeline-events">
-                {events.map((event) => {
+              {/* Events */}
+              {events.map((event) => {
                   const position = getEventPosition(event)
-                  const isHovered = hoveredEvent?.id === event.id
-                  const colorClass = event.type === 'planned' ? 'planned' : 'unplanned'
-
+                  const color = event.type === 'planned' ? 'primary' : 'warning';
+                  const bgClass = event.type === 'planned' ? 'bg-primary' : 'bg-warning';
+                  
                   return (
-                    <div
-                      key={event.id}
-                      className={`yearly-timeline-event ${colorClass} ${isHovered ? 'hovered' : ''}`}
-                      style={{
-                        left: position.left,
-                        width: position.width
-                      }}
-                      onMouseEnter={(e) => handleMouseEnter(event, e)}
-                      onMouseLeave={handleMouseLeave}
-                    ></div>
+                    <Tooltip
+                        key={event.id}
+                        content={
+                            <div className="px-1 py-2">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <Chip size="sm" color={color} variant="flat">{event.type === 'planned' ? '计划停车' : '非计划停车'}</Chip>
+                                    <span className="font-bold text-small">{event.reason}</span>
+                                </div>
+                                <div className="text-tiny text-default-500 mb-1">
+                                    {formatDateRange(event.startDate, event.endDate)} ({getDaysBetween(event.startDate, event.endDate)}天)
+                                </div>
+                                {event.description && (
+                                    <div className="text-tiny text-default-400 max-w-xs">{event.description}</div>
+                                )}
+                            </div>
+                        }
+                    >
+                        <div
+                            className={`absolute h-4 top-1/2 -translate-y-1/2 rounded-sm cursor-pointer transition-all hover:h-6 hover:z-10 shadow-sm ${bgClass}`}
+                            style={{
+                                left: position.left,
+                                width: `max(6px, ${position.width})` // Ensure at least visible
+                            }}
+                        ></div>
+                    </Tooltip>
                   )
-                })}
-              </div>
-            </div>
+              })}
           </div>
-        </div>
-      </div>
-
-      {/* 悬浮提示框 */}
-      {hoveredEvent && (
-        <div
-          className="yearly-timeline-tooltip"
-          style={{
-            left: `${tooltipPosition.x}px`,
-            top: `${tooltipPosition.y - 10}px`
-          }}
-        >
-          <div className="yearly-timeline-tooltip-header">
-            <span className={`yearly-timeline-tooltip-badge ${hoveredEvent.type}`}>
-              {hoveredEvent.type === 'planned' ? '计划停车' : '非计划停车'}
-            </span>
-          </div>
-          <div className="yearly-timeline-tooltip-title">{hoveredEvent.reason}</div>
-          <div className="yearly-timeline-tooltip-date">
-            {formatDateRange(hoveredEvent.startDate, hoveredEvent.endDate)}
-          </div>
-          <div className="yearly-timeline-tooltip-duration">
-            停车时长: {getDaysBetween(hoveredEvent.startDate, hoveredEvent.endDate)} 天
-          </div>
-          {hoveredEvent.description && (
-            <div className="yearly-timeline-tooltip-desc">{hoveredEvent.description}</div>
-          )}
-        </div>
-      )}
-    </div>
+       </div>
+    </DashboardCard>
   )
 }
 

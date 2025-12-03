@@ -1,4 +1,6 @@
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
+import { CircularProgress, Progress } from "@heroui/react";
+import { DashboardCard } from './DashboardCard';
+import React from "react";
 
 interface ProductionRingChartProps {
   currentProduction?: number // 当前产量
@@ -13,145 +15,91 @@ function ProductionRingChart({
   const achievementRate = Math.min((currentProduction / targetProduction) * 100, 100)
   const percentage = achievementRate.toFixed(1)
 
-  // 圆环数据
-  const data = [
-    { name: '已完成', value: achievementRate },
-    { name: '未完成', value: 100 - achievementRate }
-  ]
-
   // 根据达成率设置颜色
-  const getColor = (rate: number): string => {
-    if (rate >= 100) return '#10b981' // 绿色 - 完成
-    if (rate >= 80) return '#3b82f6' // 蓝色 - 良好
-    if (rate >= 60) return '#f59e0b' // 橙色 - 预警
-    return '#ef4444' // 红色 - 不足
+  let color: "success" | "primary" | "warning" | "danger" = "danger";
+  let statusText = "需努力";
+
+  if (achievementRate >= 100) {
+      color = "success";
+      statusText = "已达成";
+  } else if (achievementRate >= 80) {
+      color = "primary";
+      statusText = "良好";
+  } else if (achievementRate >= 60) {
+      color = "warning";
+      statusText = "加油";
   }
-
-  const mainColor = getColor(achievementRate)
-  const COLORS = [mainColor, '#e5e7eb']
-
-  // 获取状态文本
-  const getStatusText = (rate: number): string => {
-    if (rate >= 100) return '已达成'
-    if (rate >= 80) return '良好'
-    if (rate >= 60) return '加油'
-    return '需努力'
-  }
-
-  const statusText = getStatusText(achievementRate)
 
   return (
-    <div className="chart-container">
-      <div className="sa-chart-card">
-        {/* 标题区域 */}
-        <div className="sa-chart-header">
-          <div>
-            <h2 className="sa-chart-title">本月产量达成率</h2>
-          </div>
-        </div>
-
-        <div className="sa-chart-body production-ring-body">
-          {/* 圆环图 */}
-          <div className="ring-chart-container">
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie
-                  data={data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={55}
-                  outerRadius={80}
-                  startAngle={90}
-                  endAngle={-270}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index]} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
-
-            {/* 中心文本 */}
-            <div className="ring-center-text">
-              <div className="ring-percentage" style={{ color: mainColor }}>
-                {percentage}%
-              </div>
-              <div className="ring-status" style={{ color: mainColor }}>
-                {statusText}
-              </div>
-            </div>
-          </div>
-
-          {/* 数据详情 */}
-          <div className="ring-details">
-            <div className="ring-detail-item">
-              <div className="ring-detail-label">
-                <span className="ring-detail-icon" style={{ backgroundColor: mainColor }}></span>
-                当前产量
-              </div>
-              <div className="ring-detail-value" style={{ color: mainColor }}>
-                {currentProduction.toLocaleString('zh-CN')}
-                <span className="ring-detail-unit">吨</span>
-              </div>
-            </div>
-
-            <div className="ring-detail-divider"></div>
-
-            <div className="ring-detail-item">
-              <div className="ring-detail-label">
-                <span className="ring-detail-icon" style={{ backgroundColor: '#94a3b8' }}></span>
-                目标产量
-              </div>
-              <div className="ring-detail-value">
-                {targetProduction.toLocaleString('zh-CN')}
-                <span className="ring-detail-unit">吨</span>
-              </div>
-            </div>
-
-            <div className="ring-detail-divider"></div>
-
-            <div className="ring-detail-item">
-              <div className="ring-detail-label">
-                <span className="ring-detail-icon" style={{ backgroundColor: '#cbd5e1' }}></span>
-                差距
-              </div>
-              <div
-                className="ring-detail-value"
-                style={{
-                  color: currentProduction >= targetProduction ? '#10b981' : '#6b7280'
+    <DashboardCard title="本月产量达成率">
+      <div className="flex flex-col items-center justify-between h-full py-2">
+         {/* Ring Chart with Center Text */}
+         <div className="relative flex items-center justify-center">
+            <CircularProgress
+                classNames={{
+                    svg: "w-40 h-40 drop-shadow-md",
+                    indicator: "stroke-current",
+                    track: "stroke-default-100/50",
                 }}
-              >
-                {currentProduction >= targetProduction
-                  ? `+${(currentProduction - targetProduction).toLocaleString('zh-CN')}`
-                  : (currentProduction - targetProduction).toLocaleString('zh-CN')}
-                <span className="ring-detail-unit">吨</span>
-              </div>
+                value={achievementRate}
+                color={color}
+                strokeWidth={4}
+                showValueLabel={false}
+                aria-label="Production Progress"
+            />
+            <div className="absolute flex flex-col items-center justify-center inset-0">
+                <span className={`text-3xl font-bold text-${color} tracking-tighter`}>{percentage}%</span>
+                <span className={`text-small font-medium text-${color} uppercase tracking-widest`}>{statusText}</span>
             </div>
-          </div>
+         </div>
+         
+         {/* Details Grid */}
+         <div className="grid grid-cols-3 gap-4 w-full text-center">
+             <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-center gap-1">
+                    <span className={`w-1.5 h-1.5 rounded-full bg-${color}`}></span>
+                    <span className="text-[10px] text-default-500 uppercase tracking-wider">当前</span>
+                </div>
+                <p className={`text-lg font-bold text-${color}`}>{currentProduction.toLocaleString()}</p>
+             </div>
+             <div className="flex flex-col gap-1 border-l border-r border-default-100/50 px-2">
+                <div className="flex items-center justify-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-default-400"></span>
+                    <span className="text-[10px] text-default-500 uppercase tracking-wider">目标</span>
+                </div>
+                <p className="text-lg font-bold text-foreground">{targetProduction.toLocaleString()}</p>
+             </div>
+             <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-center gap-1">
+                    <span className={`w-1.5 h-1.5 rounded-full bg-${currentProduction >= targetProduction ? 'success' : 'default-300'}`}></span>
+                    <span className="text-[10px] text-default-500 uppercase tracking-wider">差距</span>
+                </div>
+                <p className={`text-lg font-bold text-${currentProduction >= targetProduction ? 'success' : 'default-500'}`}>
+                    {currentProduction >= targetProduction ? "+" : ""}{(currentProduction - targetProduction).toLocaleString()}
+                </p>
+             </div>
+         </div>
 
-          {/* 进度条 */}
-          <div className="ring-progress-section">
-            <div className="ring-progress-header">
-              <span className="ring-progress-label">完成进度</span>
-              <span className="ring-progress-percentage">{percentage}%</span>
+         {/* Linear Progress */}
+         <div className="w-full px-2">
+            <div className="flex justify-between mb-1">
+                <span className="text-tiny text-default-500 font-medium uppercase tracking-wider">完成进度</span>
+                <span className="text-tiny text-default-500 font-mono">{percentage}%</span>
             </div>
-            <div className="ring-progress-bar">
-              <div
-                className="ring-progress-fill"
-                style={{
-                  width: `${achievementRate}%`,
-                  backgroundColor: mainColor
+            <Progress 
+                size="sm" 
+                radius="full" 
+                value={achievementRate} 
+                color={color}
+                aria-label="Progress Bar"
+                classNames={{
+                    track: "bg-default-100/50",
+                    indicator: "bg-gradient-to-r from-primary to-secondary",
                 }}
-              >
-                <div className="ring-progress-glow"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+            />
+         </div>
       </div>
-    </div>
+    </DashboardCard>
   )
 }
 

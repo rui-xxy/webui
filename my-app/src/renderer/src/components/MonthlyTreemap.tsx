@@ -9,6 +9,7 @@ import {
   Tooltip,
   Cell
 } from 'recharts'
+import { DashboardCard } from './DashboardCard'
 
 type MonthData = {
   month: string
@@ -44,83 +45,79 @@ function MonthlyTreemap(): React.JSX.Element {
   )
 
   return (
-    <div className="chart-container">
-      <div className="sa-chart-card">
-        {/* 标题区域 */}
-        <div className="sa-chart-header">
-          <div>
-            <h2 className="sa-chart-title">月度产量分布</h2>
+    <DashboardCard
+      title="月度产量分布"
+      headerContent={
+          <div className="text-right hidden sm:block">
+             <span className="text-2xl font-bold text-primary font-mono">
+                 {totalYearOutput.toLocaleString('zh-CN')}
+             </span>
+             <span className="text-small text-default-500 ml-1">吨</span>
           </div>
-          <div className="sa-dashboard-summary">
-            <span className="sa-dashboard-summary-value">
-              {totalYearOutput.toLocaleString('zh-CN')} 吨
-            </span>
+      }
+    >
+       <div className="flex flex-col h-full">
+          <div className="flex-1 min-h-0">
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                    data={monthlyData}
+                    layout="vertical"
+                    margin={{ top: 8, right: 24, bottom: 16, left: 0 }}
+                >
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} horizontal={false} />
+                    <XAxis
+                        type="number"
+                        stroke="hsl(var(--heroui-default-500))"
+                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }}
+                        tickLine={false}
+                        axisLine={false}
+                    />
+                    <YAxis
+                        type="category"
+                        dataKey="month"
+                        stroke="hsl(var(--heroui-default-500))"
+                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }}
+                        tickLine={false}
+                        axisLine={false}
+                        width={35}
+                    />
+                    <Tooltip
+                         cursor={{ fill: 'hsl(var(--heroui-default-100))', opacity: 0.5 }}
+                         content={({ active, payload, label }) => {
+                             if (active && payload && payload.length) {
+                             return (
+                                 <div className="bg-background/80 backdrop-blur-md border border-default-200 rounded-lg shadow-lg p-3">
+                                     <p className="text-small font-bold mb-1 text-foreground">{label}</p>
+                                     <p className="text-primary text-small font-mono">
+                                         产量: {payload[0].value} 吨
+                                     </p>
+                                 </div>
+                             );
+                             }
+                             return null;
+                         }}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={16}>
+                        {monthlyData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.isCurrentMonth ? 'hsl(var(--heroui-primary))' : 'hsl(var(--heroui-primary) / 0.5)'} />
+                        ))}
+                    </Bar>
+                </BarChart>
+            </ResponsiveContainer>
           </div>
-        </div>
-
-        <div className="sa-chart-body">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={monthlyData}
-              layout="vertical"
-              margin={{
-                top: 8,
-                right: 24,
-                bottom: 16,
-                left: 0
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis
-                type="number"
-                stroke="#9ca3af"
-                tick={{ fill: '#6b7280', fontSize: 11 }}
-                tickMargin={8}
-                axisLine={{ stroke: '#d1d5db' }}
-              />
-              <YAxis
-                type="category"
-                dataKey="month"
-                stroke="#9ca3af"
-                tick={{ fill: '#6b7280', fontSize: 11 }}
-                tickMargin={8}
-                axisLine={{ stroke: '#d1d5db' }}
-                width={35}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: 6,
-                  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                  padding: '8px 12px'
-                }}
-                labelStyle={{ color: '#374151', fontWeight: 500, fontSize: 12, marginBottom: 4 }}
-                itemStyle={{ fontSize: 11 }}
-                formatter={(value: number) => [`${value} 吨`, '产量']}
-              />
-              <Bar dataKey="value" radius={[0, 4, 4, 0]} maxBarSize={16}>
-                {monthlyData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.isCurrentMonth ? '#3b82f6' : '#60a5fa'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-
-          {/* 图例 */}
-          <div className="bar-chart-legend">
-            <div className="bar-chart-legend-item">
-              <span className="bar-chart-legend-dot current-month"></span>
-              <span className="bar-chart-legend-text">当前月份：{currentMonth}</span>
-            </div>
-            <div className="bar-chart-legend-item">
-              <span className="bar-chart-legend-dot other-month"></span>
-              <span className="bar-chart-legend-text">其他月份</span>
-            </div>
+          
+          <div className="flex gap-4 justify-end items-center mt-2">
+             <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary"></span>
+                <span className="text-tiny text-default-500">当前月份：{currentMonth}</span>
+             </div>
+             <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary/50"></span>
+                <span className="text-tiny text-default-500">其他月份</span>
+             </div>
           </div>
-        </div>
-      </div>
-    </div>
+       </div>
+    </DashboardCard>
   )
 }
 

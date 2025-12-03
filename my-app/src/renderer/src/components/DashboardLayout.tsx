@@ -216,7 +216,7 @@ function DailyReportGrid(): React.JSX.Element {
 
   // 当用户手动调整布局时,保存新的布局
   const handleLayoutChange = useCallback(
-    (layout: Layout[], allLayouts: Record<string, Layout[]>): void => {
+    (_layout: Layout[], allLayouts: Record<string, Layout[]>): void => {
       // 如果是展开/收起触发的布局变化,忽略以防止位置被重置
       if (isExpandingRef.current) {
         return
@@ -257,7 +257,7 @@ function DailyReportGrid(): React.JSX.Element {
 
   return (
     <ResponsiveGridLayout
-      className="layout"
+      className="h-full bg-transparent"
       breakpoints={breakpoints}
       cols={cols}
       layouts={currentLayouts}
@@ -307,7 +307,7 @@ function YearlyReportGrid(): React.JSX.Element {
   const [currentLayouts, setCurrentLayouts] = useState<Record<string, Layout[]>>(initialLayouts)
 
   // 当用户手动调整布局时，保存新的布局
-  const handleLayoutChange = (layout: Layout[], allLayouts: Record<string, Layout[]>): void => {
+  const handleLayoutChange = (_layout: Layout[], allLayouts: Record<string, Layout[]>): void => {
     setCurrentLayouts(allLayouts)
     // 保存到 localStorage
     saveLayoutToStorage(STORAGE_KEY_YEARLY, allLayouts)
@@ -315,7 +315,7 @@ function YearlyReportGrid(): React.JSX.Element {
 
   return (
     <ResponsiveGridLayout
-      className="layout"
+      className="h-full bg-transparent"
       breakpoints={breakpoints}
       cols={cols}
       layouts={currentLayouts}
@@ -345,10 +345,10 @@ function DashboardLayout(): React.JSX.Element {
   }
 
   return (
-    <div className="dashboard-content">
+    <div className="flex flex-col min-h-screen w-full bg-background text-foreground p-4 gap-4 overflow-hidden">
       <Header currentReport={currentReport} onReportChange={handleReportChange} />
 
-      <div className="dashboard-main">
+      <div className="flex-1 w-full relative overflow-y-auto scrollbar-hide">
         {currentReport === 'daily' ? <DailyReportGrid /> : <YearlyReportGrid />}
       </div>
     </div>

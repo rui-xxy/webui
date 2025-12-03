@@ -1,11 +1,11 @@
 import DashboardLayout from './components/DashboardLayout'
-import { NextUIProvider } from '@nextui-org/react'
+import { ThemeProvider } from './providers/theme'
 
 function App(): React.JSX.Element {
   return (
-    <NextUIProvider>
+    <ThemeProvider>
       <DashboardLayout />
-    </NextUIProvider>
+    </ThemeProvider>
   )
 }
 

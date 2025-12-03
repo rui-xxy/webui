@@ -1,14 +1,16 @@
 import { useMemo, useState } from 'react'
-import { createPortal } from 'react-dom'
 import {
   CartesianGrid,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
+  Area,
+  AreaChart
 } from 'recharts'
+import { DashboardCard } from './DashboardCard'
+import { Button, Popover, PopoverTrigger, PopoverContent, Input } from "@heroui/react";
+import { motion } from "framer-motion";
 
 type ProductionPoint = {
   date: string
@@ -16,7 +18,6 @@ type ProductionPoint = {
 }
 
 // 示例数据：硫酸车间每日总产量（单位：吨）
-// 后续可以替换成真实接口数据
 const productionData: ProductionPoint[] = [
   { date: '2025-03-01', output: 320 },
   { date: '2025-03-02', output: 305 },
@@ -53,8 +54,7 @@ const productionData: ProductionPoint[] = [
 function ProductionLineChart(): React.JSX.Element {
   const [startDate, setStartDate] = useState<string>(productionData[0].date)
   const [endDate, setEndDate] = useState<string>(productionData[productionData.length - 1].date)
-  const [showContextMenu, setShowContextMenu] = useState(false)
-  const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 })
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
 
   const filteredData = useMemo(
     () => productionData.filter((point) => point.date >= startDate && point.date <= endDate),
@@ -69,177 +69,126 @@ function ProductionLineChart(): React.JSX.Element {
   const handleResetRange = (): void => {
     setStartDate(productionData[0].date)
     setEndDate(productionData[productionData.length - 1].date)
-    setShowContextMenu(false)
-  }
-
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>): void => {
-    e.preventDefault()
-    e.stopPropagation()
-
-    // 获取点击位置（相对于视口）
-    const clickX = e.clientX
-    const clickY = e.clientY
-
-    // 获取视口尺寸
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    // 右键菜单的实际尺寸
-    const menuWidth = 250
-    const menuHeight = 280
-
-    // 计算菜单位置，优先显示在鼠标右下方
-    let x = clickX + 10 // 右侧偏移10px，避免直接在鼠标下
-    let y = clickY + 10 // 下方偏移10px
-
-    // 如果右侧空间不足，显示在鼠标左侧
-    if (x + menuWidth > viewportWidth - 20) {
-      x = clickX - menuWidth - 10
-    }
-
-    // 如果底部空间不足，显示在鼠标上方
-    if (y + menuHeight > viewportHeight - 20) {
-      y = clickY - menuHeight - 10
-    }
-
-    // 确保不超出左侧和顶部边界
-    x = Math.max(10, x)
-    y = Math.max(10, y)
-
-    setContextMenuPosition({ x, y })
-    setShowContextMenu(true)
-  }
-
-  const handleCloseMenu = (): void => {
-    setShowContextMenu(false)
+    setIsPopoverOpen(false)
   }
 
   return (
-    <>
-      <div className="chart-container">
-        <div className="sa-chart-card" onContextMenu={handleContextMenu}>
-          {/* 标题区域 */}
-          <div className="sa-chart-header">
-            <div>
-              <h2 className="sa-chart-title">产量趋势</h2>
-            </div>
-            <div className="sa-dashboard-summary">
-              <span className="sa-dashboard-summary-value">
-                {totalOutput.toLocaleString('zh-CN')} 吨
-              </span>
-            </div>
+    <DashboardCard
+      title="产量趋势"
+      headerContent={
+          <div className="flex items-center gap-4">
+             <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-right hidden sm:block"
+             >
+                <span className="text-2xl font-bold text-primary font-mono">
+                    {totalOutput.toLocaleString('zh-CN')}
+                </span>
+                <span className="text-small text-default-500 ml-1">吨</span>
+             </motion.div>
+             <Popover 
+                placement="bottom-end" 
+                showArrow 
+                offset={10}
+                isOpen={isPopoverOpen}
+                onOpenChange={setIsPopoverOpen}
+             >
+                <PopoverTrigger>
+                    <Button isIconOnly size="sm" variant="light" aria-label="Settings">
+                        <SettingsIcon />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent>
+                    <div className="px-1 py-2 w-64">
+                        <p className="text-small font-bold text-foreground mb-2">时间范围设置</p>
+                        <div className="flex flex-col gap-3 w-full">
+                            <Input 
+                                type="date" 
+                                label="开始日期" 
+                                value={startDate} 
+                                onChange={(e) => setStartDate(e.target.value)} 
+                                size="sm"
+                                max={endDate}
+                            />
+                            <Input 
+                                type="date" 
+                                label="结束日期" 
+                                value={endDate} 
+                                onChange={(e) => setEndDate(e.target.value)} 
+                                size="sm"
+                                min={startDate}
+                            />
+                            <div className="flex gap-2 justify-end mt-1">
+                                <Button size="sm" color="primary" onPress={handleResetRange}>重置</Button>
+                            </div>
+                        </div>
+                    </div>
+                </PopoverContent>
+             </Popover>
           </div>
-
-          <div className="sa-chart-body">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={filteredData}
-                margin={{
-                  top: 16,
-                  right: 24,
-                  bottom: 24,
-                  left: 0
+      }
+    >
+       <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={filteredData} margin={{ top: 10, right: 10, bottom: 0, left: -20 }}>
+            <defs>
+              <linearGradient id="colorOutput" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--heroui-primary))" stopOpacity={0.3}/>
+                <stop offset="95%" stopColor="hsl(var(--heroui-primary))" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" vertical={false} opacity={0.3} />
+            <XAxis 
+                dataKey="date" 
+                stroke="hsl(var(--heroui-default-500))" 
+                tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+                dy={10}
+                minTickGap={30}
+            />
+            <YAxis 
+                stroke="hsl(var(--heroui-default-500))" 
+                tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+            />
+            <Tooltip
+                cursor={{ stroke: 'hsl(var(--heroui-default-300))', strokeWidth: 1, strokeDasharray: '3 3' }}
+                content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                    return (
+                        <div className="bg-background/80 backdrop-blur-md border border-default-200 rounded-lg shadow-lg p-3">
+                            <p className="text-small font-bold mb-1 text-foreground">{label}</p>
+                            <p className="text-primary text-small font-mono">
+                                产量: {payload[0].value} 吨
+                            </p>
+                        </div>
+                    );
+                    }
+                    return null;
                 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis
-                  dataKey="date"
-                  stroke="#9ca3af"
-                  tick={{ fill: '#6b7280', fontSize: 12 }}
-                  tickMargin={12}
-                  axisLine={{ stroke: '#d1d5db' }}
-                />
-                <YAxis
-                  stroke="#9ca3af"
-                  tick={{ fill: '#6b7280', fontSize: 12 }}
-                  tickMargin={12}
-                  axisLine={{ stroke: '#d1d5db' }}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#ffffff',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: 8,
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-                  }}
-                  labelStyle={{ color: '#374151', fontWeight: 500, marginBottom: 4 }}
-                  itemStyle={{ color: '#3b82f6', fontWeight: 500 }}
-                  formatter={(value: number) => [`${value} 吨`, '产量']}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="output"
-                  stroke="#3b82f6"
-                  strokeWidth={3}
-                  dot={{ r: 4, strokeWidth: 2, stroke: '#3b82f6', fill: '#ffffff' }}
-                  activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#3b82f6' }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
-
-      {/* 右键菜单 - 使用遮罩层 */}
-      {showContextMenu &&
-        createPortal(
-          <>
-            {/* 遮罩层 - 点击关闭菜单 */}
-            <div className="context-menu-overlay" onClick={handleCloseMenu} />
-            <div
-              className="context-menu"
-              style={{
-                top: contextMenuPosition.y,
-                left: contextMenuPosition.x
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="context-menu-content">
-                <div className="context-menu-header">时间范围设置</div>
-
-                <div className="sa-field">
-                  <label className="sa-label" htmlFor="start-date">
-                    开始日期
-                  </label>
-                  <input
-                    id="start-date"
-                    className="sa-input"
-                    type="date"
-                    value={startDate}
-                    max={endDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                  />
-                </div>
-
-                <div className="sa-field">
-                  <label className="sa-label" htmlFor="end-date">
-                    结束日期
-                  </label>
-                  <input
-                    id="end-date"
-                    className="sa-input"
-                    type="date"
-                    value={endDate}
-                    min={startDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                  />
-                </div>
-
-                <div className="context-menu-actions">
-                  <button className="sa-button" type="button" onClick={handleResetRange}>
-                    重置区间
-                  </button>
-                  <button className="sa-button-secondary" type="button" onClick={handleCloseMenu}>
-                    关闭
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>,
-          document.body
-        )}
-    </>
+            />
+            <Area
+                type="monotone"
+                dataKey="output"
+                stroke="hsl(var(--heroui-primary))"
+                strokeWidth={3}
+                fillOpacity={1}
+                fill="url(#colorOutput)"
+                animationDuration={1500}
+            />
+          </AreaChart>
+       </ResponsiveContainer>
+    </DashboardCard>
   )
 }
+
+const SettingsIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M19.4 15C20.0627 14.2031 20.4029 13.1731 20.4029 12.1317C20.4029 11.0903 20.0627 10.0603 19.4 9.26316L20.5547 7.26316C20.8403 6.76842 20.6737 6.13474 20.179 5.84916C19.6843 5.56358 19.0506 5.73016 18.765 6.2249L17.6103 8.2249C16.9307 7.83266 16.1748 7.56842 15.384 7.44211L15.384 5.13158C15.384 4.56 14.9207 4.09684 14.3491 4.09684L11.6509 4.09684C11.0793 4.09684 10.616 4.56 10.616 5.13158L10.616 7.44211C9.82517 7.56842 9.06929 7.83266 8.38971 8.2249L7.235 6.2249C6.94942 5.73016 6.31574 5.56358 5.821 5.84916C5.32626 6.13474 5.15968 6.76842 5.44526 7.26316L6.6 9.26316C5.93729 10.0603 5.59706 11.0903 5.59706 12.1317C5.59706 13.1731 5.93729 14.2031 6.6 15L5.44526 17C5.15968 17.4947 5.32626 18.1284 5.821 18.414C6.31574 18.6996 6.94942 18.533 7.235 18.0383L8.38971 16.0383C9.06929 16.4305 9.82517 16.6947 10.616 16.8211L10.616 19.1316C10.616 19.7032 11.0793 20.1663 11.6509 20.1663L14.3491 20.1663C14.9207 20.1663 15.384 19.7032 15.384 19.1316L15.384 16.8211C16.1748 16.6947 16.9307 16.4305 17.6103 16.0383L18.765 18.0383C19.0506 18.533 19.6843 18.6996 20.179 18.414C20.6737 18.1284 20.8403 17.4947 20.5547 17L19.4 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
 
 export default ProductionLineChart
