@@ -17,7 +17,13 @@
       "Bash(E:\\sql\\bin\\psql.exe:*)",
       "Bash(powershell -Command:*)",
       "Bash($env:PATH -split ';')",
-      "Bash(Where-Object { $_ -match 'E:\\\\sql\\\\bin' })"
+      "Bash(Where-Object { $_ -match 'E:\\\\sql\\\\bin' })",
+      "Bash(echo:*)",
+      "Bash(sqlcmd:*)",
+      "Bash(createdb:*)",
+      "Bash(/e/sql/bin/psql.exe:*)",
+      "Bash(/e/sql/bin/pg_isready.exe:*)",
+      "Bash(PGPASSWORD=123456 /e/sql/bin/psql.exe:*)"
     ],
     "deny": [],
     "ask": []
