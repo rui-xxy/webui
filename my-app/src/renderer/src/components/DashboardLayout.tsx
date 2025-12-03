@@ -1,5 +1,5 @@
 import type React from 'react'
-import { useMemo, useState, useCallback, useRef } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { Responsive, WidthProvider, type Layout } from 'react-grid-layout'
 import Header from './Header'
 import ProductionLineChart from './ProductionLineChart'
@@ -29,10 +29,7 @@ const cols = {
   xxs: 4
 }
 
-const CONSUMPTION_WIDGET_IDS = ['energy-consumption', 'raw-material-consumption'] as const
-type ConsumptionWidgetId = (typeof CONSUMPTION_WIDGET_IDS)[number]
 const MIN_WIDGET_HEIGHT = 2
-const EXPANDED_CONSUMPTION_HEIGHT = 15
 const MIN_CONSUMPTION_HEIGHT = MIN_WIDGET_HEIGHT
 
 const defaultDailyLayout: Layout[] = [
@@ -134,15 +131,6 @@ const saveLayoutToStorage = (key: string, layouts: Record<string, Layout[]>): vo
 }
 
 function DailyReportGrid(): React.JSX.Element {
-  const [expandedConsumptionWidgets, setExpandedConsumptionWidgets] = useState<
-    Set<ConsumptionWidgetId>
-  >(new Set())
-  const isExpandingRef = useRef(false)
-  // 记住每个组件在各个 Breakpoint 下的收起高度
-  const collapsedHeightRef = useRef<Partial<Record<ConsumptionWidgetId, Record<string, number>>>>(
-    {}
-  )
-
   // 使用 useMemo 确保初始化只执行一次,避免重新渲染
   const initialLayouts = useMemo(
     () => loadLayoutFromStorage(STORAGE_KEY_DAILY, defaultDailyLayout),
@@ -151,108 +139,14 @@ function DailyReportGrid(): React.JSX.Element {
 
   const [currentLayouts, setCurrentLayouts] = useState<Record<string, Layout[]>>(initialLayouts)
 
-  // 当展开状态变化时,只调整对应组件的高度,保留用户的位置和宽度设置
-  const handleExpandChange = useCallback(
-    (widgetId: ConsumptionWidgetId, expanded: boolean): void => {
-      setExpandedConsumptionWidgets((prev) => {
-        const next = new Set(prev)
-        if (expanded) {
-          next.add(widgetId)
-        } else {
-          next.delete(widgetId)
-        }
-        return next
-      })
-      isExpandingRef.current = true // 标记正在展开/收起
-
-      setCurrentLayouts((prevLayouts) => {
-        const newLayouts = { ...prevLayouts }
-        Object.keys(newLayouts).forEach((breakpoint) => {
-          newLayouts[breakpoint] = newLayouts[breakpoint].map((item) => {
-            if (item.i === widgetId) {
-              const currentX = item.x
-              const currentY = item.y
-              const currentW = item.w
-              const currentH = item.h
-
-              if (!collapsedHeightRef.current[widgetId]) {
-                collapsedHeightRef.current[widgetId] = {}
-              }
-              const widgetCollapsedHeights = collapsedHeightRef.current[widgetId]!
-
-              if (expanded && widgetCollapsedHeights[breakpoint] == null) {
-                widgetCollapsedHeights[breakpoint] = currentH
-              }
-
-              const collapsedHeight = widgetCollapsedHeights[breakpoint] ?? MIN_CONSUMPTION_HEIGHT
-
-              const targetHeight = expanded ? EXPANDED_CONSUMPTION_HEIGHT : collapsedHeight
-
-              return {
-                ...item,
-                x: currentX,
-                y: currentY,
-                w: currentW,
-                h: targetHeight,
-                minH: MIN_CONSUMPTION_HEIGHT,
-                static: false
-              }
-            }
-            return item
-          })
-        })
-        // 立即保存,防止被后续的 onLayoutChange 覆盖
-        saveLayoutToStorage(STORAGE_KEY_DAILY, newLayouts)
-        return newLayouts
-      })
-
-      // 延迟重置标志,等待 react-grid-layout 完成布局更新
-      setTimeout(() => {
-        isExpandingRef.current = false
-      }, 200)
-    },
-    []
-  )
-
   // 当用户手动调整布局时,保存新的布局
   const handleLayoutChange = useCallback(
     (_layout: Layout[], allLayouts: Record<string, Layout[]>): void => {
-      // 如果是展开/收起触发的布局变化,忽略以防止位置被重置
-      if (isExpandingRef.current) {
-        return
-      }
-
-      // 更新收起状态的高度记录,每个组件单独处理
-      Object.keys(allLayouts).forEach((breakpoint) => {
-        CONSUMPTION_WIDGET_IDS.forEach((widgetId) => {
-          if (expandedConsumptionWidgets.has(widgetId)) {
-            return
-          }
-          const item = allLayouts[breakpoint].find((i) => i.i === widgetId)
-          if (item && item.h < EXPANDED_CONSUMPTION_HEIGHT) {
-            if (!collapsedHeightRef.current[widgetId]) {
-              collapsedHeightRef.current[widgetId] = {}
-            }
-            const widgetCollapsedHeights = collapsedHeightRef.current[widgetId]!
-            widgetCollapsedHeights[breakpoint] = item.h
-          }
-        })
-      })
-
       setCurrentLayouts(allLayouts)
       // 保存到 localStorage
       saveLayoutToStorage(STORAGE_KEY_DAILY, allLayouts)
     },
-    [expandedConsumptionWidgets]
-  )
-
-  const handleEnergyExpandChange = useCallback(
-    (expanded: boolean) => handleExpandChange('energy-consumption', expanded),
-    [handleExpandChange]
-  )
-  const handleRawExpandChange = useCallback(
-    (expanded: boolean) => handleExpandChange('raw-material-consumption', expanded),
-    [handleExpandChange]
+    []
   )
 
   return (
@@ -279,10 +173,10 @@ function DailyReportGrid(): React.JSX.Element {
         <StorageTanks />
       </div>
       <div key="energy-consumption" style={{ display: 'flex', flexDirection: 'column' }}>
-        <EnergyConsumptionMonitor onExpandChange={handleEnergyExpandChange} />
+        <EnergyConsumptionMonitor />
       </div>
       <div key="raw-material-consumption" style={{ display: 'flex', flexDirection: 'column' }}>
-        <RawMaterialConsumptionMonitor onExpandChange={handleRawExpandChange} />
+        <RawMaterialConsumptionMonitor />
       </div>
       <div key="production-ring-chart" style={{ display: 'flex', flexDirection: 'column' }}>
         <ProductionRingChart />

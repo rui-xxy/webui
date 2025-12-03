@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from 'react'
+import { useState } from 'react'
 import {
   BarChart,
   Bar,
@@ -7,18 +7,55 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer
 } from 'recharts'
-import { Card, CardBody, Tabs, Tab, Chip, Divider } from "@heroui/react";
+import { 
+  Tabs, 
+  Tab, 
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  Button,
+  useDisclosure
+} from "@heroui/react";
 import { DashboardCard } from './DashboardCard';
 
 type ConsumptionType = 'water' | 'electricity' | 'hydrogen-peroxide' | 'pyrite'
 
+// Icon components
+const Icons = {
+  water: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2.69l5.74 9.94c.95 1.66.95 3.71 0 5.37a6.5 6.5 0 1 1-11.48 0c-.95-1.66-.95-3.71 0-5.37L12 2.69z" />
+    </svg>
+  ),
+  electricity: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  ),
+  'hydrogen-peroxide': (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M10 2v7.31" />
+      <path d="M14 2v7.31" />
+      <path d="M8.5 2h7" />
+      <path d="M14 9.3a6.5 6.5 0 1 1-4 0" />
+    </svg>
+  ),
+  pyrite: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </svg>
+  )
+}
+
 type ConsumptionItem = {
   id: ConsumptionType
   name: string
-  icon: string
   unit: string
   today: number
   standard: number // 标准值
@@ -26,16 +63,13 @@ type ConsumptionItem = {
   monthData: { date: string; value: number }[]
 }
 
-interface ConsumptionMonitorProps {
-  onExpandChange?: (expanded: boolean) => void
-}
+interface ConsumptionMonitorProps {}
 
 // 示例数据
 const consumptionData: ConsumptionItem[] = [
   {
     id: 'water',
     name: '水',
-    icon: '💧',
     unit: '吨',
     today: 245.8,
     standard: 250,
@@ -58,7 +92,6 @@ const consumptionData: ConsumptionItem[] = [
   {
     id: 'electricity',
     name: '电',
-    icon: '⚡',
     unit: 'kWh',
     today: 3850,
     standard: 4000,
@@ -81,7 +114,6 @@ const consumptionData: ConsumptionItem[] = [
   {
     id: 'hydrogen-peroxide',
     name: '双氧水',
-    icon: '🧪',
     unit: 'kg',
     today: 185.5,
     standard: 200,
@@ -104,7 +136,6 @@ const consumptionData: ConsumptionItem[] = [
   {
     id: 'pyrite',
     name: '硫铁矿',
-    icon: '⛏️',
     unit: '吨',
     today: 42.3,
     standard: 45,
@@ -138,221 +169,279 @@ const rawMaterialConsumptionItems = consumptionData.filter((item) =>
 // 获取状态配置
 const getStatusConfig = (current: number, standard: number) => {
   const ratio = current / standard
-  if (ratio <= 0.8) return { color: '#10b981', semantic: 'success' as const, text: '优秀' }
-  if (ratio <= 1.0) return { color: '#3b82f6', semantic: 'primary' as const, text: '正常' }
-  if (ratio <= 1.1) return { color: '#f59e0b', semantic: 'warning' as const, text: '预警' }
-  return { color: '#ef4444', semantic: 'danger' as const, text: '超标' }
+  if (ratio <= 0.8) return { color: '#10b981', semantic: 'success' as const, text: '优秀', bg: 'bg-success/10', textClass: 'text-success' }
+  if (ratio <= 1.0) return { color: '#3b82f6', semantic: 'primary' as const, text: '正常', bg: 'bg-primary/10', textClass: 'text-primary' }
+  if (ratio <= 1.1) return { color: '#f59e0b', semantic: 'warning' as const, text: '预警', bg: 'bg-warning/10', textClass: 'text-warning' }
+  return { color: '#ef4444', semantic: 'danger' as const, text: '超标', bg: 'bg-danger/10', textClass: 'text-danger' }
 }
 
 // 单个消耗卡片
 function ConsumptionCard({
   item,
-  onExpandChange
+  onClick
 }: {
   item: ConsumptionItem
-  onExpandChange?: (expanded: boolean) => void
+  onClick: () => void
 }): React.JSX.Element {
-  const [expanded, setExpanded] = useState(false)
-  const [viewMode, setViewMode] = useState<'week' | 'month'>('week')
-
   const statusConfig = getStatusConfig(item.today, item.standard)
   const percentage = ((item.today / item.standard) * 100).toFixed(1)
 
-  const handleCardClick = (): void => {
-    const newExpanded = !expanded
-    setExpanded(newExpanded)
-    onExpandChange?.(newExpanded)
-  }
-
   return (
-    <Card 
-        isPressable 
-        onPress={handleCardClick}
-        className={`w-full transition-all duration-300 border-none bg-content2/50 hover:bg-content2/80`}
-        shadow="none"
+    <div
+        onClick={onClick}
+        className="group relative w-full overflow-hidden rounded-2xl bg-default-50 border border-default-200 hover:border-default-300 transition-all duration-300 cursor-pointer"
     >
-      <CardBody className="p-3 overflow-hidden">
-        {/* Main Info Row */}
-        <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3">
-                <div className="text-2xl">{item.icon}</div>
-                <div>
-                    <p className="text-small font-medium text-default-500">{item.name}</p>
-                    <div className="flex items-baseline gap-1">
-                        <span className={`text-lg font-bold text-${statusConfig.semantic}`}>{item.today.toLocaleString('zh-CN')}</span>
-                        <span className="text-tiny text-default-400">{item.unit}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="flex flex-col items-end gap-1">
-                <Chip size="sm" color={statusConfig.semantic} variant="flat">{statusConfig.text}</Chip>
-                <span className="text-tiny text-default-400">{percentage}% 标准</span>
-            </div>
-        </div>
+      {/* Hover Effect */}
+      <div className={`absolute inset-0 ${statusConfig.bg} opacity-0 group-hover:opacity-50 transition-opacity duration-300`} />
 
-        {/* Expanded Content */}
-        {expanded && (
-            <div className="mt-4 w-full animate-appearance-in cursor-default" onClick={(e) => e.stopPropagation()}>
-                <Divider className="my-2" />
-                <div className="flex justify-between items-center mb-2">
-                    <Tabs 
-                        size="sm" 
-                        variant="light" 
-                        aria-label="View Mode" 
-                        selectedKey={viewMode} 
-                        onSelectionChange={(k) => setViewMode(k as any)}
-                        color="primary"
-                    >
-                        <Tab key="week" title="本周趋势" />
-                        <Tab key="month" title="本月对比" />
-                    </Tabs>
-                </div>
-                
-                <div className="h-[200px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                    {viewMode === 'week' ? (
-                    <LineChart data={item.weekData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} />
-                        <XAxis dataKey="date" tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
-                        <YAxis tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: 'hsl(var(--heroui-background))',
-                                border: '1px solid hsl(var(--heroui-default-200))',
-                                borderRadius: 8,
-                                fontSize: 12
-                            }}
-                        />
-                        <Line
-                        type="monotone"
-                        dataKey="value"
-                        stroke={statusConfig.color}
-                        strokeWidth={2}
-                        dot={{ fill: statusConfig.color, r: 4 }}
-                        activeDot={{ r: 6 }}
-                        />
-                    </LineChart>
-                    ) : (
-                    <BarChart data={item.monthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} />
-                        <XAxis dataKey="date" tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
-                        <YAxis tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 11 }} tickLine={false} axisLine={false} />
-                        <Tooltip
-                            contentStyle={{
-                                backgroundColor: 'hsl(var(--heroui-background))',
-                                border: '1px solid hsl(var(--heroui-default-200))',
-                                borderRadius: 8,
-                                fontSize: 12
-                            }}
-                        />
-                        <Bar dataKey="value" fill={statusConfig.color} radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                    )}
-                </ResponsiveContainer>
-                </div>
-
-                {/* Stats */}
-                <div className="flex justify-between mt-2 bg-default-50 p-2 rounded-lg">
-                    <div className="flex flex-col">
-                        <span className="text-tiny text-default-500">平均值</span>
-                        <span className="text-small font-medium">
-                            {(
-                                (viewMode === 'week' ? item.weekData : item.monthData).reduce(
-                                (sum, d) => sum + d.value,
-                                0
-                                ) / (viewMode === 'week' ? 7 : 4)
-                            ).toFixed(1)}{' '}
-                            {item.unit}
-                        </span>
-                    </div>
-                    <div className="flex flex-col items-end">
-                        <span className="text-tiny text-default-500">标准值</span>
-                        <span className="text-small font-medium">
-                            {item.standard} {item.unit}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        )}
-      </CardBody>
-    </Card>
+      <div className="relative p-4 flex items-center justify-start">
+          <div className="flex items-center gap-4">
+              <div className={`p-3 rounded-xl ${statusConfig.bg} ${statusConfig.textClass} group-hover:scale-110 transition-transform duration-300`}>
+                  {Icons[item.id]}
+              </div>
+              <div className="flex flex-col gap-1">
+                  <p className="text-small font-medium text-default-500">{item.name}</p>
+                  <div className="flex items-baseline gap-1">
+                      <span className={`text-2xl font-bold text-foreground`}>
+                          {item.today.toLocaleString('zh-CN')}
+                      </span>
+                      <span className="text-tiny text-default-400">{item.unit}</span>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      {/* Progress Bar */}
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-default-100">
+          <div 
+              className={`h-full ${statusConfig.bg.replace('/10', '')} transition-all duration-500`} 
+              style={{ width: `${Math.min(Number(percentage), 100)}%`, backgroundColor: statusConfig.color }}
+          />
+      </div>
+    </div>
   )
-}
-
-const useConsumptionExpansion = (
-  onExpandChange?: (expanded: boolean) => void
-): ((id: ConsumptionType, expanded: boolean) => void) => {
-  const [expandedCards, setExpandedCards] = useState<Set<ConsumptionType>>(new Set())
-  const prevHasExpandedRef = useRef(expandedCards.size > 0)
-
-  useEffect(() => {
-    const hasExpanded = expandedCards.size > 0
-    if (prevHasExpandedRef.current === hasExpanded) {
-      return
-    }
-    prevHasExpandedRef.current = hasExpanded
-    onExpandChange?.(hasExpanded)
-  }, [expandedCards, onExpandChange])
-
-  return useCallback((id: ConsumptionType, expanded: boolean) => {
-    setExpandedCards((prev) => {
-      const newSet = new Set(prev)
-      if (expanded) {
-        newSet.add(id)
-      } else {
-        newSet.delete(id)
-      }
-      return newSet
-    })
-  }, [])
 }
 
 function BaseConsumptionMonitor({
   title,
   items,
-  onExpandChange
 }: {
   title: string
   items: ConsumptionItem[]
-  onExpandChange?: (expanded: boolean) => void
 }): React.JSX.Element {
-  const handleCardExpandChange = useConsumptionExpansion(onExpandChange)
+  const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
+  const [selectedItem, setSelectedItem] = useState<ConsumptionItem | null>(null);
+  const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
+
+  const handleCardClick = (item: ConsumptionItem) => {
+    setSelectedItem(item);
+    onOpen();
+  };
+
+  const handleClose = () => {
+    setSelectedItem(null);
+    onClose();
+  };
+
+  const selectedStatusConfig = selectedItem ? getStatusConfig(selectedItem.today, selectedItem.standard) : null;
 
   return (
-    <DashboardCard title={title}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full content-start">
-          {items.map((item) => (
-            <ConsumptionCard
-              key={item.id}
-              item={item}
-              onExpandChange={(expanded) => handleCardExpandChange(item.id, expanded)}
-            />
-          ))}
-        </div>
-    </DashboardCard>
+    <>
+        <DashboardCard title={title}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full content-start p-1">
+            {items.map((item) => (
+                <ConsumptionCard
+                key={item.id}
+                item={item}
+                onClick={() => handleCardClick(item)}
+                />
+            ))}
+            </div>
+        </DashboardCard>
+
+        <Modal 
+            isOpen={isOpen} 
+            onOpenChange={onOpenChange}
+            size="2xl"
+            placement="center"
+            hideCloseButton
+            backdrop="blur"
+            classNames={{
+                base: "bg-background/95 backdrop-blur-2xl border border-default-100/60 shadow-2xl",
+                header: "border-b border-default-100/60",
+                body: "py-6",
+            }}
+            motionProps={{
+              variants: {
+                enter: { opacity: 1, y: 0, scale: 1 },
+                exit: { opacity: 0, y: 30, scale: 0.96 }
+              },
+              transition: { duration: 0.25, ease: 'easeOut' }
+            }}
+            onClose={handleClose}
+        >
+            <ModalContent>
+                {(close) => (
+                    <>
+                        <ModalHeader className="flex gap-3 items-center w-full">
+                            {selectedItem && (
+                                <>
+                                    <div className={`p-2 rounded-lg ${selectedStatusConfig?.bg} ${selectedStatusConfig?.textClass}`}>
+                                        {Icons[selectedItem.id]}
+                                    </div>
+                                    <div className="flex flex-col gap-0.5">
+                                        <span className="text-lg font-bold">{selectedItem.name}消耗详情</span>
+                                        <span className="text-tiny text-default-500">
+                                            当前: {selectedItem.today} {selectedItem.unit} / 标准: {selectedItem.standard} {selectedItem.unit}
+                                        </span>
+                                    </div>
+                                </>
+                            )}
+                        </ModalHeader>
+                        <ModalBody>
+                            {selectedItem && selectedStatusConfig && (
+                                <div className="flex flex-col gap-6 w-full max-w-3xl mx-auto">
+                                    <div className="flex flex-col gap-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="flex flex-col p-3 rounded-xl bg-content1/40 border border-default-100/60">
+                                                <span className="text-tiny text-default-500">今日消耗</span>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className={`text-xl font-bold ${selectedStatusConfig.textClass}`}>
+                                                        {selectedItem.today}
+                                                    </span>
+                                                    <span className="text-tiny text-default-400">{selectedItem.unit}</span>
+                                                </div>
+                                            </div>
+                                            <div className="flex flex-col p-3 rounded-xl bg-content1/40 border border-default-100/60">
+                                                <span className="text-tiny text-default-500">标准限额</span>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-xl font-bold text-default-700">
+                                                        {selectedItem.standard}
+                                                    </span>
+                                                    <span className="text-tiny text-default-400">{selectedItem.unit}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-end">
+                                            <Tabs 
+                                                size="sm" 
+                                                aria-label="View Mode" 
+                                                selectedKey={viewMode} 
+                                                onSelectionChange={(k) => setViewMode(k as any)}
+                                                color={selectedStatusConfig.semantic}
+                                                variant="bordered"
+                                            >
+                                                <Tab key="week" title="本周趋势" />
+                                                <Tab key="month" title="本月对比" />
+                                            </Tabs>
+                                        </div>
+                                    </div>
+
+                                    <div className="h-[260px] w-full bg-content1/40 rounded-2xl p-4 border border-default-100/60">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            {viewMode === 'week' ? (
+                                                <LineChart data={selectedItem.weekData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} vertical={false} />
+                                                    <XAxis 
+                                                        dataKey="date" 
+                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
+                                                        tickLine={false} 
+                                                        axisLine={false} 
+                                                        dy={10}
+                                                    />
+                                                    <YAxis 
+                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
+                                                        tickLine={false} 
+                                                        axisLine={false} 
+                                                        dx={-10}
+                                                    />
+                                                    <RechartsTooltip
+                                                        contentStyle={{
+                                                            backgroundColor: 'hsl(var(--heroui-background))',
+                                                            border: '1px solid hsl(var(--heroui-default-200))',
+                                                            borderRadius: 12,
+                                                            fontSize: 12,
+                                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                        }}
+                                                        cursor={{ stroke: selectedStatusConfig.color, strokeWidth: 1, strokeDasharray: '5 5' }}
+                                                    />
+                                                    <Line
+                                                        type="monotone"
+                                                        dataKey="value"
+                                                        stroke={selectedStatusConfig.color}
+                                                        strokeWidth={3}
+                                                        dot={{ fill: 'hsl(var(--heroui-background))', stroke: selectedStatusConfig.color, strokeWidth: 2, r: 4 }}
+                                                        activeDot={{ r: 6, fill: selectedStatusConfig.color }}
+                                                    />
+                                                </LineChart>
+                                            ) : (
+                                                <BarChart data={selectedItem.monthData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--heroui-default-200))" opacity={0.5} vertical={false} />
+                                                    <XAxis 
+                                                        dataKey="date" 
+                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
+                                                        tickLine={false} 
+                                                        axisLine={false}
+                                                        dy={10}
+                                                    />
+                                                    <YAxis 
+                                                        tick={{ fill: 'hsl(var(--heroui-default-500))', fontSize: 12 }} 
+                                                        tickLine={false} 
+                                                        axisLine={false}
+                                                        dx={-10}
+                                                    />
+                                                    <RechartsTooltip
+                                                        cursor={{ fill: 'hsl(var(--heroui-default-100))', opacity: 0.5 }}
+                                                        contentStyle={{
+                                                            backgroundColor: 'hsl(var(--heroui-background))',
+                                                            border: '1px solid hsl(var(--heroui-default-200))',
+                                                            borderRadius: 12,
+                                                            fontSize: 12,
+                                                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                                                        }}
+                                                    />
+                                                    <Bar 
+                                                        dataKey="value" 
+                                                        fill={selectedStatusConfig.color} 
+                                                        radius={[6, 6, 0, 0]} 
+                                                        barSize={40}
+                                                    />
+                                                </BarChart>
+                                            )}
+                                        </ResponsiveContainer>
+                                    </div>
+
+                                    <div className="flex justify-end">
+                                        <Button color="danger" variant="light" onPress={close}>
+                                            关闭
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </ModalBody>
+                    </>
+                )}
+            </ModalContent>
+        </Modal>
+    </>
   )
 }
 
-export function EnergyConsumptionMonitor({
-  onExpandChange
-}: ConsumptionMonitorProps): React.JSX.Element {
+export function EnergyConsumptionMonitor({}: ConsumptionMonitorProps): React.JSX.Element {
   return (
     <BaseConsumptionMonitor
       title="能耗"
       items={energyConsumptionItems}
-      onExpandChange={onExpandChange}
     />
   )
 }
 
-export function RawMaterialConsumptionMonitor({
-  onExpandChange
-}: ConsumptionMonitorProps): React.JSX.Element {
+export function RawMaterialConsumptionMonitor({}: ConsumptionMonitorProps): React.JSX.Element {
   return (
     <BaseConsumptionMonitor
       title="原辅料消耗"
       items={rawMaterialConsumptionItems}
-      onExpandChange={onExpandChange}
     />
   )
 }
