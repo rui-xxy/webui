@@ -1,9 +1,9 @@
 import type { JSX } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ThemeProvider } from './providers/theme'
 import { Sidebar } from './components/Sidebar'
 import { Header } from './components/Header'
-import { Responsive, WidthProvider } from 'react-grid-layout'
+import { Responsive, WidthProvider, type Layout, type Layouts } from 'react-grid-layout'
 import { ProductionRate } from './components/ProductionRate'
 import { TaskOverview } from './components/TaskOverview'
 
@@ -11,7 +11,15 @@ import { TaskOverview } from './components/TaskOverview'
 import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
-const ResponsiveGridLayout = WidthProvider(Responsive)
+const ResponsiveGridLayout = WidthProvider(Responsive);
+const LAYOUT_STORAGE_KEY = 'dashboard-layouts';
+
+const defaultLayouts: Layouts = {
+  lg: [
+    { i: 'production-rate', x: 0, y: 0, w: 4, h: 5, minW: 1, minH: 2 },
+    { i: 'task-overview', x: 4, y: 0, w: 5, h: 5, minW: 1, minH: 2 }
+  ]
+};
 
 function App(): JSX.Element {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -21,12 +29,35 @@ function App(): JSX.Element {
   };
 
   // Define the initial layout for the dashboard
-  const [layouts, setLayouts] = useState({
-    lg: [
-      { i: 'production-rate', x: 0, y: 0, w: 4, h: 5, minW: 3, minH: 3 },
-      { i: 'task-overview', x: 4, y: 0, w: 5, h: 5, minW: 4, minH: 3 }
-    ]
+  const [layouts, setLayouts] = useState<Layouts>(() => {
+    if (typeof window === 'undefined') {
+      return defaultLayouts;
+    }
+
+    try {
+      const stored = window.localStorage.getItem(LAYOUT_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : defaultLayouts;
+    } catch (error) {
+      console.warn('Failed to parse saved layouts, falling back to defaults', error);
+      return defaultLayouts;
+    }
   });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(LAYOUT_STORAGE_KEY, JSON.stringify(layouts));
+    } catch (error) {
+      console.warn('Failed to persist layouts', error);
+    }
+  }, [layouts]);
+
+  const handleLayoutChange = (_currentLayout: Layout[], allLayouts: Layouts) => {
+    setLayouts(allLayouts);
+  };
 
   return (
     <ThemeProvider>
@@ -52,7 +83,7 @@ function App(): JSX.Element {
                  cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
                  rowHeight={60}
                  draggableHandle=".drag-handle"
-                 onLayoutChange={(currentLayout, allLayouts) => setLayouts(allLayouts)}
+                 onLayoutChange={handleLayoutChange}
                  margin={[16, 16]}
                >
                  <div key="production-rate" className="relative group h-full">
