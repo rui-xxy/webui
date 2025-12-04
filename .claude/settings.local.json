@@ -27,7 +27,8 @@
       "Bash(npm install:*)",
       "Bash(cmd:*)",
       "Bash(cat:*)",
-      "Bash(/E/sql/bin/psql.exe:*)"
+      "Bash(/E/sql/bin/psql.exe:*)",
+      "Bash(set:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,11 +1,11 @@
-import { HeroUIProvider } from "@heroui/react";
+import type { JSX, ReactNode } from 'react'
+import { HeroUIProvider, ToastProvider } from '@heroui/react'
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({ children }: { children: ReactNode }): JSX.Element {
   return (
     <HeroUIProvider locale="zh-CN">
-      <main className="nerv text-foreground bg-background min-h-screen">
-        {children}
-      </main>
+      <main className="min-h-screen bg-background text-foreground">{children}</main>
+      <ToastProvider placement="bottom-right" />
     </HeroUIProvider>
-  );
+  )
 }

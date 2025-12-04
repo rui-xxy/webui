@@ -1,4 +1,3 @@
-import './assets/main.css'
 import './globals.css'
 
 import { StrictMode } from 'react'

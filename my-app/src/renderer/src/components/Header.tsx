@@ -1,100 +1,42 @@
-import { Card, CardBody, Tab, Tabs } from "@heroui/react";
-import React from "react";
+import { Button, Badge } from "@heroui/react";
+import { Bell, Search, Calendar } from "lucide-react";
 
-type ReportType = "daily" | "yearly";
-
-interface HeaderProps {
-  currentReport: ReportType;
-  onReportChange: (type: ReportType) => void;
-}
-
-function Header({ currentReport, onReportChange }: HeaderProps): React.JSX.Element {
+export const Header = () => {
   return (
-    <Card className="w-full bg-white/70 backdrop-blur-2xl border-none shadow-sm mb-6 rounded-[24px]">
-      <CardBody className="flex flex-row items-center justify-between px-8 py-6 overflow-hidden">
-        {/* Left: Title */}
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary tracking-tight">
-            硫酸车间报表
-          </h1>
-          <div className="text-[11px] text-default-400 tracking-[0.3em] uppercase font-bold">
-            Sulfuric Acid Workshop Dashboard
-          </div>
+    <header className="h-16 bg-white dark:bg-default-50 border-b border-default-200 flex items-center justify-between px-6 sticky top-0 z-40">
+      {/* Left Side - Title/Breadcrumbs */}
+      <div className="flex flex-col">
+        <h2 className="text-xl font-bold text-default-900">每日生产报表</h2>
+        <span className="text-xs text-default-500">可视化看板 / 生产概览</span>
+      </div>
+
+      {/* Right Side - Actions */}
+      <div className="flex items-center gap-4">
+        {/* Search Bar Placeholder */}
+        <div className="hidden md:flex items-center bg-default-100 rounded-full px-4 py-1.5 border border-transparent focus-within:border-primary focus-within:bg-white transition-all w-64">
+          <Search size={16} className="text-default-400" />
+          <input 
+            type="text" 
+            placeholder="搜索报表、指标..." 
+            className="bg-transparent border-none outline-none text-sm ml-2 w-full text-default-700 placeholder:text-default-400"
+          />
         </div>
 
-        {/* Right: Controls */}
-        <Tabs
-          aria-label="Report Type"
-          selectedKey={currentReport}
-          onSelectionChange={(key) => onReportChange(key as ReportType)}
-          color="primary"
-          variant="solid"
-          radius="full"
-          classNames={{
-            tabList: "bg-default-100/50 border border-default-200/50",
-            cursor: "bg-gradient-to-r from-primary to-secondary shadow-lg",
-            tabContent: "group-data-[selected=true]:text-primary-foreground font-medium",
-          }}
-        >
-          <Tab
-            key="daily"
-            title={
-              <div className="flex items-center space-x-2">
-                <SunIcon />
-                <span>日报</span>
-              </div>
-            }
-          />
-          <Tab
-            key="yearly"
-            title={
-              <div className="flex items-center space-x-2">
-                <StarIcon />
-                <span>年报</span>
-              </div>
-            }
-          />
-        </Tabs>
-      </CardBody>
-    </Card>
+        {/* Date Display */}
+        <div className="hidden md:flex items-center gap-2 text-default-600 bg-default-50 px-3 py-1.5 rounded-lg border border-default-200">
+          <Calendar size={16} />
+          <span className="text-sm font-medium">2025年12月04日</span>
+        </div>
+
+        <div className="h-6 w-px bg-default-200 mx-1"></div>
+
+        {/* Notifications */}
+        <Button isIconOnly variant="light" radius="full" className="text-default-500">
+          <Badge content="5" color="danger" shape="circle" size="sm">
+            <Bell size={20} />
+          </Badge>
+        </Button>
+      </div>
+    </header>
   );
-}
-
-// Icon components
-const SunIcon = () => (
-  <svg
-    className="w-4 h-4"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="5"></circle>
-    <line x1="12" y1="1" x2="12" y2="3"></line>
-    <line x1="12" y1="21" x2="12" y2="23"></line>
-    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-    <line x1="1" y1="12" x2="3" y2="12"></line>
-    <line x1="21" y1="12" x2="23" y2="12"></line>
-    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-  </svg>
-);
-
-const StarIcon = () => (
-  <svg
-    className="w-4 h-4"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-  </svg>
-);
-
-export default Header;
+};
