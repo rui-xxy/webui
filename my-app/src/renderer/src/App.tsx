@@ -9,6 +9,9 @@ import { TaskOverview } from './components/TaskOverview'
 import { ProductTrend } from './components/ProductTrend'
 import { EquipmentMonitor } from './components/EquipmentMonitor'
 import { TankInventory } from './components/TankInventory'
+import { ElectricConsumption } from './components/ElectricConsumption'
+import { WaterConsumption } from './components/WaterConsumption'
+import { HydrogenPeroxideConsumption } from './components/HydrogenPeroxideConsumption'
 
 // Import react-grid-layout styles
 import 'react-grid-layout/css/styles.css'
@@ -22,8 +25,13 @@ const defaultLayouts: Layouts = {
     { i: 'production-rate', x: 0, y: 0, w: 4, h: 5, minW: 3, minH: 3 },
     { i: 'task-overview', x: 4, y: 0, w: 5, h: 5, minW: 4, minH: 3 },
     { i: 'equipment-monitor', x: 9, y: 0, w: 3, h: 5, minW: 3, minH: 3 },
-    { i: 'product-trend', x: 0, y: 5, w: 9, h: 6, minW: 6, minH: 4 },
-    { i: 'tank-inventory', x: 9, y: 5, w: 3, h: 6, minW: 3, minH: 4 }
+    // New Consumption Cards Row
+    { i: 'electric-consumption', x: 0, y: 5, w: 4, h: 3, minW: 2, minH: 3 },
+    { i: 'water-consumption', x: 4, y: 5, w: 4, h: 3, minW: 2, minH: 3 },
+    { i: 'peroxide-consumption', x: 8, y: 5, w: 4, h: 3, minW: 2, minH: 3 },
+    // Shifted original bottom row
+    { i: 'product-trend', x: 0, y: 8, w: 9, h: 6, minW: 6, minH: 4 },
+    { i: 'tank-inventory', x: 9, y: 8, w: 3, h: 6, minW: 3, minH: 4 }
   ]
 };
 
@@ -127,6 +135,27 @@ function App(): JSX.Element {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
                     </div>
                     <EquipmentMonitor />
+                  </div>
+
+                  <div key="electric-consumption" className="relative group h-full">
+                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
+                    </div>
+                    <ElectricConsumption />
+                  </div>
+
+                  <div key="water-consumption" className="relative group h-full">
+                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
+                    </div>
+                    <WaterConsumption />
+                  </div>
+
+                  <div key="peroxide-consumption" className="relative group h-full">
+                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
+                    </div>
+                    <HydrogenPeroxideConsumption />
                   </div>
 
                   <div key="product-trend" className="relative group h-full">
