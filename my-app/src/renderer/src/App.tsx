@@ -6,6 +6,9 @@ import { Header } from './components/Header'
 import { Responsive, WidthProvider, type Layout, type Layouts } from 'react-grid-layout'
 import { ProductionRate } from './components/ProductionRate'
 import { TaskOverview } from './components/TaskOverview'
+import { ProductTrend } from './components/ProductTrend'
+import { EquipmentMonitor } from './components/EquipmentMonitor'
+import { TankInventory } from './components/TankInventory'
 
 // Import react-grid-layout styles
 import 'react-grid-layout/css/styles.css'
@@ -16,9 +19,24 @@ const LAYOUT_STORAGE_KEY = 'dashboard-layouts';
 
 const defaultLayouts: Layouts = {
   lg: [
-    { i: 'production-rate', x: 0, y: 0, w: 4, h: 5, minW: 1, minH: 2 },
-    { i: 'task-overview', x: 4, y: 0, w: 5, h: 5, minW: 1, minH: 2 }
+    { i: 'production-rate', x: 0, y: 0, w: 4, h: 5, minW: 3, minH: 3 },
+    { i: 'task-overview', x: 4, y: 0, w: 5, h: 5, minW: 4, minH: 3 },
+    { i: 'equipment-monitor', x: 9, y: 0, w: 3, h: 5, minW: 3, minH: 3 },
+    { i: 'product-trend', x: 0, y: 5, w: 9, h: 6, minW: 6, minH: 4 },
+    { i: 'tank-inventory', x: 9, y: 5, w: 3, h: 6, minW: 3, minH: 4 }
   ]
+};
+
+const mergeLayoutsWithDefaults = (saved?: Layouts): Layouts => {
+  const merged: Layouts = { ...saved };
+
+  Object.entries(defaultLayouts).forEach(([breakpoint, defaultLayout]) => {
+    const savedLayout = saved?.[breakpoint] ?? [];
+    const savedMap = new Map(savedLayout.map(item => [item.i, item] as const));
+    merged[breakpoint] = defaultLayout.map(item => savedMap.get(item.i) ?? item);
+  });
+
+  return merged;
 };
 
 function App(): JSX.Element {
@@ -31,15 +49,16 @@ function App(): JSX.Element {
   // Define the initial layout for the dashboard
   const [layouts, setLayouts] = useState<Layouts>(() => {
     if (typeof window === 'undefined') {
-      return defaultLayouts;
+      return mergeLayoutsWithDefaults();
     }
 
     try {
       const stored = window.localStorage.getItem(LAYOUT_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : defaultLayouts;
+      const parsed = stored ? JSON.parse(stored) : undefined;
+      return mergeLayoutsWithDefaults(parsed);
     } catch (error) {
       console.warn('Failed to parse saved layouts, falling back to defaults', error);
-      return defaultLayouts;
+      return mergeLayoutsWithDefaults();
     }
   });
 
@@ -95,13 +114,37 @@ function App(): JSX.Element {
                  </div>
 
                  <div key="task-overview" className="relative group h-full">
-                   {/* Drag Handle - Visible on Hover */}
-                   <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
-                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
-                   </div>
-                   <TaskOverview />
-                 </div>
-               </ResponsiveGridLayout>
+                    {/* Drag Handle - Visible on Hover */}
+                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
+                    </div>
+                    <TaskOverview />
+                  </div>
+
+                  <div key="equipment-monitor" className="relative group h-full">
+                    {/* Drag Handle - Visible on Hover */}
+                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
+                    </div>
+                    <EquipmentMonitor />
+                  </div>
+
+                  <div key="product-trend" className="relative group h-full">
+                    {/* Drag Handle - Visible on Hover */}
+                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
+                    </div>
+                    <ProductTrend />
+                  </div>
+
+                  <div key="tank-inventory" className="relative group h-full">
+                    {/* Drag Handle - Visible on Hover */}
+                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
+                    </div>
+                    <TankInventory />
+                  </div>
+                </ResponsiveGridLayout>
             </div>
           </main>
         </div>

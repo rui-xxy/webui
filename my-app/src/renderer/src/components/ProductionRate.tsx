@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, Chip, Progress } from "@heroui/react";
+import { Card, CardBody, CardHeader, Chip } from "@heroui/react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface ProductionRateProps {
