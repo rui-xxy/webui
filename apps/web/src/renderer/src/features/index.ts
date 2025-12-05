@@ -1,8 +1,0 @@
-export { ProductionRate } from './production/ProductionRate'
-export { TaskOverview } from './tasks/TaskOverview'
-export { EquipmentMonitor } from './equipment/EquipmentMonitor'
-export { TankInventory } from './inventory/TankInventory'
-export { ProductTrend } from './trends/ProductTrend'
-export { ElectricConsumption } from './consumption/ElectricConsumption'
-export { WaterConsumption } from './consumption/WaterConsumption'
-export { HydrogenPeroxideConsumption } from './consumption/HydrogenPeroxideConsumption'

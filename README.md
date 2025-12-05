@@ -31,18 +31,16 @@
 
 ## 前端代码结构
 
-Electron 前端位于 `apps/web/src/renderer/src`，现在按功能拆分：
+Web 端全部代码位于 `my-app/src`：
 
 ```
-features/
-├── consumption/          # 电耗、水耗、过氧化氢等消耗看板
-├── equipment/            # 设备监控
-├── inventory/            # 储罐库存
-├── production/           # 产量达成
-├── tasks/                # 任务进度
-└── trends/               # 产品走势
-layout/
-└── Header.tsx, Sidebar.tsx
+src/
+├── components/      # 仪表板模块（任务概览、储罐、用能等）
+├── providers/       # 主题、上下文提供者
+├── theme/           # Tailwind/HeroUI 主题扩展
+├── App.tsx          # 布局与网格
+├── main.tsx         # 程序入口
+└── globals.css      # 全局样式
 ```
 
-新增功能时直接在 `features/<domain>` 目录创建组件，并在 `features/index.ts` 暴露给 `App` 使用，可避免再把文件塞进一个巨大的 `components` 文件夹。
+后续扩展新模块时，建议直接在 `components/` 下创建子目录或迁移到 `components/<feature>`，便于长期维护。
