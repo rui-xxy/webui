@@ -24,6 +24,10 @@ const CARD_MIN_WIDTH = 1;
 const CARD_MIN_HEIGHT = 1;
 const CHART_MIN_WIDTH = 2;
 
+// Keep a single breakpoint so the grid keeps the same layout regardless of screen width.
+const SINGLE_BREAKPOINT = { lg: 0 };
+const SINGLE_COLS = { lg: 12 };
+
 const defaultLayouts: Layouts = {
   lg: [
     { i: 'production-rate', x: 0, y: 0, w: 4, h: 4, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
@@ -118,8 +122,8 @@ function App(): JSX.Element {
                <ResponsiveGridLayout
                  className="layout"
                  layouts={layouts}
-                 breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-                 cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                 breakpoints={SINGLE_BREAKPOINT}
+                 cols={SINGLE_COLS}
                  rowHeight={24}
                  draggableHandle=".drag-handle"
                  onLayoutChange={handleLayoutChange}

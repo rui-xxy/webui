@@ -27,4 +27,22 @@
    npm run dev
    ```
 
-前端会周期性访问 `GET /api/tanks`，加载 PostgreSQL 中的储罐实时数据。*** End Patch
+前端会周期性访问 `GET /api/tanks`，加载 PostgreSQL 中的储罐实时数据。
+
+## 前端代码结构
+
+Electron 前端位于 `apps/web/src/renderer/src`，现在按功能拆分：
+
+```
+features/
+├── consumption/          # 电耗、水耗、过氧化氢等消耗看板
+├── equipment/            # 设备监控
+├── inventory/            # 储罐库存
+├── production/           # 产量达成
+├── tasks/                # 任务进度
+└── trends/               # 产品走势
+layout/
+└── Header.tsx, Sidebar.tsx
+```
+
+新增功能时直接在 `features/<domain>` 目录创建组件，并在 `features/index.ts` 暴露给 `App` 使用，可避免再把文件塞进一个巨大的 `components` 文件夹。

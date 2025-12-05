@@ -1,17 +1,18 @@
 import type { JSX } from 'react'
 import { useEffect, useState } from 'react'
 import { ThemeProvider } from './providers/theme'
-import { Sidebar } from './components/Sidebar'
-import { Header } from './components/Header'
+import { Header, Sidebar } from './layout'
 import { Responsive, WidthProvider, type Layout, type Layouts } from 'react-grid-layout'
-import { ProductionRate } from './components/ProductionRate'
-import { TaskOverview } from './components/TaskOverview'
-import { ProductTrend } from './components/ProductTrend'
-import { EquipmentMonitor } from './components/EquipmentMonitor'
-import { TankInventory } from './components/TankInventory'
-import { ElectricConsumption } from './components/ElectricConsumption'
-import { WaterConsumption } from './components/WaterConsumption'
-import { HydrogenPeroxideConsumption } from './components/HydrogenPeroxideConsumption'
+import {
+  ElectricConsumption,
+  EquipmentMonitor,
+  HydrogenPeroxideConsumption,
+  ProductionRate,
+  ProductTrend,
+  TankInventory,
+  TaskOverview,
+  WaterConsumption
+} from './features'
 
 // Import react-grid-layout styles
 import 'react-grid-layout/css/styles.css'

@@ -1,4 +1,5 @@
-import { Card, CardHeader, CardBody, Tooltip, Chip } from "@heroui/react";
+import { useEffect, useState } from "react";
+import { Card, CardHeader, CardBody, Tooltip, Chip, Spinner } from "@heroui/react";
 import { motion } from "framer-motion";
 
 interface TankData {
@@ -13,35 +14,11 @@ interface CategoryData {
   tanks: TankData[];
 }
 
-const inventoryData: CategoryData[] = [
-  {
-    title: "98酸",
-    tanks: [
-      { name: "2#", percentage: 75, current: 4332.8, total: 5777 },
-      { name: "3#", percentage: 60, current: 3466.2, total: 5777 },
-      { name: "4#", percentage: 85, current: 4910.5, total: 5777 },
-      { name: "攻酸槽", percentage: 40, current: 20.4, total: 51 },
-    ],
-  },
-  {
-    title: "发烟硫酸",
-    tanks: [
-      { name: "1#", percentage: 90, current: 5535.0, total: 6150 },
-      { name: "5#", percentage: 70, current: 4305.0, total: 6150 },
-      { name: "烟酸攻酸槽", percentage: 55, current: 33.6, total: 61 },
-      { name: "氨基磺酸转运槽", percentage: 80, current: 153.6, total: 192 },
-    ],
-  },
-  {
-    title: "精品酸",
-    tanks: [
-      { name: "1#", percentage: 65, current: 271.7, total: 418 },
-      { name: "2#", percentage: 50, current: 240.0, total: 480 },
-      { name: "3#", percentage: 35, current: 192.5, total: 550 },
-      { name: "4#", percentage: 88, current: 484.0, total: 550 },
-    ],
-  },
-];
+interface TankApiResponse {
+  data: CategoryData[];
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
 
 const getStatusColor = (percentage: number) => {
   if (percentage >= 90) return { bg: "bg-danger-500", text: "text-danger-600" };
@@ -126,6 +103,76 @@ const Tank = ({ data }: { data: TankData }) => {
 };
 
 export function TankInventory() {
+  const [inventoryData, setInventoryData] = useState<CategoryData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchInventory = async () => {
+      try {
+        if (!cancelled) {
+          setLoading(true);
+        }
+
+        const response = await fetch(`${API_BASE_URL}/api/tanks`);
+        if (!response.ok) {
+          throw new Error("无法获取储罐数据，请稍后再试");
+        }
+
+        const payload = (await response.json()) as TankApiResponse;
+
+        if (!cancelled) {
+          setInventoryData(payload.data ?? []);
+          setError(null);
+        }
+      } catch (fetchError) {
+        if (!cancelled) {
+          const message =
+            fetchError instanceof Error ? fetchError.message : "未知错误，请联系管理员";
+          setError(message);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchInventory();
+    const intervalId = setInterval(fetchInventory, 60_000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  const renderStatusChip = () => {
+    if (loading && inventoryData.length === 0) {
+      return (
+        <Chip size="sm" variant="flat" color="default" className="h-6 text-tiny">
+          Loading...
+        </Chip>
+      );
+    }
+
+    if (error) {
+      return (
+        <Chip size="sm" variant="flat" color="danger" className="h-6 text-tiny">
+          同步异常
+        </Chip>
+      );
+    }
+
+    return (
+      <Chip size="sm" variant="flat" color="primary" className="h-6 text-tiny">
+        All Normal
+      </Chip>
+    );
+  };
+
   return (
     <Card className="h-full w-full p-4 shadow-sm border border-default-100 bg-gradient-to-b from-white to-default-50/50">
       <CardHeader className="flex flex-row justify-between items-center px-2 pb-4 pt-1">
@@ -133,29 +180,47 @@ export function TankInventory() {
           <h2 className="text-medium font-bold text-default-900 tracking-tight">储罐库存</h2>
           <p className="text-[10px] text-default-400 font-medium uppercase tracking-wider">Real-time Monitoring</p>
         </div>
-        <Chip size="sm" variant="flat" color="primary" className="h-6 text-tiny">All Normal</Chip>
+        {renderStatusChip()}
       </CardHeader>
       
       <CardBody className="gap-5 overflow-y-auto px-1 py-0 scrollbar-hide">
-        {inventoryData.map((category, index) => (
-          <div key={index} className="flex flex-col gap-3">
-            {/* Category Header */}
-            <div className="flex items-center gap-2 px-1">
-              <div className="h-1.5 w-1.5 rounded-full bg-default-400" />
-              <h3 className="text-small font-semibold text-default-600 uppercase tracking-wide">{category.title}</h3>
-              <div className="h-[1px] flex-1 bg-default-100" />
-            </div>
-            
-            {/* Tank Grid */}
-            <div className="grid grid-cols-4 gap-x-2 gap-y-4">
-              {category.tanks.map((tank, tankIndex) => (
-                <div key={tankIndex} className="flex justify-center">
-                  <Tank data={tank} />
-                </div>
-              ))}
-            </div>
+        {error && (
+          <div className="px-3 py-2 text-[12px] text-danger-500 bg-danger-50 border border-danger-200 rounded-md mb-2">
+            {error}
           </div>
-        ))}
+        )}
+
+        {loading && inventoryData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-2">
+            <Spinner size="sm" color="primary" />
+            <p className="text-tiny text-default-400">正在同步储罐数据...</p>
+          </div>
+        ) : inventoryData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-2 text-default-400 text-tiny">
+            <span>暂无储罐信息</span>
+            <span>请确认后端 API 是否运行</span>
+          </div>
+        ) : (
+          inventoryData.map((category, index) => (
+            <div key={category.title + index} className="flex flex-col gap-3">
+              {/* Category Header */}
+              <div className="flex items-center gap-2 px-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-default-400" />
+                <h3 className="text-small font-semibold text-default-600 uppercase tracking-wide">{category.title}</h3>
+                <div className="h-[1px] flex-1 bg-default-100" />
+              </div>
+              
+              {/* Tank Grid */}
+              <div className="grid grid-cols-4 gap-x-2 gap-y-4">
+                {category.tanks.map((tank) => (
+                  <div key={`${category.title}-${tank.name}`} className="flex justify-center">
+                    <Tank data={tank} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
       </CardBody>
     </Card>
   );

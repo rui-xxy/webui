@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express from 'express'
 import tanksRouter from './routes/tanks'
+import { pool } from './db/pool'
 
 export function createServer() {
   const app = express()
@@ -12,8 +13,13 @@ export function createServer() {
   )
   app.use(express.json())
 
-  app.get('/healthz', (_req, res) => {
-    res.json({ status: 'ok' })
+  app.get('/healthz', async (_req, res) => {
+    try {
+      await pool.query('SELECT 1')
+      res.json({ status: 'ok' })
+    } catch {
+      res.status(503).json({ status: 'error' })
+    }
   })
 
   app.use('/api/tanks', tanksRouter)
