@@ -1,34 +1,25 @@
-# my-app
+# 恒光化工 · 数据仪表盘（Web）
 
-An Electron application with React and TypeScript
+基于 React + Vite + TailwindCSS 的纯前端应用，展示生产与储罐实时数据。
 
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-## Project Setup
-
-### Install
+## 开发
 
 ```bash
-$ npm install
+npm install
+npm run dev
 ```
 
-### Development
+## 构建与预览
 
 ```bash
-$ npm run dev
+npm run build
+npm run preview
 ```
 
-### Build
+## 代码质量
 
 ```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
+npm run lint
+npm run typecheck
+npm run format
 ```
