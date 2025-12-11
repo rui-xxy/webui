@@ -1,5 +1,5 @@
-import { findTankInventory } from '../repositories/tankRepository'
-import type { TankCategory, TankSummary } from '../types/tank'
+import { findTankInventory } from './tank.repository'
+import type { TankCategory, TankSummary } from './tank.types'
 
 export async function listTankInventory(): Promise<TankCategory[]> {
   const records = await findTankInventory()

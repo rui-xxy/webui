@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { listTankInventory } from '../services/tankService'
+import { listTankInventory } from './tank.service'
 
 const router = Router()
 

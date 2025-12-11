@@ -1,5 +1,18 @@
-import { pool } from '../db/pool'
-import type { TankRecord } from '../types/tank'
+import { pool } from '../../db/pool'
+import type { TankRecord } from './tank.types'
+
+const ACID_TYPE_MAP = {
+  '98酸': { id: 1, sortOrder: 1 },
+  '发烟硫酸': { id: 2, sortOrder: 2 },
+  '试剂酸': { id: 3, sortOrder: 3 },
+  // 添加更多酸类型及其对应的ID和排序权重
+};
+
+const generateCaseWhen = (field: 'id' | 'sortOrder') => {
+  return Object.entries(ACID_TYPE_MAP)
+    .map(([acidType, values]) => `WHEN '${acidType}' THEN ${values[field]}`)
+    .join('\n      ');
+};
 
 const TANK_QUERY = `
   SELECT
@@ -7,23 +20,17 @@ const TANK_QUERY = `
     s.tank_name,
     s.acid_type as category_title,
     CASE s.acid_type
-      WHEN '98酸' THEN 1
-      WHEN '发烟硫酸' THEN 2
-      WHEN '试剂酸' THEN 3
-      ELSE 4
+      ${generateCaseWhen('id')}
+      ELSE 4 -- Default ID if not matched
     END as category_id,
     CASE s.acid_type
-      WHEN '98酸' THEN 1
-      WHEN '发烟硫酸' THEN 2
-      WHEN '试剂酸' THEN 3
-      ELSE 4
+      ${generateCaseWhen('sortOrder')}
+      ELSE 4 -- Default sort order if not matched
     END as category_sort_order,
     s.capacity as total_capacity,
     COALESCE(m.current_volume, 0) as current_volume,
     CASE s.acid_type
-      WHEN '98酸' THEN 1
-      WHEN '发烟硫酸' THEN 2
-      WHEN '试剂酸' THEN 3
+      ${generateCaseWhen('sortOrder')} -- Using category_sort_order for tank_sort_order as well
       ELSE 4
     END as tank_sort_order,
     COALESCE(m.recorded_at, s.updated_at) as updated_at

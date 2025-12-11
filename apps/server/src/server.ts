@@ -1,6 +1,6 @@
 import cors from 'cors'
 import express from 'express'
-import tanksRouter from './routes/tanks'
+import tanksRouter from './modules/tank/tank.routes'
 import { pool } from './db/pool'
 
 export function createServer() {
