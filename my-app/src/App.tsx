@@ -18,7 +18,7 @@ import 'react-grid-layout/css/styles.css'
 import 'react-resizable/css/styles.css'
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
-const LAYOUT_STORAGE_KEY = 'dashboard-layouts-v2';
+const LAYOUT_STORAGE_KEY = 'dashboard-layouts-v3';
 
 const CARD_MIN_WIDTH = 1;
 const CARD_MIN_HEIGHT = 1;
@@ -30,14 +30,14 @@ const SINGLE_COLS = { lg: 12 };
 
 const defaultLayouts: Layouts = {
   lg: [
-    { i: 'production-rate', x: 0, y: 0, w: 4, h: 4, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'task-overview', x: 4, y: 0, w: 5, h: 4, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'equipment-monitor', x: 9, y: 0, w: 3, h: 4, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'electric-consumption', x: 0, y: 4, w: 4, h: 3, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'water-consumption', x: 4, y: 4, w: 4, h: 3, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'peroxide-consumption', x: 8, y: 4, w: 4, h: 3, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'product-trend', x: 0, y: 7, w: 9, h: 5, minW: CHART_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'tank-inventory', x: 9, y: 7, w: 3, h: 5, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT }
+    { i: 'production-rate', x: 0, y: 6, w: 3, h: 13, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'task-overview', x: 0, y: 0, w: 3, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'equipment-monitor', x: 9, y: 0, w: 3, h: 8, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'electric-consumption', x: 3, y: 0, w: 2, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'water-consumption', x: 5, y: 0, w: 2, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'peroxide-consumption', x: 7, y: 0, w: 2, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'product-trend', x: 3, y: 6, w: 6, h: 13, minW: CHART_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'tank-inventory', x: 9, y: 8, w: 3, h: 11, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT }
   ]
 };
 
