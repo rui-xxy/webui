@@ -117,8 +117,8 @@ function App(): JSX.Element {
           <Header />
 
           {/* Main Scrollable Area */}
-          <main className="flex-1 overflow-y-auto p-6 scrollbar-hide relative">
-            <div className="max-w-[1600px] mx-auto h-full">
+          <main className="flex-1 overflow-x-auto overflow-y-auto p-6 relative">
+            <div className="max-w-[1600px] mx-auto h-full min-w-[1600px]">
                <ResponsiveGridLayout
                  className="layout"
                  layouts={layouts}
