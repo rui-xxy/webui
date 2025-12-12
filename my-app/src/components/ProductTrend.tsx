@@ -23,7 +23,6 @@ import {
   today,
   getLocalTimeZone,
   startOfMonth,
-  endOfMonth,
 } from "@internationalized/date";
 
 const API_BASE_URL =
@@ -114,9 +113,14 @@ const formatDateLabel = (dateKey: string) => {
 };
 
 export const ProductTrend = () => {
-  const [dateRange, setDateRange] = useState({
-    start: startOfMonth(today(getLocalTimeZone())),
-    end: endOfMonth(today(getLocalTimeZone())),
+  const [dateRange, setDateRange] = useState(() => {
+    const timeZone = getLocalTimeZone();
+    const now = today(timeZone);
+    const start = startOfMonth(now);
+    const yesterday = now.subtract({ days: 1 });
+    const end =
+      yesterday.toString() < start.toString() ? start : yesterday;
+    return { start, end };
   });
 
   const [data, setData] = useState<ChartPoint[]>([]);

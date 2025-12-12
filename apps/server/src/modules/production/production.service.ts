@@ -94,8 +94,7 @@ export async function listDailyProductionTrend(
       acid98 +
       (fumingAcid * MATERIALS.fumingAcid.concentration) /
         MATERIALS.acid98.concentration +
-      (reagentAcid * MATERIALS.reagentAcid.concentration) /
-        MATERIALS.acid98.concentration
+      reagentAcid
 
     results.push({
       date: formatDateKey(current),
@@ -113,4 +112,3 @@ export async function listDailyProductionTrend(
 
   return results
 }
-
