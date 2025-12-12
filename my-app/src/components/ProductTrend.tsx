@@ -1,10 +1,33 @@
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardBody, DateRangePicker, Button, Spinner, Chip } from "@heroui/react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  DateRangePicker,
+  Button,
+  Spinner,
+  Chip,
+} from "@heroui/react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 import { TrendingUp, Download } from "lucide-react";
-import { today, getLocalTimeZone, startOfMonth, endOfMonth } from "@internationalized/date";
+import {
+  today,
+  getLocalTimeZone,
+  startOfMonth,
+  endOfMonth,
+} from "@internationalized/date";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
 
 interface DailyProduction {
   date: string;
@@ -21,9 +44,65 @@ interface ProductionTrendResponse {
 interface ChartPoint {
   date: string;
   actual: number;
-  target: number;
-  breakdown?: Pick<DailyProduction, "acid98" | "reagentAcid" | "fumingAcid">;
+  breakdown?: Pick<
+    DailyProduction,
+    "acid98" | "reagentAcid" | "fumingAcid"
+  >;
 }
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  const point = payload[0]?.payload as ChartPoint | undefined;
+  if (!point) return null;
+
+  const breakdown = point.breakdown;
+
+  return (
+    <div className="rounded-xl bg-background/90 backdrop-blur-md border border-default-200 shadow-lg px-3 py-2 text-xs min-w-[170px]">
+      <div className="font-semibold text-default-900 mb-1">{label}</div>
+      <div className="flex items-baseline justify-between mb-2">
+        <span className="text-default-500">当日产量(98折算)</span>
+        <span className="font-mono font-bold text-default-900">
+          {point.actual.toLocaleString()} 吨
+        </span>
+      </div>
+
+      {breakdown && (
+        <div className="space-y-1">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-primary-500" />
+              <span className="text-default-700">98酸</span>
+            </div>
+            <span className="font-mono text-default-900">
+              {breakdown.acid98} 吨
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-warning-500" />
+              <span className="text-default-700">试剂酸</span>
+            </div>
+            <span className="font-mono text-default-900">
+              {breakdown.reagentAcid} 吨
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-danger-500" />
+              <span className="text-default-700">发烟硫酸</span>
+            </div>
+            <span className="font-mono text-default-900">
+              {breakdown.fumingAcid} 吨
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 const formatDateLabel = (dateKey: string) => {
   const [, month, day] = dateKey.split("-").map(Number);
@@ -34,7 +113,7 @@ const formatDateLabel = (dateKey: string) => {
 export const ProductTrend = () => {
   const [dateRange, setDateRange] = useState({
     start: startOfMonth(today(getLocalTimeZone())),
-    end: endOfMonth(today(getLocalTimeZone()))
+    end: endOfMonth(today(getLocalTimeZone())),
   });
 
   const [data, setData] = useState<ChartPoint[]>([]);
@@ -79,12 +158,11 @@ export const ProductTrend = () => {
         const chartData: ChartPoint[] = (payload.data ?? []).map((row) => ({
           date: formatDateLabel(row.date),
           actual: row.total98Equivalent,
-          target: 8500,
           breakdown: {
             acid98: row.acid98,
             reagentAcid: row.reagentAcid,
-            fumingAcid: row.fumingAcid
-          }
+            fumingAcid: row.fumingAcid,
+          },
         }));
 
         if (!cancelled) {
@@ -124,21 +202,21 @@ export const ProductTrend = () => {
             <p className="text-xs text-default-500">每日生产数据分析</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2 w-full sm:w-auto">
-           <DateRangePicker 
-             label="选择日期范围"
-             aria-label="选择日期范围"
-             size="sm"
-             className="max-w-xs"
-             variant="bordered"
-             value={dateRange}
-             onChange={handleDateChange}
-             visibleMonths={2}
-           />
-           <Button isIconOnly size="sm" variant="flat" className="hidden sm:flex">
-             <Download size={18} className="text-default-500" />
-           </Button>
+          <DateRangePicker
+            label="选择日期范围"
+            aria-label="选择日期范围"
+            size="sm"
+            className="max-w-xs"
+            variant="bordered"
+            value={dateRange}
+            onChange={handleDateChange}
+            visibleMonths={2}
+          />
+          <Button isIconOnly size="sm" variant="flat" className="hidden sm:flex">
+            <Download size={18} className="text-default-500" />
+          </Button>
         </div>
 
         {loading ? (
@@ -180,66 +258,40 @@ export const ProductTrend = () => {
               >
                 <defs>
                   <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#006FEE" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#006FEE" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#006FEE" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#006FEE" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E4E4E7" />
-                <XAxis 
-                  dataKey="date" 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{fill: '#71717A', fontSize: 12}} 
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#71717A", fontSize: 12 }}
                   dy={10}
                 />
-                <YAxis 
-                  axisLine={false} 
-                  tickLine={false} 
-                  tick={{fill: '#71717A', fontSize: 12}}
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#71717A", fontSize: 12 }}
+                  domain={[0, 1200]}
+                  allowDataOverflow
                 />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)', 
-                    borderRadius: '12px', 
-                    border: 'none', 
-                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                    padding: '12px'
-                  }}
-                  labelStyle={{ color: '#3f3f46', fontWeight: 'bold', marginBottom: '8px' }}
-                  formatter={(value: number, name: string, context: any) => {
-                    if (name === "实际产量" && context?.payload?.breakdown) {
-                      const { acid98, reagentAcid, fumingAcid } = context.payload.breakdown;
-                      return [
-                        `${value.toLocaleString()} 吨 (98折算)`,
-                        `98酸:${acid98}  试剂酸:${reagentAcid}  发烟硫酸:${fumingAcid}`
-                      ];
-                    }
-                    return [`${value.toLocaleString()} 吨`, name];
-                  }}
-                />
-                <Legend 
-                  verticalAlign="top" 
-                  height={36} 
+                <Tooltip content={<CustomTooltip />} />
+                <Legend
+                  verticalAlign="top"
+                  height={36}
                   iconType="circle"
                   wrapperStyle={{ top: -10, right: 0 }}
                 />
-                
-                <Line 
-                  type="monotone" 
-                  dataKey="target" 
-                  name="目标产量" 
-                  stroke="#F5A524" // Warning color
-                  strokeWidth={2}
-                  strokeDasharray="5 5"
-                  dot={false}
-                />
-                <Line 
-                  type="monotone" 
-                  dataKey="actual" 
-                  name="实际产量" 
-                  stroke="#006FEE" // Primary color
+
+                <Line
+                  type="monotone"
+                  dataKey="actual"
+                  name="实际产量"
+                  stroke="#006FEE"
                   strokeWidth={3}
-                  dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
+                  dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
                   activeDot={{ r: 6, strokeWidth: 0 }}
                 />
               </LineChart>
