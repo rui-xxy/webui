@@ -5,7 +5,7 @@ export interface TankRecord {
   categorySortOrder: number
   tankName: string
   totalCapacity: number
-  currentVolume: number
+  levelPercent: number // Renamed from currentVolume to levelPercent
   tankSortOrder: number
   updatedAt: Date
 }

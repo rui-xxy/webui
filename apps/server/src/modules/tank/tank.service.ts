@@ -13,17 +13,18 @@ export async function listTankInventory(): Promise<TankCategory[]> {
       })
     }
 
-    const percentage =
-      record.totalCapacity > 0
-        ? Number(((record.currentVolume / record.totalCapacity) * 100).toFixed(2))
-        : 0
+    const percentage = record.levelPercent; // levelPercent 现在就是百分比
+
+    const current = record.totalCapacity > 0 // 根据百分比和总容量计算实际吨数
+      ? Number(((percentage / 100) * record.totalCapacity).toFixed(2))
+      : 0;
 
     const tank: TankSummary = {
       id: record.tankId,
       name: record.tankName,
       total: record.totalCapacity,
-      current: record.currentVolume,
-      percentage,
+      current: current, // 现在是计算出的吨数
+      percentage: percentage, // 现在是数据库中的百分比
       updatedAt: record.updatedAt.toISOString()
     }
 

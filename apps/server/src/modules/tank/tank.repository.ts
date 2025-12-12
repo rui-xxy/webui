@@ -28,7 +28,7 @@ const TANK_QUERY = `
       ELSE 4 -- Default sort order if not matched
     END as category_sort_order,
     s.capacity as total_capacity,
-    COALESCE(m.current_volume, 0) as current_volume,
+    COALESCE(m.level_percent, 0) as level_percent,
     CASE s.acid_type
       ${generateCaseWhen('sortOrder')} -- Using category_sort_order for tank_sort_order as well
       ELSE 4
@@ -38,7 +38,7 @@ const TANK_QUERY = `
   LEFT JOIN (
     SELECT DISTINCT ON (tank_id)
       tank_id,
-      current_volume,
+      level_percent,
       recorded_at
     FROM tank_monitoring_data
     ORDER BY tank_id, recorded_at DESC
@@ -56,7 +56,7 @@ export async function findTankInventory(): Promise<TankRecord[]> {
     categorySortOrder: row.category_sort_order,
     tankName: row.tank_name,
     totalCapacity: Number(row.total_capacity),
-    currentVolume: Number(row.current_volume),
+    levelPercent: Number(row.level_percent),
     tankSortOrder: row.tank_sort_order,
     updatedAt: new Date(row.updated_at)
   }))

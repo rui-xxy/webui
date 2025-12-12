@@ -28,7 +28,8 @@
       "Bash(cmd:*)",
       "Bash(cat:*)",
       "Bash(/E/sql/bin/psql.exe:*)",
-      "Bash(set:*)"
+      "Bash(set:*)",
+      "Bash(PGPASSWORD=123456 psql:*)"
     ],
     "deny": [],
     "ask": []
