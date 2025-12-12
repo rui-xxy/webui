@@ -16,7 +16,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
+  LabelList,
 } from "recharts";
 import { TrendingUp, Download } from "lucide-react";
 import {
@@ -28,6 +28,8 @@ import {
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
+
+const DAILY_TARGET = 850;
 
 interface DailyProduction {
   date: string;
@@ -44,6 +46,7 @@ interface ProductionTrendResponse {
 interface ChartPoint {
   date: string;
   actual: number;
+  target: number;
   breakdown?: Pick<
     DailyProduction,
     "acid98" | "reagentAcid" | "fumingAcid"
@@ -119,6 +122,7 @@ export const ProductTrend = () => {
   const [data, setData] = useState<ChartPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const showPointLabels = data.length > 0 && data.length <= 12;
 
   const handleDateChange = (range: any) => {
     if (range) {
@@ -158,6 +162,7 @@ export const ProductTrend = () => {
         const chartData: ChartPoint[] = (payload.data ?? []).map((row) => ({
           date: formatDateLabel(row.date),
           actual: row.total98Equivalent,
+          target: DAILY_TARGET,
           breakdown: {
             acid98: row.acid98,
             reagentAcid: row.reagentAcid,
@@ -278,13 +283,16 @@ export const ProductTrend = () => {
                   allowDataOverflow
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Legend
-                  verticalAlign="top"
-                  height={36}
-                  iconType="circle"
-                  wrapperStyle={{ top: -10, right: 0 }}
-                />
 
+                <Line
+                  type="monotone"
+                  dataKey="target"
+                  name="目标产量"
+                  stroke="#F5A524"
+                  strokeWidth={2}
+                  strokeDasharray="5 5"
+                  dot={false}
+                />
                 <Line
                   type="monotone"
                   dataKey="actual"
@@ -293,7 +301,18 @@ export const ProductTrend = () => {
                   strokeWidth={3}
                   dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
                   activeDot={{ r: 6, strokeWidth: 0 }}
-                />
+                >
+                  {showPointLabels ? (
+                    <LabelList
+                      dataKey="actual"
+                      position="top"
+                      offset={6}
+                      fill="#52525B"
+                      style={{ fontSize: 10, fontWeight: 600 }}
+                      formatter={(value: any) => Number(value).toFixed(0)}
+                    />
+                  ) : null}
+                </Line>
               </LineChart>
             </ResponsiveContainer>
           )}
