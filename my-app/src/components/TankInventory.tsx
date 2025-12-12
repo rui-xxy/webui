@@ -3,6 +3,7 @@ import { Card, CardHeader, CardBody, Tooltip, Chip, Spinner } from "@heroui/reac
 import { motion } from "framer-motion";
 
 interface TankData {
+  id: string;
   name: string;
   percentage: number;
   current: number;
@@ -215,7 +216,7 @@ export function TankInventory() {
               {/* Tank Grid */}
               <div className="grid grid-cols-4 gap-x-2 gap-y-4">
                 {category.tanks.map((tank) => (
-                  <div key={`${category.title}-${tank.name}`} className="flex justify-center">
+                  <div key={tank.id} className="flex justify-center">
                     <Tank data={tank} />
                   </div>
                 ))}

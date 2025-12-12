@@ -1,5 +1,5 @@
 export interface TankRecord {
-  tankId: number
+  tankId: string
   categoryId: number
   categoryTitle: string
   categorySortOrder: number
@@ -16,7 +16,7 @@ export interface TankCategory {
 }
 
 export interface TankSummary {
-  id: number
+  id: string
   name: string
   total: number
   current: number

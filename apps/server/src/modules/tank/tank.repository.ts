@@ -1,40 +1,21 @@
 import { pool } from '../../db/pool'
 import type { TankRecord } from './tank.types'
 
-const ACID_TYPE_MAP = {
-  '98酸': { id: 1, sortOrder: 1 },
-  '发烟硫酸': { id: 2, sortOrder: 2 },
-  '试剂酸': { id: 3, sortOrder: 3 },
-  // 添加更多酸类型及其对应的ID和排序权重
-};
-
-const generateCaseWhen = (field: 'id' | 'sortOrder') => {
-  return Object.entries(ACID_TYPE_MAP)
-    .map(([acidType, values]) => `WHEN '${acidType}' THEN ${values[field]}`)
-    .join('\n      ');
-};
+// ACID_TYPE_MAP 和 generateCaseWhen 已不再需要，因为我们现在直接从 materials 表中获取信息
 
 const TANK_QUERY = `
   SELECT
     s.tank_id,
     s.tank_name,
-    s.acid_type as category_title,
-    CASE s.acid_type
-      ${generateCaseWhen('id')}
-      ELSE 4 -- Default ID if not matched
-    END as category_id,
-    CASE s.acid_type
-      ${generateCaseWhen('sortOrder')}
-      ELSE 4 -- Default sort order if not matched
-    END as category_sort_order,
+    mt.name as category_title,  -- 从 materials 表获取名称
+    s.material_id as category_id, -- 使用 material_id 作为 category_id
+    s.material_id as category_sort_order, -- 使用 material_id 作为排序依据 (materials 表未设置单独排序字段前)
     s.capacity as total_capacity,
     COALESCE(m.level_percent, 0) as level_percent,
-    CASE s.acid_type
-      ${generateCaseWhen('sortOrder')} -- Using category_sort_order for tank_sort_order as well
-      ELSE 4
-    END as tank_sort_order,
+    s.material_id as tank_sort_order, -- 使用 material_id 作为 tank_sort_order
     COALESCE(m.recorded_at, s.updated_at) as updated_at
   FROM storage_tanks s
+  LEFT JOIN materials mt ON s.material_id = mt.id -- 新增的 JOIN
   LEFT JOIN (
     SELECT DISTINCT ON (tank_id)
       tank_id,
@@ -61,3 +42,4 @@ export async function findTankInventory(): Promise<TankRecord[]> {
     updatedAt: new Date(row.updated_at)
   }))
 }
+
