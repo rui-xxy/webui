@@ -5,7 +5,9 @@
   "type": "module",
   "description": "恒光化工数据仪表盘 - 纯 Web 版本",
   "scripts": {
-    "dev": "vite",
+    "dev:client": "vite",
+    "dev:server": "npm --prefix ../apps/server run dev",
+    "dev": "node scripts/dev.mjs",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview",
     "lint": "eslint .",

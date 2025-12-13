@@ -23,6 +23,6 @@ match the database credentials you shared (`postgres/123456` on `127.0.0.1:5432`
 
 ## Tank Schema
 
-The API expects `storage_tank_categories` and `storage_tanks` tables. See
+The API expects `storage_tank_categories` and `tanks` tables. See
 `../../database/tank_inventory.sql` for the schema and seed data you can run
 inside your PostgreSQL instance.*** End Patch

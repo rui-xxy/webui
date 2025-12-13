@@ -14,14 +14,14 @@ const TANK_QUERY = `
     COALESCE(m.level_percent, 0) as level_percent,
     s.material_id as tank_sort_order, -- 使用 material_id 作为 tank_sort_order
     COALESCE(m.recorded_at, s.updated_at) as updated_at
-  FROM storage_tanks s
+  FROM tanks s
   LEFT JOIN materials mt ON s.material_id = mt.id -- 新增的 JOIN
   LEFT JOIN (
     SELECT DISTINCT ON (tank_id)
       tank_id,
       level_percent,
       recorded_at
-    FROM tank_monitoring_data
+    FROM tank_readings
     ORDER BY tank_id, recorded_at DESC
   ) m ON s.tank_id = m.tank_id
   ORDER BY category_sort_order, category_id, tank_sort_order, s.tank_id;

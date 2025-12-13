@@ -14,10 +14,10 @@ export async function getMaterialStockAt(
           ),
           0
         ) AS total_stock
-      FROM storage_tanks s
+      FROM tanks s
       LEFT JOIN LATERAL (
         SELECT level_percent
-        FROM tank_monitoring_data tmd
+        FROM tank_readings tmd
         WHERE tmd.tank_id = s.tank_id
           AND tmd.recorded_at <= $1
         ORDER BY tmd.recorded_at DESC
