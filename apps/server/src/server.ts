@@ -3,6 +3,7 @@ import express from 'express'
 import tanksRouter from './modules/tank/tank.routes'
 import productionRouter from './modules/production/production.routes'
 import consumptionRouter from './modules/consumption/consumption.routes'
+import metersRouter from './modules/meter/meter.routes'
 import { pool } from './db/pool'
 
 export function createServer() {
@@ -27,6 +28,7 @@ export function createServer() {
   app.use('/api/tanks', tanksRouter)
   app.use('/api/production', productionRouter)
   app.use('/api/consumption', consumptionRouter)
+  app.use('/api/meters', metersRouter)
 
   app.use(
     (

@@ -31,7 +31,7 @@ type MetricDefinition = {
   unit: string;
   color: string;
   Icon: typeof Zap;
-  series: { date: string; value: number }[];
+  series: { date: string; value: number; meters?: Record<string, number>; dateKey?: string }[];
 };
 
 const buildSeries = (days: number, generator: (dayIndex: number) => number) => {
@@ -61,6 +61,34 @@ type PeroxideTrendResponse = {
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
+
+type ElectricTrendPoint = {
+  date: string;
+  value: number;
+  meters?: Record<string, number>;
+};
+
+type ElectricTrendResponse = {
+  data: ElectricTrendPoint[];
+};
+
+const formatIsoDate = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const ELECTRIC_METER_BREAKDOWN: { name: string; sign: 1 | -1 }[] = [
+  { name: "1#变压器", sign: 1 },
+  { name: "2#变压器", sign: 1 },
+  { name: "1#电机", sign: 1 },
+  { name: "2#电机", sign: 1 },
+  { name: "1#电炉", sign: 1 },
+  { name: "2#电炉", sign: 1 },
+  { name: "丰联变压器", sign: 1 },
+  { name: "安环部电表", sign: -1 },
+];
 
 const formatDateLabel = (dateKey: string) => {
   const [, month, day] = dateKey.split("-").map(Number);
@@ -135,6 +163,67 @@ const TrendModal = ({
 }) => {
   if (!definition) return null;
 
+  const renderTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: readonly any[];
+  }) => {
+    if (!active || !payload?.length) return null;
+
+    const point = (payload[0] as any)?.payload as
+      | {
+          date?: string;
+          dateKey?: string;
+          value?: number;
+          meters?: Record<string, number>;
+        }
+      | undefined;
+    if (!point) return null;
+
+    const meters = point.meters;
+    const titleDate = point.dateKey ?? point.date ?? "";
+    const total = Number(point.value ?? 0);
+
+    if (!meters) {
+      return (
+        <div className="rounded-lg border border-default-200 bg-white p-3 shadow-md">
+          <div className="text-xs text-default-500">{titleDate}</div>
+          <div className="mt-1 text-sm font-semibold text-default-900">
+            {total.toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+            {definition.unit}
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="rounded-lg border border-default-200 bg-white p-3 shadow-md min-w-[240px]">
+        <div className="text-xs text-default-500">{titleDate}</div>
+        <div className="mt-1 text-sm font-semibold text-default-900">
+          总电耗：{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+          kWh
+        </div>
+        <div className="mt-2 space-y-1">
+          {ELECTRIC_METER_BREAKDOWN.map((item) => {
+            const raw = Number(meters[item.name] ?? 0);
+            const prefix = item.sign === 1 ? "+" : "-";
+            return (
+              <div key={item.name} className="flex justify-between gap-3 text-xs">
+                <span className="text-default-600">{item.name}</span>
+                <span className="font-mono text-default-900">
+                  {prefix}
+                  {raw.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="4xl">
       <ModalContent>
@@ -165,18 +254,7 @@ const TrendModal = ({
                       tickLine={false}
                       tick={{ fill: "#71717a", fontSize: 12 }}
                     />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: "10px",
-                        border: "none",
-                        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                        padding: "8px 12px",
-                      }}
-                      formatter={(value: any) => [
-                        `${Number(value).toLocaleString(undefined, { maximumFractionDigits: 1 })} ${definition.unit}`,
-                        "",
-                      ]}
-                    />
+                    <Tooltip content={renderTooltip} />
                     <Line
                       type="monotone"
                       dataKey="value"
@@ -327,15 +405,67 @@ export const EnergyConsumptionPanel = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selected, setSelected] = useState<MetricId>("electric");
 
-  const electricSeries = useMemo(
-    () =>
-      buildSeries(30, (i) => {
-        const baseValue = 450 + Math.sin(i * 0.5) * 50;
-        const randomFactor = Math.random() * 40 - 20;
-        return Math.round(baseValue + randomFactor);
-      }),
-    []
-  );
+  const [electricSeries, setElectricSeries] = useState<
+    { date: string; value: number }[]
+  >([]);
+  const [electricLoading, setElectricLoading] = useState(true);
+  const [electricError, setElectricError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchElectric = async () => {
+      try {
+        setElectricLoading(true);
+
+        const end = new Date();
+        end.setHours(0, 0, 0, 0);
+        const start = new Date(end);
+        start.setDate(start.getDate() - 29);
+
+        const startDate = formatIsoDate(start);
+        const endDate = formatIsoDate(end);
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/meters/electric/total/trend?start=${startDate}&end=${endDate}`
+        );
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const payload = (await response.json()) as ElectricTrendResponse;
+        const points = (payload.data ?? []).map((row) => ({
+          date: formatDateLabel(row.date),
+          dateKey: row.date,
+          value: Number(row.value ?? 0),
+          meters: row.meters,
+        }));
+
+        if (!cancelled) {
+          setElectricSeries(points);
+          setElectricError(null);
+        }
+      } catch (fetchError) {
+        if (!cancelled) {
+          const message =
+            fetchError instanceof Error ? fetchError.message : "未知错误";
+          setElectricError(message);
+          setElectricSeries([]);
+        }
+      } finally {
+        if (!cancelled) setElectricLoading(false);
+      }
+    };
+
+    fetchElectric();
+    const intervalId = setInterval(fetchElectric, 60_000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, []);
 
   const waterSeries = useMemo(
     () =>
@@ -384,9 +514,33 @@ export const EnergyConsumptionPanel = () => {
             <h4 className="font-bold text-base text-default-900">能源消耗</h4>
             <p className="text-xs text-default-500">点击数字查看趋势</p>
           </div>
+          {electricLoading ? (
+            <Chip
+              size="sm"
+              variant="flat"
+              color="default"
+              className="h-6 text-tiny"
+            >
+              Loading...
+            </Chip>
+          ) : electricError ? (
+            <Chip
+              size="sm"
+              variant="flat"
+              color="danger"
+              className="h-6 text-tiny"
+            >
+              同步异常
+            </Chip>
+          ) : null}
         </CardHeader>
         <CardBody className="px-3 pb-4 pt-0">
-          <div className="flex flex-col gap-1">
+          {electricLoading && electricSeries.length === 0 ? (
+            <div className="flex items-center justify-center py-6">
+              <Spinner size="sm" color="primary" />
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
             {definitions.map((definition) => (
               <MetricRow
                 key={definition.id}
@@ -394,7 +548,8 @@ export const EnergyConsumptionPanel = () => {
                 onOpenTrend={openTrend}
               />
             ))}
-          </div>
+            </div>
+          )}
         </CardBody>
       </Card>
 

@@ -25,4 +25,13 @@ match the database credentials you shared (`postgres/123456` on `127.0.0.1:5432`
 
 The API expects `storage_tank_categories` and `tanks` tables. See
 `../../database/tank_inventory.sql` for the schema and seed data you can run
-inside your PostgreSQL instance.*** End Patch
+inside your PostgreSQL instance.
+
+## Meters
+
+Create the meter tables with `../../create_meter_tables.sql` and seed with
+`../../insert_meters_data.sql` + `../../insert_meter_readings_data.sql`.
+
+The dashboard reads total daily electricity usage from:
+
+`GET /api/meters/electric/total/trend?start=YYYY-MM-DD&end=YYYY-MM-DD`
