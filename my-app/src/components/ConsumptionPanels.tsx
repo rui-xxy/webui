@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardBody,
@@ -7,6 +7,8 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
+  Chip,
+  Spinner,
   useDisclosure,
 } from "@heroui/react";
 import {
@@ -19,6 +21,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Droplet, FlaskConical, Zap } from "lucide-react";
+import { getLocalTimeZone, startOfMonth, today } from "@internationalized/date";
 
 type MetricId = "electric" | "water" | "peroxide";
 
@@ -45,6 +48,24 @@ const buildSeries = (days: number, generator: (dayIndex: number) => number) => {
   }
 
   return points;
+};
+
+type PeroxideTrendPoint = {
+  date: string;
+  value: number;
+};
+
+type PeroxideTrendResponse = {
+  data: PeroxideTrendPoint[];
+};
+
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
+
+const formatDateLabel = (dateKey: string) => {
+  const [, month, day] = dateKey.split("-").map(Number);
+  if (!month || !day) return dateKey;
+  return `${month}/${day}`;
 };
 
 const formatDelta = (delta: number) => {
@@ -178,23 +199,69 @@ const TrendModal = ({
 export const RawMaterialsPanel = () => {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [selected, setSelected] = useState<MetricId>("peroxide");
+  const [peroxideSeries, setPeroxideSeries] = useState<
+    { date: string; value: number }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const peroxideSeries = useMemo(
-    () =>
-      buildSeries(30, (i) => {
-        const baseValue = 50 + Math.sin(i * 0.8) * 10;
-        const randomFactor = Math.random() * 5 - 2.5;
-        return Math.round((baseValue + randomFactor) * 10) / 10;
-      }),
-    []
-  );
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchPeroxide = async () => {
+      try {
+        if (!cancelled) setLoading(true);
+        const timeZone = getLocalTimeZone();
+        const now = today(timeZone);
+        const start = startOfMonth(now);
+        const yesterday = now.subtract({ days: 1 });
+        const end = yesterday.toString() < start.toString() ? start : yesterday;
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/consumption/peroxide/trend?start=${start.toString()}&end=${end.toString()}`
+        );
+
+        if (!response.ok) {
+          throw new Error("无法获取双氧水消耗数据，请确认后端 API 正在运行");
+        }
+
+        const payload = (await response.json()) as PeroxideTrendResponse;
+        const points = (payload.data ?? []).map((row) => ({
+          date: formatDateLabel(row.date),
+          value: Number(row.value ?? 0),
+        }));
+
+        if (!cancelled) {
+          setPeroxideSeries(points);
+          setError(null);
+        }
+      } catch (fetchError) {
+        if (!cancelled) {
+          const message =
+            fetchError instanceof Error ? fetchError.message : "未知错误";
+          setError(message);
+          setPeroxideSeries([]);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    fetchPeroxide();
+    const intervalId = setInterval(fetchPeroxide, 60_000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, []);
 
   const definitions = useMemo<MetricDefinition[]>(
     () => [
       {
         id: "peroxide",
         title: "双氧水",
-        unit: "L",
+        unit: "t",
         color: "#7828C8",
         Icon: FlaskConical,
         series: peroxideSeries,
@@ -216,11 +283,25 @@ export const RawMaterialsPanel = () => {
         <CardHeader className="flex items-center justify-between px-5 pt-5 pb-2">
           <div className="flex flex-col">
             <h4 className="font-bold text-base text-default-900">原辅料</h4>
-            <p className="text-xs text-default-500">点击数字查看趋势</p>
+            <p className="text-xs text-default-500">点击行查看趋势</p>
           </div>
+          {loading ? (
+            <Chip size="sm" variant="flat" color="default" className="h-6 text-tiny">
+              Loading...
+            </Chip>
+          ) : error ? (
+            <Chip size="sm" variant="flat" color="danger" className="h-6 text-tiny">
+              同步异常
+            </Chip>
+          ) : null}
         </CardHeader>
         <CardBody className="px-3 pb-4 pt-0">
-          <div className="flex flex-col gap-1">
+          {loading && peroxideSeries.length === 0 ? (
+            <div className="flex items-center justify-center py-6">
+              <Spinner size="sm" color="primary" />
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
             {definitions.map((definition) => (
               <MetricRow
                 key={definition.id}
@@ -228,7 +309,8 @@ export const RawMaterialsPanel = () => {
                 onOpenTrend={openTrend}
               />
             ))}
-          </div>
+            </div>
+          )}
         </CardBody>
       </Card>
 
