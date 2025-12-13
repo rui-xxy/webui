@@ -9,9 +9,7 @@ import { TaskOverview } from './components/TaskOverview'
 import { ProductTrend } from './components/ProductTrend'
 import { EquipmentMonitor } from './components/EquipmentMonitor'
 import { TankInventory } from './components/TankInventory'
-import { ElectricConsumption } from './components/ElectricConsumption'
-import { WaterConsumption } from './components/WaterConsumption'
-import { HydrogenPeroxideConsumption } from './components/HydrogenPeroxideConsumption'
+import { EnergyConsumptionPanel, RawMaterialsPanel } from './components/ConsumptionPanels'
 
 // Import react-grid-layout styles
 import 'react-grid-layout/css/styles.css'
@@ -33,9 +31,8 @@ const defaultLayouts: Layouts = {
     { i: 'production-rate', x: 0, y: 6, w: 3, h: 13, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
     { i: 'task-overview', x: 0, y: 0, w: 3, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
     { i: 'equipment-monitor', x: 9, y: 0, w: 3, h: 8, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'electric-consumption', x: 3, y: 0, w: 2, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'water-consumption', x: 5, y: 0, w: 2, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
-    { i: 'peroxide-consumption', x: 7, y: 0, w: 2, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'raw-materials', x: 3, y: 0, w: 3, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
+    { i: 'energy-consumption', x: 6, y: 0, w: 3, h: 6, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
     { i: 'product-trend', x: 3, y: 6, w: 6, h: 13, minW: CHART_MIN_WIDTH, minH: CARD_MIN_HEIGHT },
     { i: 'tank-inventory', x: 9, y: 8, w: 3, h: 11, minW: CARD_MIN_WIDTH, minH: CARD_MIN_HEIGHT }
   ]
@@ -153,25 +150,18 @@ function App(): JSX.Element {
                     <EquipmentMonitor />
                   </div>
 
-                  <div key="electric-consumption" className="relative group h-full">
+                  <div key="raw-materials" className="relative group h-full">
                     <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
                     </div>
-                    <ElectricConsumption />
+                    <RawMaterialsPanel />
                   </div>
 
-                  <div key="water-consumption" className="relative group h-full">
+                  <div key="energy-consumption" className="relative group h-full">
                     <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
                     </div>
-                    <WaterConsumption />
-                  </div>
-
-                  <div key="peroxide-consumption" className="relative group h-full">
-                    <div className="drag-handle absolute top-2 right-2 z-20 p-1 bg-default-100 rounded-md cursor-move opacity-0 group-hover:opacity-100 transition-opacity">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-default-500"><path d="M5 9l0 .01"/><path d="M5 15l0 .01"/><path d="M12 9l0 .01"/><path d="M12 15l0 .01"/><path d="M19 9l0 .01"/><path d="M19 15l0 .01"/></svg>
-                    </div>
-                    <HydrogenPeroxideConsumption />
+                    <EnergyConsumptionPanel />
                   </div>
 
                   <div key="product-trend" className="relative group h-full">
