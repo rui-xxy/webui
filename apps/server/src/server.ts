@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express from 'express'
 import tanksRouter from './modules/tank/tank.routes'
+import workTasksRouter from './modules/work-task/work-task.routes'
 import productionRouter from './modules/production/production.routes'
 import consumptionRouter from './modules/consumption/consumption.routes'
 import metersRouter from './modules/meter/meter.routes'
@@ -26,6 +27,7 @@ export function createServer() {
   })
 
   app.use('/api/tanks', tanksRouter)
+  app.use('/api/work-tasks', workTasksRouter)
   app.use('/api/production', productionRouter)
   app.use('/api/consumption', consumptionRouter)
   app.use('/api/meters', metersRouter)
