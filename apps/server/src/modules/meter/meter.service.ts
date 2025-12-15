@@ -1,4 +1,7 @@
-import { findDailyElectricUsageByMeterNames } from './meter.repository'
+import {
+  findDailyElectricUsageByMeterNames,
+  findDailyUsageByMeterUnit
+} from './meter.repository'
 import type { DailyElectricTotalPoint } from './meter.types'
 
 const INCLUDED_IN_TOTAL = [
@@ -76,6 +79,46 @@ export async function listTotalElectricDailyUsage(
       0
     )
     point.value = Number((included - subtract).toFixed(2))
+  })
+
+  return Array.from(pointsByDate.values()).filter(
+    (point) => Object.keys(point.meters).length > 0
+  )
+}
+
+const WATER_UNIT_CANDIDATES = ['立方米', 'm3', 'M3', 'm³'] as const
+
+export async function listTotalWaterDailyUsage(
+  startDate: string,
+  endDate: string
+): Promise<DailyElectricTotalPoint[]> {
+  const start = parseDateOnly(startDate)
+  const end = parseDateOnly(endDate)
+  if (!start || !end || start > end) return []
+
+  const usageRows = await findDailyUsageByMeterUnit(
+    [...WATER_UNIT_CANDIDATES],
+    startDate,
+    endDate
+  )
+
+  const pointsByDate = new Map<string, DailyElectricTotalPoint>()
+  buildDateRange(start, end).forEach((dateKey) => {
+    pointsByDate.set(dateKey, { date: dateKey, value: 0, meters: {} })
+  })
+
+  usageRows.forEach((row) => {
+    const point = pointsByDate.get(row.date)
+    if (!point) return
+    point.meters[row.meterName] = row.usage
+  })
+
+  pointsByDate.forEach((point) => {
+    const total = Object.values(point.meters).reduce(
+      (sum, value) => sum + value,
+      0
+    )
+    point.value = Number(total.toFixed(2))
   })
 
   return Array.from(pointsByDate.values()).filter(

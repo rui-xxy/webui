@@ -72,6 +72,16 @@ type ElectricTrendResponse = {
   data: ElectricTrendPoint[];
 };
 
+type WaterTrendPoint = {
+  date: string;
+  value: number;
+  meters?: Record<string, number>;
+};
+
+type WaterTrendResponse = {
+  data: WaterTrendPoint[];
+};
+
 const formatIsoDate = (date: Date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -198,12 +208,42 @@ const TrendModal = ({
       );
     }
 
+    const label = definition.id === "electric" ? "总电耗" : "总用量";
+
+    if (definition.id !== "electric") {
+      const rows = Object.entries(meters).sort(
+        (a, b) => Number(b[1] ?? 0) - Number(a[1] ?? 0)
+      );
+
+      return (
+        <div className="rounded-lg border border-default-200 bg-white p-3 shadow-md min-w-[240px]">
+          <div className="text-xs text-default-500">{titleDate}</div>
+          <div className="mt-1 text-sm font-semibold text-default-900">
+            {label}：{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+            {definition.unit}
+          </div>
+          <div className="mt-2 space-y-1">
+            {rows.map(([name, value]) => (
+              <div key={name} className="flex justify-between gap-3 text-xs">
+                <span className="text-default-600">{name}</span>
+                <span className="font-mono text-default-900">
+                  {Number(value ?? 0).toLocaleString(undefined, {
+                    maximumFractionDigits: 2
+                  })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="rounded-lg border border-default-200 bg-white p-3 shadow-md min-w-[240px]">
         <div className="text-xs text-default-500">{titleDate}</div>
         <div className="mt-1 text-sm font-semibold text-default-900">
-          总电耗：{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
-          kWh
+          {label}：{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}{" "}
+          {definition.unit}
         </div>
         <div className="mt-2 space-y-1">
           {ELECTRIC_METER_BREAKDOWN.map((item) => {
@@ -467,15 +507,67 @@ export const EnergyConsumptionPanel = () => {
     };
   }, []);
 
-  const waterSeries = useMemo(
-    () =>
-      buildSeries(30, (i) => {
-        const baseValue = 120 + Math.cos(i * 0.3) * 20;
-        const randomFactor = Math.random() * 10 - 5;
-        return Math.round((baseValue + randomFactor) * 10) / 10;
-      }),
-    []
-  );
+  const [waterSeries, setWaterSeries] = useState<
+    { date: string; value: number; meters?: Record<string, number>; dateKey?: string }[]
+  >([]);
+  const [waterLoading, setWaterLoading] = useState(true);
+  const [waterError, setWaterError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchWater = async () => {
+      try {
+        setWaterLoading(true);
+
+        const end = new Date();
+        end.setHours(0, 0, 0, 0);
+        const start = new Date(end);
+        start.setDate(start.getDate() - 29);
+
+        const startDate = formatIsoDate(start);
+        const endDate = formatIsoDate(end);
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/meters/water/total/trend?start=${startDate}&end=${endDate}`
+        );
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const payload = (await response.json()) as WaterTrendResponse;
+        const points = (payload.data ?? []).map((row) => ({
+          date: formatDateLabel(row.date),
+          dateKey: row.date,
+          value: Number(row.value ?? 0),
+          meters: row.meters,
+        }));
+
+        if (!cancelled) {
+          setWaterSeries(points);
+          setWaterError(null);
+        }
+      } catch (fetchError) {
+        if (!cancelled) {
+          const message =
+            fetchError instanceof Error ? fetchError.message : "未知错误";
+          setWaterError(message);
+          setWaterSeries([]);
+        }
+      } finally {
+        if (!cancelled) setWaterLoading(false);
+      }
+    };
+
+    fetchWater();
+    const intervalId = setInterval(fetchWater, 60_000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, []);
 
   const definitions = useMemo<MetricDefinition[]>(
     () => [
@@ -514,7 +606,7 @@ export const EnergyConsumptionPanel = () => {
             <h4 className="font-bold text-base text-default-900">能源消耗</h4>
             <p className="text-xs text-default-500">点击数字查看趋势</p>
           </div>
-          {electricLoading ? (
+          {electricLoading || waterLoading ? (
             <Chip
               size="sm"
               variant="flat"
@@ -523,7 +615,7 @@ export const EnergyConsumptionPanel = () => {
             >
               Loading...
             </Chip>
-          ) : electricError ? (
+          ) : electricError || waterError ? (
             <Chip
               size="sm"
               variant="flat"
@@ -535,7 +627,8 @@ export const EnergyConsumptionPanel = () => {
           ) : null}
         </CardHeader>
         <CardBody className="px-3 pb-4 pt-0">
-          {electricLoading && electricSeries.length === 0 ? (
+          {(electricLoading && electricSeries.length === 0) ||
+          (waterLoading && waterSeries.length === 0) ? (
             <div className="flex items-center justify-center py-6">
               <Spinner size="sm" color="primary" />
             </div>
