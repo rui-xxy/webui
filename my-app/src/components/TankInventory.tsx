@@ -21,6 +21,9 @@ interface TankApiResponse {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4000";
 
+const formatTonnage = (value: number) =>
+  value.toLocaleString(undefined, { maximumFractionDigits: 1 });
+
 const getStatusColor = (percentage: number) => {
   if (percentage >= 90) return { bg: "bg-danger-500", text: "text-danger-600" };
   if (percentage >= 75) return { bg: "bg-warning-500", text: "text-warning-600" };
@@ -92,12 +95,6 @@ const Tank = ({ data }: { data: TankData }) => {
           </div>
         </div>
 
-        {/* Inventory Info (Bottom) */}
-        <div className="text-center">
-          <span className="text-[10px] font-semibold text-default-600 group-hover:text-default-900 transition-colors font-mono">
-            {data.current.toLocaleString()}
-          </span>
-        </div>
       </div>
     </Tooltip>
   );
@@ -211,6 +208,19 @@ export function TankInventory() {
                   {category.title}
                 </h3>
                 <div className="h-[1px] flex-1 bg-default-100" />
+                <div className="flex items-baseline gap-1 rounded-lg bg-default-50 px-2 py-1 ring-1 ring-default-200">
+                  <span className="font-mono text-xs font-bold text-default-900">
+                    {formatTonnage(
+                      category.tanks.reduce(
+                        (sum, tank) => sum + Number(tank.current ?? 0),
+                        0
+                      )
+                    )}
+                  </span>
+                  <span className="text-[10px] font-medium text-default-500">
+                    吨库存
+                  </span>
+                </div>
               </div>
               
               {/* Tank Grid */}
