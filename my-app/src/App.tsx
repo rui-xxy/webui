@@ -62,6 +62,7 @@ const mergeLayoutsWithDefaults = (saved?: Layouts): Layouts => {
 
 function App(): JSX.Element {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [activeSidebarItem, setActiveSidebarItem] = useState<"reports">("reports");
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -106,6 +107,8 @@ function App(): JSX.Element {
         <Sidebar 
           isCollapsed={isSidebarCollapsed} 
           toggleSidebar={toggleSidebar} 
+          activeItem={activeSidebarItem}
+          onSelectItem={setActiveSidebarItem}
         />
 
         {/* Main Content Wrapper */}
@@ -115,6 +118,7 @@ function App(): JSX.Element {
 
           {/* Main Scrollable Area */}
           <main className="flex-1 overflow-x-auto overflow-y-auto p-6 relative">
+            {activeSidebarItem === "reports" ? (
             <div className="max-w-[1600px] mx-auto h-full min-w-[1600px]">
                <ResponsiveGridLayout
                  className="layout"
@@ -181,6 +185,7 @@ function App(): JSX.Element {
                   </div>
                 </ResponsiveGridLayout>
             </div>
+            ) : null}
           </main>
         </div>
       </div>

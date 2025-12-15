@@ -1,37 +1,20 @@
 import { Avatar } from "@heroui/react";
-import { 
-  LayoutDashboard, 
-  Settings, 
-  Users, 
-  BarChart3, 
-  ChevronLeft, 
-  ChevronRight,
-  Factory,
-  FileText,
-  HelpCircle
-} from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
 
 interface SidebarProps {
   isCollapsed: boolean;
   toggleSidebar: () => void;
+  activeItem: "reports";
+  onSelectItem: (id: "reports") => void;
 }
 
-export const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
-  const [activeItem, setActiveItem] = useState("dashboard");
-
-  const menuItems = [
-    { id: "dashboard", icon: LayoutDashboard, label: "生产概览" },
-    { id: "reports", icon: FileText, label: "报表管理" },
-    { id: "analysis", icon: BarChart3, label: "数据分析" },
-    { id: "production", icon: Factory, label: "车间监控" },
-    { id: "users", icon: Users, label: "人员管理" },
-  ];
-
-  const bottomItems = [
-    { id: "settings", icon: Settings, label: "系统设置" },
-    { id: "help", icon: HelpCircle, label: "帮助中心" },
-  ];
+export const Sidebar = ({
+  isCollapsed,
+  toggleSidebar,
+  activeItem,
+  onSelectItem,
+}: SidebarProps) => {
+  const menuItems = [{ id: "reports" as const, icon: FileText, label: "报表管理" }];
 
   return (
     <div 
@@ -67,7 +50,7 @@ export const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
         {menuItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => setActiveItem(item.id)}
+            onClick={() => onSelectItem(item.id)}
             className={`flex items-center p-3 rounded-xl transition-all duration-200 group
               ${activeItem === item.id 
                 ? "bg-primary text-white shadow-md shadow-primary/30" 
@@ -87,21 +70,6 @@ export const Sidebar = ({ isCollapsed, toggleSidebar }: SidebarProps) => {
 
       {/* Bottom Menu */}
       <div className="py-4 px-3 border-t border-default-100 flex flex-col gap-2">
-        {bottomItems.map((item) => (
-          <button
-            key={item.id}
-            className={`flex items-center p-3 rounded-xl transition-all duration-200 text-default-500 hover:bg-default-100 hover:text-default-900 group
-              ${isCollapsed ? "justify-center" : "justify-start"}
-            `}
-            title={isCollapsed ? item.label : ""}
-          >
-            <item.icon size={20} strokeWidth={2} />
-            {!isCollapsed && (
-              <span className="ml-3 font-medium">{item.label}</span>
-            )}
-          </button>
-        ))}
-        
         {/* User Profile */}
         <div className={`mt-2 flex items-center p-2 rounded-xl bg-default-50 border border-default-100
           ${isCollapsed ? "justify-center" : "justify-start gap-3"}
