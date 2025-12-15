@@ -177,29 +177,29 @@ export const TaskOverview = () => {
       key: "进行中",
       label: "进行中",
       count: counts.inProgress,
-      icon: <Clock className="text-primary" size={20} />,
-      tone: "bg-primary-50 border-primary-100 hover:bg-primary-100",
+      icon: <Clock className="text-primary" size={16} />,
+      tone: "border-primary-100 bg-primary-50/60 hover:bg-primary-50",
     },
     {
       key: "已完成",
       label: "已完成",
       count: counts.completed,
-      icon: <CheckCircle2 className="text-success" size={20} />,
-      tone: "bg-success-50 border-success-100 hover:bg-success-100",
+      icon: <CheckCircle2 className="text-success" size={16} />,
+      tone: "border-success-100 bg-success-50/60 hover:bg-success-50",
     },
     {
       key: "延期",
       label: "延期",
       count: counts.overdue,
-      icon: <AlertCircle className="text-warning" size={20} />,
-      tone: "bg-warning-50 border-warning-100 hover:bg-warning-100",
+      icon: <AlertCircle className="text-warning" size={16} />,
+      tone: "border-warning-100 bg-warning-50/60 hover:bg-warning-50",
     },
     {
       key: "搁置",
       label: "搁置",
       count: counts.onHold,
-      icon: <PauseCircle className="text-default-600" size={20} />,
-      tone: "bg-default-50 border-default-200 hover:bg-default-100",
+      icon: <PauseCircle className="text-default-600" size={16} />,
+      tone: "border-default-200 bg-default-50/60 hover:bg-default-50",
     },
   ] as const;
 
@@ -225,14 +225,18 @@ export const TaskOverview = () => {
   return (
     <>
       <Card className="h-full w-full shadow-sm hover:shadow-md transition-shadow duration-300 border border-default-100 bg-white dark:bg-default-50">
-        <CardHeader className="flex justify-between items-start gap-3 px-5 pt-5">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-primary-100 rounded-lg text-primary">
-              <ListTodo size={20} />
+        <CardHeader className="flex justify-between items-center gap-2 px-3 pt-3 pb-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="p-1.5 bg-primary-100 rounded-lg text-primary shrink-0">
+              <ListTodo size={16} />
             </div>
-            <div>
-              <h4 className="font-bold text-lg text-default-900">事项管理</h4>
-              <p className="text-xs text-default-500">来自 work_tasks 数据库表</p>
+            <div className="min-w-0">
+              <h4 className="font-semibold text-sm text-default-900 leading-5">
+                事项
+              </h4>
+              <p className="text-[10px] text-default-500 leading-4 truncate">
+                {selectedDepartment === "all" ? "全部部门" : selectedDepartment}
+              </p>
             </div>
           </div>
 
@@ -243,7 +247,11 @@ export const TaskOverview = () => {
               variant="bordered"
               selectedKeys={departmentSelectKeys}
               isLoading={departmentsLoading}
-              className="w-[180px]"
+              className="w-[140px]"
+              classNames={{
+                trigger: "h-8 min-h-8",
+                value: "text-xs",
+              }}
               onSelectionChange={(keys) => {
                 const value = Array.from(keys)[0];
                 setSelectedDepartment(typeof value === "string" ? value : "all");
@@ -255,43 +263,49 @@ export const TaskOverview = () => {
               ))}
             </Select>
 
-            <Button size="sm" variant="light" color="primary" onPress={onOpen} isIconOnly>
-              <ListTodo size={18} />
+            <Button
+              size="sm"
+              variant="flat"
+              color="primary"
+              onPress={onOpen}
+              className="h-8 min-w-0 px-2"
+              isIconOnly
+            >
+              <ListTodo size={16} />
             </Button>
           </div>
         </CardHeader>
 
-        <CardBody className="px-5 pb-5 flex flex-col justify-center gap-4 overflow-hidden">
+        <CardBody className="px-3 pb-3 pt-0 h-full min-h-0 overflow-hidden">
           {summaryLoading ? (
-            <div className="flex items-center justify-center py-6">
+            <div className="flex items-center justify-center h-full">
               <Spinner size="sm" color="primary" />
             </div>
           ) : summaryError ? (
-            <div className="px-3 py-2 text-[12px] text-danger-500 bg-danger-50 border border-danger-200 rounded-md">
+            <div className="px-2 py-1.5 text-[11px] text-danger-600 bg-danger-50 border border-danger-200 rounded-lg">
               {summaryError}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 grid-rows-2 gap-2 h-full">
               {statusTiles.map((tile) => (
                 <button
                   key={tile.key}
                   type="button"
-                  className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${tile.tone}`}
+                  className={`h-full flex items-center justify-between gap-2 p-2 rounded-lg border cursor-pointer transition-colors ${tile.tone}`}
                   onClick={() => {
                     setSelectedStatus(tile.key);
                     onOpen();
                   }}
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-2 bg-white rounded-full shadow-sm">{tile.icon}</div>
-                    <div className="min-w-0">
-                      <div className="text-xs text-default-500 font-medium">{tile.label}</div>
-                      <div className="text-[10px] text-default-400 truncate">
-                        {selectedDepartment === "all" ? "全部部门" : selectedDepartment}
-                      </div>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-7 h-7 rounded-md bg-white/70 border border-default-200 flex items-center justify-center shrink-0">
+                      {tile.icon}
+                    </div>
+                    <div className="text-xs font-medium text-default-700 truncate">
+                      {tile.label}
                     </div>
                   </div>
-                  <div className="text-2xl font-bold text-default-900 tabular-nums">
+                  <div className="text-xl font-bold text-default-900 tabular-nums leading-none">
                     {tile.count}
                   </div>
                 </button>
@@ -453,4 +467,3 @@ export const TaskOverview = () => {
     </>
   );
 };
-
