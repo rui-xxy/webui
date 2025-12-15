@@ -1,6 +1,27 @@
 import { Search, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export const Header = () => {
+  const [dateStr, setDateStr] = useState("");
+
+  useEffect(() => {
+    const updateDate = () => {
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long'
+      });
+      setDateStr(formatter.format(now));
+    };
+    
+    updateDate();
+    // Update periodically in case the day changes while open
+    const timer = setInterval(updateDate, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <header className="h-16 bg-white dark:bg-default-50 border-b border-default-200 flex items-center justify-between px-6 sticky top-0 z-40">
       {/* Left Side - Title/Breadcrumbs */}
@@ -22,9 +43,9 @@ export const Header = () => {
         </div>
 
         {/* Date Display */}
-        <div className="hidden md:flex items-center gap-2 text-default-600 bg-default-50 px-3 py-1.5 rounded-lg border border-default-200">
-          <Calendar size={16} />
-          <span className="text-sm font-medium">2025年12月04日</span>
+        <div className="hidden md:flex items-center gap-2 text-default-700 bg-default-100/60 px-4 py-1.5 rounded-full border border-default-200/60 backdrop-blur-sm">
+          <Calendar size={16} className="text-primary" />
+          <span className="text-sm font-medium">{dateStr}</span>
         </div>
       </div>
     </header>
