@@ -23,3 +23,21 @@ export interface TankSummary {
   percentage: number
   updatedAt: string
 }
+
+export interface TankBasic {
+  id: string
+  name: string
+}
+
+export interface TankLevelHistoryRow {
+  timestamp: string
+  levels: Record<string, number>
+}
+
+export interface TankLevelHistory {
+  start: string
+  end: string
+  bucketMinutes: number
+  tanks: TankBasic[]
+  rows: TankLevelHistoryRow[]
+}

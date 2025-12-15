@@ -1,5 +1,10 @@
-import { findTankInventory } from './tank.repository'
-import type { TankCategory, TankSummary } from './tank.types'
+import {
+  findTankBasics,
+  findTankInventory,
+  findTankLevelHistory,
+  findTankReadingsMinRecordedAt
+} from './tank.repository'
+import type { TankCategory, TankLevelHistory, TankSummary } from './tank.types'
 
 export async function listTankInventory(): Promise<TankCategory[]> {
   const records = await findTankInventory()
@@ -32,4 +37,36 @@ export async function listTankInventory(): Promise<TankCategory[]> {
   })
 
   return Array.from(categories.values())
+}
+
+export async function listTankLevelHistory(options?: {
+  hours?: number
+  bucketMinutes?: number
+  limit?: number
+  end?: Date
+  all?: boolean
+}): Promise<TankLevelHistory> {
+  const bucketMinutes = options?.bucketMinutes ?? 60
+  const end = options?.end ?? new Date()
+  const hours = options?.hours ?? 24
+
+  const start = options?.all
+    ? ((await findTankReadingsMinRecordedAt()) ?? end)
+    : new Date(end.getTime() - hours * 60 * 60 * 1000)
+
+  const expected = Math.ceil((end.getTime() - start.getTime()) / (bucketMinutes * 60 * 1000)) + 2
+  const limit = options?.limit ?? Math.min(300_000, Math.max(1, expected))
+
+  const [tanks, rows] = await Promise.all([
+    findTankBasics(),
+    findTankLevelHistory({ start, end, bucketMinutes, limit })
+  ])
+
+  return {
+    start: start.toISOString(),
+    end: end.toISOString(),
+    bucketMinutes,
+    tanks,
+    rows
+  }
 }
