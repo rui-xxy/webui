@@ -1,5 +1,4 @@
-import { Button, Badge } from "@heroui/react";
-import { Bell, Search, Calendar } from "lucide-react";
+import { Search, Calendar } from "lucide-react";
 
 export const Header = () => {
   return (
@@ -27,15 +26,6 @@ export const Header = () => {
           <Calendar size={16} />
           <span className="text-sm font-medium">2025年12月04日</span>
         </div>
-
-        <div className="h-6 w-px bg-default-200 mx-1"></div>
-
-        {/* Notifications */}
-        <Button isIconOnly variant="light" radius="full" className="text-default-500">
-          <Badge content="5" color="danger" shape="circle" size="sm">
-            <Bell size={20} />
-          </Badge>
-        </Button>
       </div>
     </header>
   );
