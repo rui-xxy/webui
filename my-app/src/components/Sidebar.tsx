@@ -1,5 +1,6 @@
 import { Avatar } from "@heroui/react";
 import { ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -30,17 +31,34 @@ export const Sidebar = ({
       </button>
 
       {/* Logo Area */}
-      <div className="h-16 flex items-center justify-center border-b border-default-100">
+      <div className="h-16 flex items-center justify-center border-b border-default-100 overflow-hidden relative bg-white/50 backdrop-blur-sm">
         {isCollapsed ? (
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">D</span>
-          </div>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center"
+          >
+            <span className="text-primary font-bold text-lg">恒</span>
+          </motion.div>
         ) : (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">D</span>
-            </div>
-            <span className="font-bold text-xl text-default-900">DataView</span>
+          <div className="flex flex-col justify-center w-full px-5">
+            <motion.div 
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="text-lg font-bold tracking-tight text-default-900"
+            >
+              恒光化工运维系统
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+              className="text-[10px] text-default-400 font-medium tracking-wider flex items-center gap-2"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-primary inline-block"></span>
+              生产技术部出品
+            </motion.div>
           </div>
         )}
       </div>
